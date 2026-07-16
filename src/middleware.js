@@ -1,11 +1,6 @@
 import NextAuth from "next-auth";
 import { authConfig } from "@/config/auth.config";
 
-/**
- * Middleware - Auth Guard
- * Menggunakan authConfig yang Edge-compatible (tanpa DB adapter/Prisma).
- * Proteksi rute /dashboard dan redirect jika sudah login mencoba ke /login atau /register.
- */
 export const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {

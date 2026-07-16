@@ -1,14 +1,19 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// =============================================================================
+// Prisma Schema - SaaS Invitation Card
+// =============================================================================
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+// =============================================================================
+// DOMAIN 1: AUTH & USER (Auth.js Required Models)
+// =============================================================================
 
 model User {
   id            String    @id @default(cuid())
@@ -17,26 +22,34 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String    @default("USER") // USER, AGENCY, ADMIN, SUPER_ADMIN
+  role          String    @default("USER") // USER | AGENCY | ADMIN | SUPER_ADMIN
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+
+  // Auth.js relations
+  accounts    Account[]
+  sessions    Session[]
+
+  // Business relations
+  invitations   Invitation[]
+  subscriptions Subscription[]
+  transactions  Transaction[]
+  posts         Post[]
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -57,4 +70,310 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// =============================================================================
+// DOMAIN 2: MONETIZATION
+// =============================================================================
+
+/// Paket langganan yang tersedia di platform
+model Package {
+  id             String      @id @default(cuid())
+  name           String
+  slug           String      @unique
+  type           PackageType @default(ONE_TIME)
+  price          Int         // Dalam satuan Rupiah
+  features       Json        // Array of feature string
+  maxInvitations Int         @default(1)
+  durationDays   Int         @default(180) // Masa aktif dalam hari
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  subscriptions Subscription[]
+  transactions  Transaction[]
+}
+
+/// Status langganan aktif user
+model Subscription {
+  id         String             @id @default(cuid())
+  userId     String
+  packageId  String
+  status     SubscriptionStatus @default(ACTIVE)
+  startDate  DateTime           @default(now())
+  validUntil DateTime
+  quotaUsed  Int                @default(0) // Jumlah undangan yang sudah dibuat
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package @relation(fields: [packageId], references: [id])
+
+  @@index([userId])
+}
+
+/// Riwayat transaksi pembayaran
+model Transaction {
+  id               String            @id @default(cuid())
+  userId           String
+  packageId        String
+  amount           Int               // Dalam satuan Rupiah
+  currency         String            @default("IDR")
+  midtransOrderId  String            @unique
+  midtransToken    String?
+  status           TransactionStatus @default(PENDING)
+  paymentUrl       String?
+  paidAt           DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package @relation(fields: [packageId], references: [id])
+
+  @@index([userId])
+  @@index([midtransOrderId])
+}
+
+// =============================================================================
+// DOMAIN 3: INVITATION CORE
+// =============================================================================
+
+/// Master tema desain undangan
+model Theme {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  thumbnailUrl  String?
+  previewImages Json?    // Array of preview image URLs
+  isPremium     Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  invitations Invitation[]
+}
+
+/// Undangan digital milik user
+model Invitation {
+  id          String   @id @default(cuid())
+  slug        String   @unique // URL publik undangan
+  userId      String
+  themeId     String
+
+  // Info pasangan
+  title       String   // Contoh: "Pernikahan Rani & Budi"
+  brideName   String
+  groomName   String
+  coverUrl    String?  // Foto cover utama
+  musicUrl    String?  // URL musik latar
+  quotes      String?  @db.Text
+  openingText String?  @db.Text
+
+  // Status
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme       Theme        @relation(fields: [themeId], references: [id])
+  events      Event[]
+  loveStories LoveStory[]
+  galleries   Gallery[]
+  gifts       Gift[]
+  guests      Guest[]
+  rsvps       RSVP[]
+  visitorLogs VisitorLog[]
+
+  @@index([userId])
+  @@index([slug])
+}
+
+/// Acara dalam undangan (Akad, Resepsi, dll)
+model Event {
+  id           String   @id @default(cuid())
+  invitationId String
+  name         String   // Contoh: "Akad Nikah" | "Resepsi"
+  date         DateTime
+  startTime    String   // Format "HH:MM" (lebih fleksibel dari Time)
+  endTime      String?
+  locationName String
+  address      String   @db.Text
+  mapUrl       String?  // Google Maps embed URL
+  mapLat       Float?
+  mapLng       Float?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+}
+
+/// Cerita perjalanan cinta pasangan
+model LoveStory {
+  id           String   @id @default(cuid())
+  invitationId String
+  title        String
+  date         String?  // Format bebas: "Januari 2020"
+  description  String   @db.Text
+  imageUrl     String?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+}
+
+/// Galeri foto/video undangan
+model Gallery {
+  id           String      @id @default(cuid())
+  invitationId String
+  mediaUrl     String
+  thumbnailUrl String?
+  type         MediaType   @default(PHOTO)
+  caption      String?
+  sortOrder    Int         @default(0)
+  createdAt    DateTime    @default(now())
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+}
+
+/// Amplop digital / rekening tujuan hadiah
+model Gift {
+  id            String   @id @default(cuid())
+  invitationId  String
+  type          GiftType // BANK | EWALLET | PHYSICAL
+  providerName  String   // Contoh: "BCA", "GoPay", "Tokopedia"
+  accountName   String
+  accountNumber String?
+  qrCodeUrl     String?
+  note          String?
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+}
+
+// =============================================================================
+// DOMAIN 4: GUEST & RSVP
+// =============================================================================
+
+/// Daftar tamu undangan
+model Guest {
+  id           String   @id @default(cuid())
+  invitationId String
+  name         String
+  whatsapp     String?
+  uniqueCode   String   @unique // Digunakan untuk link personal & QR check-in
+  isOpened     Boolean  @default(false)
+  openedAt     DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  rsvp       RSVP?
+
+  @@index([invitationId])
+  @@index([uniqueCode])
+}
+
+/// Konfirmasi kehadiran tamu
+model RSVP {
+  id           String     @id @default(cuid())
+  invitationId String
+  guestId      String?    @unique // Nullable: tamu anonim bisa RSVP tanpa uniqueCode
+  name         String?    // Jika tamu anonim
+  attendance   Attendance
+  pax          Int        @default(1)
+  message      String?    @db.Text
+  createdAt    DateTime   @default(now())
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  guest      Guest?     @relation(fields: [guestId], references: [id], onDelete: SetNull)
+
+  @@index([invitationId])
+}
+
+// =============================================================================
+// DOMAIN 5: ANALYTICS
+// =============================================================================
+
+/// Log kunjungan halaman undangan
+model VisitorLog {
+  id           String   @id @default(cuid())
+  invitationId String
+  ipAddress    String?  // Di-hash sebelum disimpan untuk privasi
+  userAgent    String?  @db.Text
+  referrer     String?
+  visitedAt    DateTime @default(now())
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@index([invitationId])
+  @@index([visitedAt])
+}
+
+// =============================================================================
+// DOMAIN 6: BLOG (SEO)
+// =============================================================================
+
+/// Artikel blog untuk SEO
+model Post {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  excerpt      String?  @db.Text
+  content      String   @db.Text
+  thumbnailUrl String?
+  authorId     String
+  isPublished  Boolean  @default(false)
+  publishedAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  author User @relation(fields: [authorId], references: [id])
+
+  @@index([slug])
+  @@index([isPublished])
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum PackageType {
+  ONE_TIME   // Pembayaran sekali untuk akses terbatas waktu
+  RECURRING  // Berlangganan bulanan/tahunan
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+}
+
+enum GiftType {
+  BANK
+  EWALLET
+  PHYSICAL
+}
+
+enum Attendance {
+  YES
+  NO
+  MAYBE
 }

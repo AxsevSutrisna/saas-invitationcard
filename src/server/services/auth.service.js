@@ -19,7 +19,7 @@ import {
 export async function registerUser(data) {
   const existingUser = await findUserByEmail(data.email);
   if (existingUser) {
-    return { success: false, error: "Email ini sudah terdaftar." };
+    return { success: false, error: "Email is already registered." };
   }
 
   const hashedPassword = await bcrypt.hash(data.password, 12);
