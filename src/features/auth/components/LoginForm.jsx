@@ -34,13 +34,13 @@ export function LoginForm() {
       });
 
       if (res?.error) {
-        setError("Email atau Password salah!");
+        setError("Invalid email or password!");
       } else {
         router.push("/dashboard");
         router.refresh();
       }
     } catch {
-      setError("Terjadi kesalahan sistem.");
+      setError("A system error occurred.");
     } finally {
       setLoading(false);
     }

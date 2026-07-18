@@ -1,27 +1,22 @@
 import { z } from "zod";
 
-/**
- * Validation Layer - Auth
- * Seluruh schema validasi Zod terkait proses autentikasi.
- */
-
 export const registerSchema = z.object({
   name: z
-    .string({ required_error: "Nama wajib diisi." })
-    .min(2, "Nama minimal 2 karakter."),
+    .string({ required_error: "Name is required." })
+    .min(2, "Name must be at least 2 characters."),
   email: z
-    .string({ required_error: "Email wajib diisi." })
-    .email("Format email tidak valid."),
+    .string({ required_error: "Email is required." })
+    .email("Invalid email address format."),
   password: z
-    .string({ required_error: "Password wajib diisi." })
-    .min(8, "Password minimal 8 karakter."),
+    .string({ required_error: "Password is required." })
+    .min(8, "Password must be at least 8 characters."),
 });
 
 export const loginSchema = z.object({
   email: z
-    .string({ required_error: "Email wajib diisi." })
-    .email("Format email tidak valid."),
+    .string({ required_error: "Email is required." })
+    .email("Invalid email address format."),
   password: z
-    .string({ required_error: "Password wajib diisi." })
-    .min(1, "Password wajib diisi."),
+    .string({ required_error: "Password is required." })
+    .min(1, "Password is required."),
 });
