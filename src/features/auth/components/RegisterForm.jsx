@@ -36,7 +36,8 @@ export function RegisterForm() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Gagal mendaftar.");
+        const errorMessage = data.error?.details?.[0] || data.message || "Gagal mendaftar.";
+        throw new Error(errorMessage);
       }
 
       // Registrasi berhasil → langsung login
