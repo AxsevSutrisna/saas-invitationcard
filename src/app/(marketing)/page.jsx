@@ -15,10 +15,6 @@ export const metadata = {
     "IKARA adalah platform digital untuk mengabadikan dan membagikan kisah cinta serta janji pernikahan Anda melalui pengalaman yang indah, personal, dan bermakna.",
 };
 
-/**
- * Landing Page Entry Point
- * Merangkai seluruh 8 section utama dari fitur Landing Page.
- */
 export default function LandingPage() {
   return (
     <div className="space-y-0">
