@@ -11,22 +11,22 @@ export const dashboardNav = [
   {
     label: "Dashboard",
     href: ROUTES.DASHBOARD,
-    icon: "LayoutDashboard",
+    icon: "LayoutGrid",
   },
   {
-    label: "Undangan Saya",
-    href: ROUTES.INVITATIONS,
-    icon: "Mail",
+    label: "Statistik",
+    href: ROUTES.ANALYTICS,
+    icon: "BarChart3",
   },
   {
-    label: "Subscription",
-    href: ROUTES.SUBSCRIPTION,
-    icon: "CreditCard",
+    label: "Tema",
+    href: ROUTES.THEMES,
+    icon: "Palette",
   },
   {
-    label: "Pengaturan",
-    href: ROUTES.SETTINGS,
-    icon: "Settings",
+    label: "Buat Undangan",
+    href: ROUTES.INVITATION_NEW,
+    icon: "PlusCircle",
   },
 ];
 
