@@ -19,8 +19,8 @@ export default function RegisterPage() {
     <Card className="w-full max-w-md shadow-2xl border-none">
       <CardHeader className="space-y-3 text-center">
         <div className="flex justify-center mb-2">
-          <h1 className="text-3xl font-heading font-bold text-primary">
-            SaaS Invitation
+          <h1 className="text-3xl font-heading font-bold text-primary tracking-widest uppercase">
+            IKARA
           </h1>
         </div>
         <CardTitle className="text-2xl font-semibold tracking-tight">
