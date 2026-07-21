@@ -15,6 +15,8 @@ export const ROUTES = {
 
   // Dashboard (protected)
   DASHBOARD: "/dashboard",
+  ANALYTICS: "/dashboard/analytics",
+  THEMES: "/dashboard/themes",
   INVITATIONS: "/dashboard/invitations",
   INVITATION_NEW: "/dashboard/invitations/new",
   INVITATION_EDIT: (id) => `/dashboard/invitations/${id}/edit`,
