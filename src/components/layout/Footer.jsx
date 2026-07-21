@@ -21,6 +21,7 @@ export function Footer() {
               height={44}
               style={{ width: "auto", height: "40px" }}
               className="object-contain"
+              loading="lazy"
             />
           </Link>
           <p className="text-sm text-zinc-400 leading-relaxed font-light">

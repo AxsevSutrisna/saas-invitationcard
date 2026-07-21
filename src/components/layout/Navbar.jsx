@@ -43,7 +43,8 @@ export function Navbar() {
               height={40}
               style={{ width: "auto", height: "30px" }}
               className="object-contain"
-              priority
+              loading="eager"
+              priority={true}
             />
           </div>
         </Link>
