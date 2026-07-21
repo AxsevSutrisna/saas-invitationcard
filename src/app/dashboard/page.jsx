@@ -2,10 +2,6 @@ import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-/**
- * Dashboard Page (sementara/placeholder).
- * Akan dibangun secara penuh di Phase 3.
- */
 export default async function DashboardPage() {
   const session = await auth();
 

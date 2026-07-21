@@ -10,10 +10,6 @@ import {
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 
-/**
- * Login Page
- * Thin page — hanya layout dan routing, logika form ada di LoginForm.
- */
 export default function LoginPage() {
   return (
     <Card className="w-full max-w-md shadow-2xl border-none">
