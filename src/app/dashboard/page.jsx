@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
@@ -35,7 +35,12 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <form action="/api/auth/signout" method="POST">
+        <form
+          action={async () => {
+            "use server";
+            await signOut({ redirectTo: "/" });
+          }}
+        >
           <Button variant="destructive" type="submit" className="w-full">
             Log Out
           </Button>

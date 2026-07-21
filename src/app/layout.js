@@ -14,8 +14,14 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata = {
-  title: "SaaS Invitation Card",
-  description: "Modern wedding invitation platform",
+  title: "IKARA — Every Promise Has a Story",
+  description:
+    "IKARA adalah platform digital untuk mengabadikan dan membagikan kisah cinta serta janji pernikahan Anda melalui pengalaman yang indah, personal, dan bermakna.",
+  icons: {
+    icon: "/IKARA_LOGO_ICON.png",
+    shortcut: "/IKARA_LOGO_ICON.png",
+    apple: "/IKARA_LOGO_ICON.png",
+  },
 };
 
 export default function RootLayout({ children }) {

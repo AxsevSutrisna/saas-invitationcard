@@ -1,34 +1,37 @@
 /**
  * Config - Site
- * Metadata dan konfigurasi global untuk seluruh aplikasi.
- * Digunakan untuk SEO, Open Graph, dan informasi aplikasi.
+ * Metadata dan konfigurasi global untuk aplikasi IKARA.
+ * Digunakan untuk SEO, Open Graph, dan copywriting aplikasi.
  */
 export const siteConfig = {
-  name: "SaaS Invitation Card",
-  tagline: "Buat Undangan Digital Keren dalam Hitungan Menit",
+  name: "IKARA",
+  tagline: "Every Promise Has a Story",
+  philosophy: "Love is felt. A promise is made. A story is remembered.",
   description:
-    "Platform undangan digital modern yang mudah digunakan. Desain premium, sistem RSVP real-time, dan galeri foto untuk hari spesial Anda.",
+    "IKARA adalah platform digital modern untuk mengabadikan dan membagikan kisah cinta serta janji pernikahan Anda melalui pengalaman yang indah, personal, dan bermakna.",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ogImage: "/og-image.jpg",
 
   // Informasi kontak
   contact: {
-    email: "hello@saas-invitation.com",
-    support: "support@saas-invitation.com",
+    email: "hello@ikara.id",
+    support: "support@ikara.id",
   },
 
   // Social media
   social: {
-    instagram: "https://instagram.com/saas.invitation",
-    twitter: "https://twitter.com/saas_invitation",
+    instagram: "https://instagram.com/ikara.id",
+    twitter: "https://twitter.com/ikara_id",
   },
 
   // Metadata SEO default
   keywords: [
-    "undangan digital",
-    "undangan pernikahan online",
-    "wedding invitation",
+    "IKARA",
+    "digital wedding invitation",
+    "digital storytelling platform",
+    "undangan pernikahan digital",
+    "undangan nikah elegan",
+    "ikrar dan aksara",
     "RSVP online",
-    "undangan nikah digital",
   ],
 };

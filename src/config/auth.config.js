@@ -8,6 +8,7 @@ import Google from "next-auth/providers/google";
 export const authConfig = {
   session: {
     strategy: "jwt",
+    maxAge: 7 * 24 * 60 * 60, // 7 hari (1 minggu)
   },
   providers: [
     Google({
