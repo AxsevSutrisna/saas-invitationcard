@@ -182,6 +182,30 @@ export async function getInvitationById(id, userId) {
 }
 
 /**
+ * Mengambil detail undangan secara publik berdasarkan slug URL
+ */
+export async function getInvitationBySlug(slug) {
+  return db.invitation.findUnique({
+    where: { slug },
+    include: {
+      theme: true,
+      events: {
+        orderBy: { sortOrder: "asc" },
+      },
+      loveStories: {
+        orderBy: { sortOrder: "asc" },
+      },
+      galleries: {
+        orderBy: { sortOrder: "asc" },
+      },
+      gifts: {
+        orderBy: { sortOrder: "asc" },
+      },
+    },
+  });
+}
+
+/**
  * Memeriksa apakah slug URL publik sudah pernah digunakan
  */
 export async function checkSlugAvailability(slug) {

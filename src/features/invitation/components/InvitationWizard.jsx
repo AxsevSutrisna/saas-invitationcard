@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invitationFormSchema } from "@/lib/validations/invitation.schema";
@@ -26,11 +26,13 @@ const STEPS = [
 
 export function InvitationWizard({ themes = [] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryThemeId = searchParams.get("themeId");
   const [currentStep, setCurrentStep] = useState(1);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  const defaultThemeId = themes[0]?.id || "";
+  const defaultThemeId = queryThemeId || themes[0]?.id || "";
 
   const {
     register,
@@ -186,11 +188,9 @@ export function InvitationWizard({ themes = [] }) {
         <Button
           type="button"
           onClick={() => setShowGuideModal(true)}
-          variant="outline"
-          size="sm"
-          className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A] hover:bg-[#C8A96A]/10"
+          className="rounded-xl text-xs flex items-center gap-1.5 bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-semibold shadow-md shadow-[#C8A96A]/20 border-none transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
         >
-          <BookOpen className="w-4 h-4" />
+          <BookOpen className="w-3.5 h-3.5" />
           <span>Panduan Petunjuk</span>
         </Button>
       </div>

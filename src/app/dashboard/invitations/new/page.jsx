@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { db } from "@/lib/db";
 import { InvitationWizard } from "@/features/invitation";
 
@@ -25,7 +26,9 @@ export default async function NewInvitationPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <InvitationWizard themes={themes} />
+      <Suspense fallback={<div className="text-xs text-muted-foreground p-6">Loading form editor...</div>}>
+        <InvitationWizard themes={themes} />
+      </Suspense>
     </div>
   );
 }
