@@ -1,4 +1,4 @@
-import { Poppins, Cormorant_Garamond } from "next/font/google";
+import { Poppins, Cormorant_Garamond, Great_Vibes } from "next/font/google";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -11,6 +11,12 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+});
+
+const greatVibes = Great_Vibes({
+  variable: "--font-greatvibes",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 export const metadata = {
@@ -28,7 +34,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${cormorant.variable} h-full antialiased`}
+      className={`${poppins.variable} ${cormorant.variable} ${greatVibes.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>

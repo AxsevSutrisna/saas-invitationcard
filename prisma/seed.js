@@ -106,6 +106,15 @@ async function main() {
       isPremium: true,
       isActive: true,
       sortOrder: 3,
+    },
+    {
+      name: "Floral Blue",
+      slug: "floral-blue",
+      description: "Desain dedaunan biru anggun berpalet biru es dan navy yang tenang.",
+      thumbnailUrl: "/themes/floral-blue-thumb.jpg",
+      isPremium: true,
+      isActive: true,
+      sortOrder: 4,
     }
   ];
 
