@@ -164,11 +164,9 @@ function Bubble({ style, dur = 12, del = 0 }) {
 }
 
 // ════════════════════════════════════════════
-export function FloralBlueTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview }) {
+export function FloralBlueTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
   const [copiedId, setCopiedId] = useState(null);
   const [carouselIndex, setIdx] = useState(0);
-  const [isMuted, setIsMuted]   = useState(true);
-  const [audioEl, setAudioEl]   = useState(null);
 
   const NAVY = "#1A365D";
   const ICE  = "#E8F4FD";
@@ -185,18 +183,6 @@ export function FloralBlueTheme({ invitation, rsvps, guestName, onRsvpSuccess, i
     const t = setInterval(() => setIdx((p) => (p + 1) % galleries.length), 4500);
     return () => clearInterval(t);
   }, [layout, galleries.length]);
-
-  useEffect(() => {
-    if (isPreview || !invitation?.musicUrl || !invitation?.isMusicEnabled) return;
-    const a = new Audio(invitation.musicUrl);
-    a.loop = true; setAudioEl(a);
-    return () => { a.pause(); a.src = ""; };
-  }, [invitation?.musicUrl, invitation?.isMusicEnabled, isPreview]);
-
-  useEffect(() => {
-    if (!audioEl) return;
-    isMuted ? audioEl.pause() : audioEl.play().catch(() => {});
-  }, [isMuted, audioEl]);
 
   const handleCopy = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -231,7 +217,7 @@ export function FloralBlueTheme({ invitation, rsvps, guestName, onRsvpSuccess, i
       </div>
 
       {/* ── MUSIC TOGGLE ── */}
-      {!isPreview && invitation?.isMusicEnabled && (
+      {invitation?.isMusicEnabled && (
         <motion.button type="button" onClick={() => setIsMuted((p) => !p)}
           className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full border-2 shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
           style={{ background: "white", borderColor: NAVY }}
@@ -542,7 +528,7 @@ export function FloralBlueTheme({ invitation, rsvps, guestName, onRsvpSuccess, i
           <SectionHeading title="RSVP & Buku Ucapan" subtitle="Konfirmasi kehadiran dan doa terbaik:" color={NAVY} />
           <Reveal direction="up">
             <div className="p-6 rounded-3xl bg-white border shadow-sm" style={{ borderColor: `${NAVY}20` }}>
-              <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} />
+              <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} guest={guest} />
             </div>
           </Reveal>
           <Reveal direction="up" delay={0.1}>

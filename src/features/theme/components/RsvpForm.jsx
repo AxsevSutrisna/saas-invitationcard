@@ -20,9 +20,11 @@ const clientRsvpSchema = z.object({
   message: z.string().max(500, "Ucapan maksimal 500 karakter").optional(),
 });
 
-export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess }) {
+export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest }) {
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
+
+  const prevRsvp = guest?.rsvp;
 
   const {
     register,
@@ -33,10 +35,10 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess }) {
   } = useForm({
     resolver: zodResolver(clientRsvpSchema),
     defaultValues: {
-      name: defaultGuestName || "",
-      attendance: "YES",
-      pax: 1,
-      message: "",
+      name: prevRsvp?.name || defaultGuestName || "",
+      attendance: prevRsvp?.attendance || "YES",
+      pax: prevRsvp?.pax || 1,
+      message: prevRsvp?.message || "",
     },
   });
 
@@ -46,6 +48,7 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess }) {
     setServerError("");
     const res = await submitRsvpAction({
       invitationId,
+      guestId: guest?.id || null,
       ...data,
     });
 

@@ -9,7 +9,7 @@ import { FloralBlueTheme } from "@/themes/floral-blue";
  * Registry - Menentukan tema visual mana yang akan digunakan untuk
  * me-render halaman publik undangan berdasarkan data di database.
  */
-export function ThemeRegistry({ invitation, rsvps, guestName, onRsvpSuccess, isPreview }) {
+export function ThemeRegistry({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
   const themeSlug = invitation?.theme?.slug || "classic-elegance";
 
   const props = {
@@ -18,6 +18,9 @@ export function ThemeRegistry({ invitation, rsvps, guestName, onRsvpSuccess, isP
     guestName,
     onRsvpSuccess,
     isPreview,
+    guest,
+    isMuted,
+    setIsMuted,
   };
 
   switch (themeSlug) {

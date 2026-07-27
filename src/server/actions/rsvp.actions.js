@@ -16,6 +16,7 @@ const rsvpSchema = z.object({
     z.number().min(1, "Jumlah tamu minimal 1").max(10, "Jumlah tamu maksimal 10")
   ).default(1),
   message: z.string().max(500, "Ucapan maksimal 500 karakter").optional().nullable(),
+  guestId: z.string().optional().nullable(),
 });
 
 /**

@@ -48,14 +48,16 @@ export default async function PublicInvitationPage({ params, searchParams }) {
   // 2. Fetch list ucapan doa (RSVP)
   const rsvps = await getRsvpsByInvitationId(invitation.id);
 
-  // 3. Ambil parameter nama tamu "?to=Nama+Tamu"
+  // 3. Ambil parameter nama tamu "?to=Nama+Tamu" & code "?code=uniqueCode"
   const guestName = resolvedSearchParams.to || "";
+  const guestCode = resolvedSearchParams.code || "";
 
   return (
-    <PublicInvitationClient
-      invitation={invitation}
-      initialRsvps={rsvps}
-      guestName={guestName}
-    />
+     <PublicInvitationClient
+       invitation={invitation}
+       initialRsvps={rsvps}
+       guestName={guestName}
+       guestCode={guestCode}
+     />
   );
 }

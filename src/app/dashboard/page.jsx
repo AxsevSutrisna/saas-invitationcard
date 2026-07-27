@@ -127,12 +127,15 @@ export default async function DashboardPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-center text-xs text-muted-foreground">
-                  <div className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/50">
+                  <Link
+                    href={`${ROUTES.GUESTS}?invitationId=${invitation.id}`}
+                    className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 hover:bg-[#C8A96A]/10 hover:text-[#C8A96A] transition-all block cursor-pointer"
+                  >
                     <span className="font-bold text-foreground block text-sm">
                       {invitation._count?.rsvps || 0}
                     </span>
                     <span className="text-[10px]">Tamu RSVP</span>
-                  </div>
+                  </Link>
                   <div className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/50">
                     <span className="font-bold text-foreground block text-sm">
                       {invitation._count?.visitorLogs || 0}

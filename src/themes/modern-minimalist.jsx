@@ -133,11 +133,9 @@ function SectionHeading({ title, subtitle, color = "#1E293B" }) {
 }
 
 // ════════════════════════════════════════════
-export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview }) {
+export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
   const [copiedId, setCopiedId] = useState(null);
   const [carouselIndex, setIdx] = useState(0);
-  const [isMuted, setIsMuted]   = useState(true);
-  const [audioEl, setAudioEl]   = useState(null);
 
   const DARK   = "#0F172A";
   const ACCENT = "#1E293B";
@@ -155,18 +153,6 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
     return () => clearInterval(t);
   }, [layout, galleries.length]);
 
-  useEffect(() => {
-    if (isPreview || !invitation?.musicUrl || !invitation?.isMusicEnabled) return;
-    const a = new Audio(invitation.musicUrl);
-    a.loop = true; setAudioEl(a);
-    return () => { a.pause(); a.src = ""; };
-  }, [invitation?.musicUrl, invitation?.isMusicEnabled, isPreview]);
-
-  useEffect(() => {
-    if (!audioEl) return;
-    isMuted ? audioEl.pause() : audioEl.play().catch(() => {});
-  }, [isMuted, audioEl]);
-
   const handleCopy = (text, id) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
@@ -179,7 +165,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
       style={{ background: "linear-gradient(180deg, #FAFAF9 0%, #F4F4F2 60%, #FAFAF9 100%)" }}
     >
       {/* ── MUSIC TOGGLE ── */}
-      {!isPreview && invitation?.isMusicEnabled && (
+      {invitation?.isMusicEnabled && (
         <motion.button type="button" onClick={() => setIsMuted((p) => !p)}
           className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white border-2 border-[#1E293B] shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
           whileTap={{ scale: 0.9 }} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1 }}>
@@ -503,7 +489,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
           <SectionHeading title="RSVP & Ucapan" color={DARK} />
           <Reveal direction="up">
             <div className="p-6 bg-white border border-[#1E293B]/10 shadow-sm">
-              <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} />
+              <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} guest={guest} />
             </div>
           </Reveal>
           <Reveal direction="up" delay={0.1}>

@@ -12,6 +12,7 @@ import {
   PlusCircle,
   X,
   User,
+  Users,
 } from "lucide-react";
 
 /** Map Icon string ke komponen Lucide */
@@ -20,6 +21,7 @@ const ICON_MAP = {
   BarChart3: BarChart3,
   Palette: Palette,
   PlusCircle: PlusCircle,
+  Users: Users,
 };
 
 export function Sidebar({ user }) {

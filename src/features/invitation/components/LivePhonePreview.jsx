@@ -259,32 +259,14 @@ export function LivePhonePreview({ formData, themes = [] }) {
               guestName="Nama Tamu"
               onRsvpSuccess={() => {}}
               isPreview={true}
+              isMuted={isMuted}
+              setIsMuted={setIsMuted}
             />
           )}
         </div>
 
         {/* Hidden HTML5 Audio Element */}
         <audio ref={audioRef} loop />
-
-        {/* Floating Music Toggle Button (Bottom-Right corner of device frame) */}
-        {isCoverOpen && isMusicEnabled && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsMuted((prev) => !prev);
-            }}
-            className="absolute bottom-5 right-5 z-40 w-9 h-9 rounded-full bg-white/95 dark:bg-zinc-800/95 shadow-md border border-zinc-200/50 dark:border-zinc-700/50 flex items-center justify-center text-foreground hover:scale-110 active:scale-95 transition-all cursor-pointer"
-            style={{ backdropFilter: "blur(4px)" }}
-            title={isMuted ? "Mainkan Musik" : "Senyap Musik"}
-          >
-            {isMuted ? (
-              <VolumeX className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-zinc-600 dark:text-zinc-300 animate-pulse" />
-            )}
-          </button>
-        )}
       </div>
     </div>
   );
