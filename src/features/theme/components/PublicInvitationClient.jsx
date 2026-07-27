@@ -5,14 +5,31 @@ import { AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 import { EnvelopeCover } from "./EnvelopeCover";
 import { ThemeRegistry } from "./ThemeRegistry";
+import { trackGuestOpenAction, getGuestByCodeAction } from "@/server/actions/guest.actions";
 
-export function PublicInvitationClient({ invitation, initialRsvps, guestName }) {
+export function PublicInvitationClient({ invitation, initialRsvps, guestName, guestCode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [rsvps, setRsvps] = useState(initialRsvps || []);
+  const [guest, setGuest] = useState(null);
   const audioRef = useRef(null);
 
   const isMusicEnabled = invitation?.isMusicEnabled && invitation?.musicUrl;
+
+  useEffect(() => {
+    if (guestCode) {
+      trackGuestOpenAction(guestCode).catch((err) => {
+        console.error("Failed to track guest open:", err);
+      });
+      getGuestByCodeAction(guestCode).then((res) => {
+        if (res.success && res.data) {
+          setGuest(res.data);
+        }
+      }).catch((err) => {
+        console.error("Failed to fetch guest details:", err);
+      });
+    }
+  }, [guestCode]);
 
   // Sinkronisasi pemutaran musik latar
   useEffect(() => {
@@ -71,35 +88,20 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName }) 
           rsvps={rsvps}
           guestName={guestName}
           onRsvpSuccess={handleRsvpSuccess}
+          guest={guest}
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
         />
       )}
 
       {/* 3. PEMUTAR AUDIO LATAR (HTML5 Audio) */}
       {isMusicEnabled && (
-        <>
-          <audio
-            ref={audioRef}
-            src={invitation.musicUrl}
-            loop
-            preload="auto"
-          />
-
-          {/* Floating Audio Controller Widget */}
-          {isOpen && (
-            <button
-              type="button"
-              onClick={() => setIsMuted((prev) => !prev)}
-              className="fixed bottom-5 right-5 z-40 w-10 h-10 rounded-full bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800/80 shadow-lg backdrop-blur-sm flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:scale-105 active:scale-95 cursor-pointer transition-all duration-300"
-              title={isMuted ? "Mainkan Musik" : "Senyapkan Musik"}
-            >
-              {isMuted ? (
-                <VolumeX className="w-5 h-5 animate-pulse text-zinc-400" />
-              ) : (
-                <Volume2 className="w-5 h-5 text-zinc-600 dark:text-zinc-300 animate-bounce" />
-              )}
-            </button>
-          )}
-        </>
+        <audio
+          ref={audioRef}
+          src={invitation.musicUrl}
+          loop
+          preload="auto"
+        />
       )}
     </div>
   );

@@ -186,11 +186,9 @@ function GoldParticle({ style, dur = 10, del = 0 }) {
 // ════════════════════════════════════════════
 //              MAIN COMPONENT
 // ════════════════════════════════════════════
-export function ClassicEleganceTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview }) {
+export function ClassicEleganceTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
   const [copiedId, setCopiedId]     = useState(null);
   const [carouselIndex, setIdx]     = useState(0);
-  const [isMuted, setIsMuted]       = useState(true);
-  const [audioEl, setAudioEl]       = useState(null);
 
   const GOLD = "#C8A96A";
 
@@ -206,19 +204,6 @@ export function ClassicEleganceTheme({ invitation, rsvps, guestName, onRsvpSucce
     const t = setInterval(() => setIdx((p) => (p + 1) % galleries.length), 4500);
     return () => clearInterval(t);
   }, [layout, galleries.length]);
-
-  useEffect(() => {
-    if (isPreview || !invitation?.musicUrl || !invitation?.isMusicEnabled) return;
-    const audio = new Audio(invitation.musicUrl);
-    audio.loop = true;
-    setAudioEl(audio);
-    return () => { audio.pause(); audio.src = ""; };
-  }, [invitation?.musicUrl, invitation?.isMusicEnabled, isPreview]);
-
-  useEffect(() => {
-    if (!audioEl) return;
-    isMuted ? audioEl.pause() : audioEl.play().catch(() => {});
-  }, [isMuted, audioEl]);
 
   const handleCopy = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -246,7 +231,7 @@ export function ClassicEleganceTheme({ invitation, rsvps, guestName, onRsvpSucce
       </div>
 
       {/* ── MUSIC TOGGLE ── */}
-      {!isPreview && invitation?.isMusicEnabled && (
+      {invitation?.isMusicEnabled && (
         <motion.button
           type="button"
           onClick={() => setIsMuted((p) => !p)}
@@ -590,7 +575,7 @@ export function ClassicEleganceTheme({ invitation, rsvps, guestName, onRsvpSucce
           <SectionHeading title="Konfirmasi RSVP & Ucapan" subtitle="Berikan konfirmasi kehadiran dan doa restu terbaik:" />
           <Reveal direction="up">
             <div className="p-6 rounded-3xl bg-white border shadow-sm" style={{ borderColor: `${GOLD}25` }}>
-              <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} />
+              <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} guest={guest} />
             </div>
           </Reveal>
           <Reveal direction="up" delay={0.1}>

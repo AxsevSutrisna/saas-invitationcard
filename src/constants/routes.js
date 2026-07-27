@@ -22,6 +22,7 @@ export const ROUTES = {
   INVITATION_EDIT: (id) => `/dashboard/invitations/${id}/edit`,
   SUBSCRIPTION: "/dashboard/subscription",
   SETTINGS: "/dashboard/settings",
+  GUESTS: "/dashboard/guests",
 
   // Admin (super admin only)
   ADMIN: "/admin",

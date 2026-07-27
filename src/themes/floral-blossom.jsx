@@ -223,11 +223,9 @@ function FallingPetal({ style, xEnd = 40, dur = 10, del = 0 }) {
 // ════════════════════════════════════════════
 //              MAIN COMPONENT
 // ════════════════════════════════════════════
-export function FloralBlossomTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview }) {
+export function FloralBlossomTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
   const [copiedId, setCopiedId] = useState(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
-  const [audioEl, setAudioEl] = useState(null);
 
   const ROSE   = "#B76E79";
   const ROSE_L = "#FFF3F5";
@@ -248,21 +246,6 @@ export function FloralBlossomTheme({ invitation, rsvps, guestName, onRsvpSuccess
     );
     return () => clearInterval(interval);
   }, [layout, galleries.length]);
-
-  // ── Background music ──
-  useEffect(() => {
-    if (isPreview || !invitation?.musicUrl || !invitation?.isMusicEnabled) return;
-    const audio = new Audio(invitation.musicUrl);
-    audio.loop = true;
-    setAudioEl(audio);
-    return () => { audio.pause(); audio.src = ""; };
-  }, [invitation?.musicUrl, invitation?.isMusicEnabled, isPreview]);
-
-  useEffect(() => {
-    if (!audioEl) return;
-    if (isMuted) { audioEl.pause(); }
-    else { audioEl.play().catch(() => {}); }
-  }, [isMuted, audioEl]);
 
   const handleCopy = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -299,7 +282,7 @@ export function FloralBlossomTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </div>
 
       {/* ── MUSIC TOGGLE BUTTON ── */}
-      {!isPreview && invitation?.isMusicEnabled && (
+      {invitation?.isMusicEnabled && (
         <motion.button
           type="button"
           onClick={() => setIsMuted((p) => !p)}
@@ -734,6 +717,7 @@ export function FloralBlossomTheme({ invitation, rsvps, guestName, onRsvpSuccess
                 invitationId={invitation.id}
                 defaultGuestName={guestName}
                 onRsvpSuccess={onRsvpSuccess}
+                guest={guest}
               />
             </div>
           </Reveal>

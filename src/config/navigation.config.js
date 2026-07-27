@@ -24,6 +24,11 @@ export const dashboardNav = [
     icon: "Palette",
   },
   {
+    label: "Tamu",
+    href: ROUTES.GUESTS,
+    icon: "Users",
+  },
+  {
     label: "Buat Undangan",
     href: ROUTES.INVITATION_NEW,
     icon: "PlusCircle",
