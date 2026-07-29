@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
 import { CreditCard, Plus, Trash2, Gift, Music, Sparkles, CheckCircle2, Volume2, VolumeX, Upload, Disc, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FileUploader } from "@/components/shared/FileUploader";
 
 const MUSIC_PRESETS = [
   { title: "Nadhif Basalamah - Bergema Sampai Selamanya", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
@@ -207,63 +208,68 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           </p>
         </div>
 
-        {/* Audio Player Preview Bar */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-800 border border-border/60 space-y-3">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#C8A96A]">
-            <Disc className="w-4 h-4 animate-spin" />
-            <span>Musik Default Tema: {musicTitle}</span>
-          </div>
-
-          {isMusicEnabled ? (
-            <audio controls src={musicUrl} className="w-full h-9 rounded-xl" />
-          ) : (
-            <div className="p-2 rounded-xl bg-rose-50 text-rose-600 text-xs font-semibold text-center">
-              🔇 Musik Dipatikan (Tanpa Musik)
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons Bar */}
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            onClick={() => {
-              const url = prompt("Masukkan URL File MP3:");
+        {/* FileUploader Area for Music */}
+        <div className="space-y-4">
+          <FileUploader
+            value={isMusicEnabled ? musicUrl : ""}
+            onChange={(url) => {
               if (url) {
                 setValue("musicUrl", url);
-                setValue("musicTitle", "Custom Song Upload");
+                setValue("musicTitle", "Kustom Musik Unggahan");
                 setValue("isMusicEnabled", true);
+              } else {
+                setValue("musicUrl", "");
+                setValue("musicTitle", "Tanpa Musik");
+                setValue("isMusicEnabled", false);
               }
             }}
-            variant="outline"
-            size="sm"
-            className="rounded-xl text-xs flex items-center gap-1.5"
-          >
-            <Upload className="w-3.5 h-3.5" />
-            <span>Upload Lagu</span>
-          </Button>
+            accept="audio/*"
+            maxSize={10 * 1024 * 1024} // 10MB
+            label="Unggah File Musik Latar (.mp3)"
+            helperText="Mendukung format MP3 atau WAV, Maksimal 10MB."
+          />
 
-          <Button
-            type="button"
-            onClick={() => setShowMusicModal(true)}
-            variant="outline"
-            size="sm"
-            className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A]"
-          >
-            <Music className="w-3.5 h-3.5" />
-            <span>Pustaka Lagu</span>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              onClick={() => setShowMusicModal(true)}
+              variant="outline"
+              size="sm"
+              className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A]"
+            >
+              <Music className="w-3.5 h-3.5" />
+              <span>Pilih Dari Pustaka Lagu</span>
+            </Button>
 
-          <Button
-            type="button"
-            onClick={() => setValue("isMusicEnabled", !isMusicEnabled)}
-            variant={isMusicEnabled ? "outline" : "destructive"}
-            size="sm"
-            className="rounded-xl text-xs flex items-center gap-1.5"
-          >
-            {isMusicEnabled ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-            <span>{isMusicEnabled ? "Tanpa Lagu" : "Aktifkan Musik"}</span>
-          </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setValue("isMusicEnabled", !isMusicEnabled);
+                if (isMusicEnabled) {
+                  setValue("isMusicEnabled", false);
+                } else {
+                  setValue("isMusicEnabled", true);
+                  if (!musicUrl) {
+                    setValue("musicUrl", "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+                    setValue("musicTitle", "Nadhif Basalamah - Bergema Sampai Selamanya");
+                  }
+                }
+              }}
+              variant={isMusicEnabled ? "outline" : "destructive"}
+              size="sm"
+              className="rounded-xl text-xs flex items-center gap-1.5"
+            >
+              {isMusicEnabled ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              <span>{isMusicEnabled ? "Nonaktifkan Musik" : "Aktifkan Musik"}</span>
+            </Button>
+          </div>
+
+          {isMusicEnabled && musicTitle && (
+            <div className="text-[10px] text-muted-foreground flex items-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+              <Disc className="w-3.5 h-3.5 text-[#C8A96A] animate-spin" />
+              <span>Musik Aktif: <strong className="text-foreground">{musicTitle}</strong></span>
+            </div>
+          )}
         </div>
       </div>
 

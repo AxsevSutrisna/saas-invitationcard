@@ -15,7 +15,7 @@ export function Footer() {
         <div className="md:col-span-1 space-y-4">
           <Link href="/" className="flex items-center">
             <Image
-              src="/IKARA_Logo_V3.png"
+              src="/IKARA_Logo_V3_footer.png"
               alt="IKARA Logo"
               width={160}
               height={44}
