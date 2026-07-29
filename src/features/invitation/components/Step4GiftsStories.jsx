@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
 import { Heart, Plus, Trash2, LayoutGrid, Quote, Image as ImageIcon, Sparkles, BookOpen, Info, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FileUploader } from "@/components/shared/FileUploader";
 
 const QUOTES_PRESETS = [
   {
@@ -239,7 +240,7 @@ export function Step4GiftsStories({ register, control, watch, setValue }) {
             <span className="text-xs font-semibold text-foreground">Daftar Foto Galeri ({galleryFields.length})</span>
             <Button
               type="button"
-              onClick={() => appendGallery({ mediaUrl: "https://images.unsplash.com/photo-1519741497674-611481863552", type: "PHOTO" })}
+              onClick={() => appendGallery({ mediaUrl: "", type: "PHOTO" })}
               variant="outline"
               size="sm"
               className="rounded-xl text-xs flex items-center gap-1 border-[#C8A96A]/40 text-[#C8A96A]"
@@ -249,22 +250,29 @@ export function Step4GiftsStories({ register, control, watch, setValue }) {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-4">
             {galleryFields.map((field, index) => (
-              <div key={field.id} className="flex items-center gap-2 p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60">
-                <input
-                  type="text"
-                  placeholder="URL Foto Prewedding (misal: https://images.unsplash.com/...)"
-                  {...register(`galleries.${index}.mediaUrl`)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none"
+              <div key={field.id} className="relative p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Foto Galeri #{index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeGallery(index)}
+                    className="flex items-center gap-1 text-red-500 hover:text-red-700 text-[10px] font-semibold uppercase tracking-wider cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Hapus</span>
+                  </button>
+                </div>
+                <FileUploader
+                  value={watch(`galleries.${index}.mediaUrl`)}
+                  onChange={(url) => setValue(`galleries.${index}.mediaUrl`, url)}
+                  accept="image/*"
+                  maxSize={5 * 1024 * 1024}
+                  helperText="Format JPG, PNG, atau WEBP (Maks 5MB)"
                 />
-                <button
-                  type="button"
-                  onClick={() => removeGallery(index)}
-                  className="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 shrink-0 flex items-center justify-center text-xs"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
               </div>
             ))}
           </div>

@@ -166,9 +166,6 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
   // Print and Generate PDF report of Guests list
   const handlePrintPDF = () => {
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-
     // Calculate metrics for summary
     const totalGuests = initialGuests.length;
     const attendingCount = initialGuests.filter(g => g.rsvp?.attendance === "YES").length;
@@ -176,11 +173,17 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
     const noResponseCount = initialGuests.filter(g => !g.rsvp).length;
 
     const tableRows = initialGuests.map((g, index) => {
-      let rsvpText = "Belum Konfirmasi";
+      let rsvpBadge = '<span class="badge badge-belum">Belum</span>';
       let paxText = "-";
       if (g.rsvp) {
         paxText = `${g.rsvp.pax} Orang`;
-        rsvpText = g.rsvp.attendance === "YES" ? "🟢 Hadir" : g.rsvp.attendance === "NO" ? "🔴 Tidak Hadir" : "🟡 Ragu-ragu";
+        if (g.rsvp.attendance === "YES") {
+          rsvpBadge = '<span class="badge badge-hadir">Hadir</span>';
+        } else if (g.rsvp.attendance === "NO") {
+          rsvpBadge = '<span class="badge badge-tidak">Tidak</span>';
+        } else {
+          rsvpBadge = '<span class="badge badge-ragu">Ragu</span>';
+        }
       }
       return `
         <tr>
@@ -188,7 +191,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
           <td><strong>${g.name}</strong></td>
           <td>${g.whatsapp || "-"}</td>
           <td>${g.isOpened ? "Sudah Dibuka" : "Belum Dibuka"}</td>
-          <td>${rsvpText}</td>
+          <td style="text-align: center; vertical-align: middle;">${rsvpBadge}</td>
           <td style="text-align: center;">${paxText}</td>
           <td>${g.rsvp?.message || "-"}</td>
         </tr>
@@ -202,11 +205,15 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       day: "numeric",
     });
 
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Daftar Hadir Tamu - ${selectedInvitation.title}</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <style>
           body {
             font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -214,6 +221,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
             padding: 20px;
             font-size: 11px;
             line-height: 1.4;
+            background-color: #fff;
           }
           .header {
             text-align: center;
@@ -271,74 +279,109 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
           .main-table tr:nth-child(even) {
             background-color: #fafafa;
           }
+          .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            font-weight: 700;
+            font-size: 9px;
+            border-radius: 9999px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+          }
+          .badge-hadir {
+            background-color: #DEF7EC;
+            color: #03543F;
+            border: 1px solid #84E1BC;
+          }
+          .badge-tidak {
+            background-color: #FDF2F2;
+            color: #DE3E3E;
+            border: 1px solid #F8B4B4;
+          }
+          .badge-ragu {
+            background-color: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FCD34D;
+          }
+          .badge-belum {
+            background-color: #F3F4F6;
+            color: #4B5563;
+            border: 1px solid #D1D5DB;
+          }
           .footer {
             margin-top: 30px;
             text-align: right;
             font-size: 10px;
             color: #888;
           }
-          @media print {
-            @page {
-              margin: 0;
-            }
-            body {
-              margin: 1.6cm;
-              padding: 0;
-            }
-            button { display: none; }
-          }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>DAFTAR TAMU & REKAP RSVP</h1>
-          <p>${selectedInvitation.title}</p>
-        </div>
-
-        <div class="meta-info">
-          <div>
-            <strong>Penyelenggara:</strong> ${selectedInvitation.groomNickname} & ${selectedInvitation.brideNickname}<br/>
-            <strong>URL Undangan:</strong> ikara.id/${selectedInvitation.slug}
+        <div id="pdf-content" style="padding: 10px; background-color: #fff;">
+          <div class="header">
+            <h1>DAFTAR TAMU & REKAP RSVP</h1>
+            <p>${selectedInvitation.title}</p>
           </div>
-          <div style="text-align: right;">
-            <strong>Tanggal Cetak:</strong> ${dateStr}
+
+          <div class="meta-info">
+            <div>
+              <strong>Penyelenggara:</strong> ${selectedInvitation.groomNickname} & ${selectedInvitation.brideNickname}<br/>
+              <strong>URL Undangan:</strong> ikara.id/${selectedInvitation.slug}
+            </div>
+            <div style="text-align: right;">
+              <strong>Tanggal Cetak:</strong> ${dateStr}
+            </div>
           </div>
-        </div>
 
-        <table class="stats-table">
-          <tr>
-            <td><strong>Total Undangan Tamu:</strong> ${totalGuests} Orang</td>
-            <td><strong>Telah Konfirmasi Hadir:</strong> ${attendingCount} Tamu</td>
-            <td><strong>Total Porsi/Pax Hadir:</strong> ${totalPaxAttending} Pax</td>
-            <td><strong>Belum Memberikan Respon:</strong> ${noResponseCount} Tamu</td>
-          </tr>
-        </table>
-
-        <table class="main-table">
-          <thead>
+          <table class="stats-table">
             <tr>
-              <th style="width: 4%;">No</th>
-              <th style="width: 22%;">Nama Tamu</th>
-              <th style="width: 14%;">No WhatsApp</th>
-              <th style="width: 14%;">Status Dibuka</th>
-              <th style="width: 14%;">Konfirmasi</th>
-              <th style="width: 10%;">Jumlah Pax</th>
-              <th>Doa & Ucapan Restu</th>
+              <td><strong>Total Undangan Tamu:</strong> ${totalGuests} Orang</td>
+              <td><strong>Telah Konfirmasi Hadir:</strong> ${attendingCount} Tamu</td>
+              <td><strong>Total Porsi/Pax Hadir:</strong> ${totalPaxAttending} Pax</td>
+              <td><strong>Belum Memberikan Respon:</strong> ${noResponseCount} Tamu</td>
             </tr>
-          </thead>
-          <tbody>
-            ${tableRows}
-          </tbody>
-        </table>
+          </table>
 
-        <div class="footer">
-          Laporan ini dicetak secara otomatis melalui sistem IKARA
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width: 4%;">No</th>
+                <th style="width: 22%;">Nama Tamu</th>
+                <th style="width: 14%;">No WhatsApp</th>
+                <th style="width: 14%;">Status Dibuka</th>
+                <th style="width: 14%;">Konfirmasi</th>
+                <th style="width: 10%;">Jumlah Pax</th>
+                <th>Doa & Ucapan Restu</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+
+          <div class="footer">
+            Laporan ini dicetak secara otomatis melalui sistem IKARA
+          </div>
         </div>
 
         <script>
           window.onload = function() {
-            window.print();
-            setTimeout(function() { window.close(); }, 500);
+            const element = document.getElementById('pdf-content');
+            const opt = {
+              margin:       10,
+              filename:     'Daftar_Tamu_${selectedInvitation.slug}.pdf',
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            window.html2pdf().set(opt).from(element).save().then(function() {
+              setTimeout(function() { window.close(); }, 800);
+            }).catch(function(err) {
+              console.error(err);
+              window.close();
+            });
           };
         </script>
       </body>

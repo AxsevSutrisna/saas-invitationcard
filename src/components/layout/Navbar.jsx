@@ -8,10 +8,6 @@ import { marketingNav } from "@/config/navigation.config";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
-/**
- * Navbar - Floating Glassmorphism Navbar Component
- * Navigasi melayang berbentuk pill dengan backdrop blur, logo IKARA, link halus, & tombol CTA.
- */
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -43,8 +39,7 @@ export function Navbar() {
               height={40}
               style={{ width: "auto", height: "30px" }}
               className="object-contain"
-              loading="eager"
-              priority={true}
+              priority
             />
           </div>
         </Link>
