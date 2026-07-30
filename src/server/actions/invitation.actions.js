@@ -8,6 +8,8 @@ import {
   deleteInvitation,
   checkSlugAvailability,
 } from "@/server/repositories/invitation.repository";
+import { db } from "@/lib/db";
+import { findActiveSubscriptionByUserId } from "@/server/repositories/subscription.repository";
 
 import fs from "fs/promises";
 import path from "path";
@@ -37,6 +39,21 @@ export async function createInvitationAction(payload) {
         success: false,
         error: `Alamat URL "${validatedData.slug}" sudah digunakan. Silakan gunakan slug lain.`,
       };
+    }
+
+    // Cek Akses Tema Premium (Security Check)
+    const selectedTheme = await db.theme.findUnique({
+      where: { id: validatedData.themeId },
+    });
+
+    if (selectedTheme?.isPremium) {
+      const activeSub = await findActiveSubscriptionByUserId(session.user.id);
+      if (!activeSub) {
+        return {
+          success: false,
+          error: "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade akun Anda ke Premium terlebih dahulu di menu Langganan.",
+        };
+      }
     }
 
     // Eksekusi Simpan di PostgreSQL

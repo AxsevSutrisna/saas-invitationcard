@@ -185,6 +185,13 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
                         </span>
                       </div>
 
+                      {theme.isPremium && (
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#C8A96A] to-amber-600 text-white text-[8px] font-bold tracking-wider uppercase flex items-center gap-1">
+                          <Sparkles className="w-2 h-2 fill-current" />
+                          <span>PREMIUM</span>
+                        </div>
+                      )}
+
                       {isSelected && (
                         <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#C8A96A] text-white text-[9px] font-bold flex items-center gap-1">
                           <Check className="w-2.5 h-2.5" />

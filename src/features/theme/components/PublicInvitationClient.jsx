@@ -7,7 +7,7 @@ import { EnvelopeCover } from "./EnvelopeCover";
 import { ThemeRegistry } from "./ThemeRegistry";
 import { trackGuestOpenAction, getGuestByCodeAction } from "@/server/actions/guest.actions";
 
-export function PublicInvitationClient({ invitation, initialRsvps, guestName, guestCode }) {
+export function PublicInvitationClient({ invitation, initialRsvps, guestName, guestCode, isPremium = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [rsvps, setRsvps] = useState(initialRsvps || []);
@@ -102,6 +102,15 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
           loop
           preload="auto"
         />
+      )}
+
+      {/* 4. WATERMARK UNTUK PENGGUNA GRATIS */}
+      {isOpen && !isPremium && (
+        <div className="w-full py-6 text-center bg-zinc-50 dark:bg-zinc-900 border-t border-border/40 text-[10px] tracking-wider text-muted-foreground font-semibold uppercase flex items-center justify-center gap-1.5 z-40 relative">
+          <span>Powered by</span>
+          <span className="text-[#C8A96A] font-heading font-bold text-xs tracking-widest">IKARA</span>
+          <span className="text-[8px] font-normal lowercase opacity-60">— Every Promise Has a Story</span>
+        </div>
       )}
     </div>
   );

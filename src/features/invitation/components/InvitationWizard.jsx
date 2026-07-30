@@ -24,7 +24,7 @@ const STEPS = [
   { id: 5, title: "Finalisasi" },
 ];
 
-export function InvitationWizard({ themes = [] }) {
+export function InvitationWizard({ themes = [], activeSubscription = null }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryThemeId = searchParams.get("themeId");
@@ -68,30 +68,31 @@ export function InvitationWizard({ themes = [] }) {
       quotes:
         "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang. (QS. Ar-Rum: 21)",
       openingText: "Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami.",
+      musicUrl: "https://pub-c48bd7eade8944c1bbc28a03f43c23f7.r2.dev/Beautiful_In_White.mp3",
+      musicTitle: "Beautiful In White",
+      isMusicEnabled: true,
 
       // Acara
       events: [
         {
           name: "Akad Nikah",
-          date: "2026-08-18",
-          startTime: "08:00",
-          endTime: "10:00",
-          locationName: "Masjid Agung Sunda Kelapa",
-          address: "Jl. Taman Sunda Kelapa No.16, Menteng, Jakarta Pusat",
-          mapUrl: "https://maps.google.com",
+          date: "2026-08-08",
+          startTime: "09:00",
+          endTime: "10:30",
+          locationName: "Masjid Raya Al-A'zham",
+          address: "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
+          mapUrl: "https://maps.app.goo.gl/kX31s3V4F6T7U8W9",
         },
         {
           name: "Resepsi Pernikahan",
-          date: "2026-08-18",
+          date: "2026-08-08",
           startTime: "11:00",
           endTime: "14:00",
-          locationName: "Hotel Indonesia Kempinski",
-          address: "Jl. M.H. Thamrin No.1, Menteng, Jakarta Pusat",
-          mapUrl: "https://maps.google.com",
+          locationName: "Grand Ballroom Al-A'zham",
+          address: "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
+          mapUrl: "https://maps.app.goo.gl/kX31s3V4F6T7U8W9",
         },
       ],
-
-      // Love Stories
       loveStories: [
         {
           title: "Pertama Bertemu",
@@ -158,6 +159,16 @@ export function InvitationWizard({ themes = [] }) {
 
   const onSubmit = async (data) => {
     setServerError("");
+
+    // Verifikasi Client-side untuk tema premium bagi pengguna gratis
+    const chosenTheme = themes.find((t) => t.id === data.themeId);
+    const isPremiumActive = activeSubscription && activeSubscription.package?.price > 0;
+
+    if (chosenTheme?.isPremium && !isPremiumActive) {
+      setServerError("Tema yang Anda pilih adalah Tema Premium. Silakan upgrade paket Anda ke Premium di halaman Langganan terlebih dahulu.");
+      return;
+    }
+
     const res = await createInvitationAction(data);
     if (res.success) {
       router.push("/dashboard");

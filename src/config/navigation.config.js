@@ -33,6 +33,11 @@ export const dashboardNav = [
     href: ROUTES.INVITATION_NEW,
     icon: "PlusCircle",
   },
+  {
+    label: "Langganan",
+    href: ROUTES.SUBSCRIPTION,
+    icon: "CreditCard",
+  },
 ];
 
 /** Menu Admin CMS */
