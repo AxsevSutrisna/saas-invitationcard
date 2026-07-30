@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getInvitationBySlug } from "@/server/repositories/invitation.repository";
 import { getRsvpsByInvitationId } from "@/server/repositories/rsvp.repository";
+import { findActiveSubscriptionByUserId } from "@/server/repositories/subscription.repository";
 import { PublicInvitationClient } from "@/features/theme/components/PublicInvitationClient";
 
 /**
@@ -45,10 +46,14 @@ export default async function PublicInvitationPage({ params, searchParams }) {
     notFound();
   }
 
-  // 2. Fetch list ucapan doa (RSVP)
+  // 2. Fetch status langganan pemilik undangan (untuk watermark check)
+  const activeSub = await findActiveSubscriptionByUserId(invitation.userId);
+  const isPremium = !!activeSub;
+
+  // 3. Fetch list ucapan doa (RSVP)
   const rsvps = await getRsvpsByInvitationId(invitation.id);
 
-  // 3. Ambil parameter nama tamu "?to=Nama+Tamu" & code "?code=uniqueCode"
+  // 4. Ambil parameter nama tamu "?to=Nama+Tamu" & code "?code=uniqueCode"
   const guestName = resolvedSearchParams.to || "";
   const guestCode = resolvedSearchParams.code || "";
 
@@ -58,6 +63,7 @@ export default async function PublicInvitationPage({ params, searchParams }) {
        initialRsvps={rsvps}
        guestName={guestName}
        guestCode={guestCode}
+       isPremium={isPremium}
      />
   );
 }
