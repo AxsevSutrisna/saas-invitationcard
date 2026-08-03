@@ -41,10 +41,24 @@ export default async function NewInvitationPage() {
     ];
   }
 
+  // 4. Fetch Quotes & Music templates from Neon DB
+  const quoteTemplates = await db.quoteTemplate.findMany();
+  const musicTemplates = await db.musicTemplate.findMany({
+    where: { isActive: true },
+  });
+
+  const serializedQuotes = JSON.parse(JSON.stringify(quoteTemplates));
+  const serializedMusics = JSON.parse(JSON.stringify(musicTemplates));
+
   return (
     <div className="max-w-6xl mx-auto">
       <Suspense fallback={<div className="text-xs text-muted-foreground p-6">Loading form editor...</div>}>
-        <InvitationWizard themes={themes} activeSubscription={serializedSubscription} />
+        <InvitationWizard
+          themes={themes}
+          activeSubscription={serializedSubscription}
+          quoteTemplates={serializedQuotes}
+          musicTemplates={serializedMusics}
+        />
       </Suspense>
     </div>
   );

@@ -6,7 +6,6 @@ import { AnimatePresence } from "framer-motion";
 import { ThemeRegistry } from "@/features/theme/components/ThemeRegistry";
 import { EnvelopeCover } from "@/features/theme/components/EnvelopeCover";
 
-/** Map Tema Visual Styling untuk Live Mockup */
 const THEME_STYLES = {
   "classic-elegance": {
     bg: "bg-[#F8F6F2] dark:bg-[#191919]",
@@ -48,11 +47,9 @@ export function LivePhonePreview({ formData, themes = [] }) {
   const themeKey = selectedTheme.slug || "classic-elegance";
   const themeStyle = THEME_STYLES[themeKey] || THEME_STYLES["classic-elegance"];
 
-  // Reaktif Data Binding
   const title = formData?.title || "Pernikahan Asep & Salsa";
   const slug = formData?.slug || "asep-salsa";
 
-  // Mempelai
   const groomNickname = formData?.groomNickname || formData?.groomName || "Asep";
   const groomFullName = formData?.groomFullName || "Asep Sutrisna Suhada Putra";
   const groomFather = formData?.groomFather || "Bapak Sutrisna";
@@ -70,7 +67,6 @@ export function LivePhonePreview({ formData, themes = [] }) {
     formData?.quotes ||
     "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang. (QS. Ar-Rum: 21)";
 
-  // Acara
   const eventsList =
     formData?.events && formData.events.length > 0
       ? formData.events
@@ -91,7 +87,6 @@ export function LivePhonePreview({ formData, themes = [] }) {
           },
         ];
 
-  // Love Story
   const loveStories = formData?.loveStories || [
     {
       title: "Menuju Pelaminan",
@@ -100,11 +95,9 @@ export function LivePhonePreview({ formData, themes = [] }) {
     },
   ];
 
-  // Galeri
   const galleryLayout = formData?.galleryLayout || "CAROUSEL";
   const galleries = formData?.galleries || [];
 
-  // Gifts & Kado Fisik
   const gifts = formData?.gifts || [
     {
       type: "BANK",
@@ -115,14 +108,12 @@ export function LivePhonePreview({ formData, themes = [] }) {
   ];
   const physicalGiftAddress = formData?.physicalGiftAddress;
 
-  // Musik
   const musicTitle = formData?.musicTitle || "Nadhif Basalamah - Bergema Sampai Selamanya";
   const isMusicEnabled = formData?.isMusicEnabled !== false;
 
   const audioRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
 
-  // Sync Sumber URL File Musik Latar
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.src = formData?.musicUrl || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
@@ -133,7 +124,6 @@ export function LivePhonePreview({ formData, themes = [] }) {
     }
   }, [formData?.musicUrl, isMusicEnabled]);
 
-  // Sync Play / Pause status berdasarkan Mute/Unmute State
   useEffect(() => {
     if (!audioRef.current) return;
     if (isMusicEnabled && !isMuted) {
@@ -143,18 +133,15 @@ export function LivePhonePreview({ formData, themes = [] }) {
     }
   }, [isMusicEnabled, isMuted]);
 
-  // State untuk Slideshow Active Slide
   const [activeSlide, setActiveSlide] = useState(0);
   const galleriesCount = galleries.length;
 
-  // Reset slide index jika list berubah atau melebihi kuota
   useEffect(() => {
     if (activeSlide >= galleriesCount) {
       setActiveSlide(0);
     }
   }, [galleriesCount, activeSlide]);
 
-  // Autoplay Slideshow: Berganti otomatis setiap 4 detik
   useEffect(() => {
     if (galleryLayout !== "CAROUSEL" || galleriesCount <= 1) return;
     const interval = setInterval(() => {
@@ -165,7 +152,6 @@ export function LivePhonePreview({ formData, themes = [] }) {
 
   const [isCoverOpen, setIsCoverOpen] = useState(false);
 
-  // Reset cover screen when theme changes
   useEffect(() => {
     setIsCoverOpen(false);
   }, [formData?.themeId]);

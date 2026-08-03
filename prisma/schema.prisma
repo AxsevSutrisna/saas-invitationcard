@@ -401,3 +401,47 @@ enum Attendance {
   NO
   MAYBE
 }
+
+// =============================================================================
+// DOMAIN 7: TEMPLATES & SETTINGS (Dikelola oleh Super Admin)
+// =============================================================================
+
+/// Templat ayat dan kutipan pilihan untuk undangan
+model QuoteTemplate {
+  id        String   @id @default(cuid())
+  title     String   // Contoh: "QS. Ar-Rum Ayat 21 (Islami)"
+  content   String   @db.Text
+  category  String   @default("General") // "Islami" | "Kristiani" | "Modern" | "Umum"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Pustaka lagu latar belakang pernikahan
+model MusicTemplate {
+  id        String   @id @default(cuid())
+  title     String   // Contoh: "Payung Teduh - Akad"
+  url       String   // URL file audio .mp3
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Daftar Tanya Jawab (FAQ) di Landing Page
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String   // Pertanyaan
+  answer    String   @db.Text // Jawaban
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Pengaturan Global Sistem (Key-Value) seperti nomor WhatsApp
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique // Contoh: "CS_WHATSAPP_NUMBER"
+  value       String   // Nilai pengaturan
+  description String?  // Deskripsi kegunaan
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

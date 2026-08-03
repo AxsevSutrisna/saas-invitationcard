@@ -13,7 +13,10 @@ const MUSIC_PRESETS = [
   { title: "Shane Filan - Beautiful in White", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
 ];
 
-export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting }) {
+export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting, musicTemplates = [] }) {
+  const displayMusics = musicTemplates.length > 0
+    ? musicTemplates.map((m) => ({ title: m.title, url: m.url }))
+    : MUSIC_PRESETS;
   const [showMusicModal, setShowMusicModal] = useState(false);
   const musicTitle = watch("musicTitle") || "Nadhif Basalamah - Bergema Sampai Selamanya";
   const musicUrl = watch("musicUrl") || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
@@ -291,7 +294,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
             </div>
 
             <div className="space-y-2">
-              {MUSIC_PRESETS.map((m, idx) => (
+              {displayMusics.map((m, idx) => (
                 <div
                   key={idx}
                   onClick={() => {
