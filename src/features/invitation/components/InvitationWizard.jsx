@@ -24,7 +24,7 @@ const STEPS = [
   { id: 5, title: "Finalisasi" },
 ];
 
-export function InvitationWizard({ themes = [], activeSubscription = null }) {
+export function InvitationWizard({ themes = [], activeSubscription = null, quoteTemplates = [], musicTemplates = [] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryThemeId = searchParams.get("themeId");
@@ -280,6 +280,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null }) {
                 control={control}
                 watch={watch}
                 setValue={setValue}
+                quoteTemplates={quoteTemplates}
               />
             )}
             {currentStep === 5 && (
@@ -289,6 +290,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null }) {
                 watch={watch}
                 setValue={setValue}
                 isSubmitting={isSubmitting}
+                musicTemplates={musicTemplates}
               />
             )}
 

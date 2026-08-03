@@ -10,56 +10,104 @@ import { ROUTES } from "@/constants/routes";
  * PricingSection Component
  * Paket harga SaaS (FREE, BASIC, PRO) sesuai skema monetisasi.
  */
-export function PricingSection() {
-  const plans = [
-    {
-      name: "FREE",
-      price: "Rp 0",
-      period: "selamanya",
-      desc: "Cocok untuk mencoba fitur dasar platform.",
-      features: [
-        "1 Undangan Aktif",
-        "Watermark Platform Aktif",
-        "Pilihan Tema Terbatas",
-        "Masa Aktif 30 Hari",
-      ],
-      popular: false,
-      ctaText: "Mulai Gratis",
-      ctaVariant: "outline",
-    },
-    {
-      name: "BASIC",
-      price: "Rp 99.000",
-      period: "sekali bayar",
-      desc: "Pilihan favorit untuk sepasang calon pengantin.",
-      features: [
-        "1 Undangan Premium Eksklusif",
-        "Tanpa Watermark",
-        "Semua Pilihan Tema",
-        "Fitur Amplop Digital & QRIS",
-        "Masa Aktif 180 Hari",
-      ],
-      popular: true,
-      ctaText: "Pilih Paket Basic",
-      ctaVariant: "default",
-    },
-    {
-      name: "PRO",
-      price: "Rp 199.000",
-      period: "/ bulan",
-      desc: "Solusi profesional untuk Wedding Organizer & Studio Foto.",
-      features: [
-        "Hingga 10 Undangan Aktif/Bulan",
-        "Tanpa Watermark",
-        "Semua Pilihan Tema Premium",
-        "Fitur RSVP & QR Check-in",
-        "Dukungan Custom Domain",
-      ],
-      popular: false,
-      ctaText: "Berlangganan Pro",
-      ctaVariant: "outline",
-    },
-  ];
+export function PricingSection({ packages = [] }) {
+  const displayPlans = packages.length > 0 
+    ? packages.map((pkg) => {
+        let desc = "Cocok untuk kebutuhan Anda.";
+        let popular = false;
+        let ctaText = `Pilih Paket ${pkg.name}`;
+        let ctaVariant = "outline";
+
+        if (pkg.slug === "free") {
+          desc = "Cocok untuk mencoba fitur dasar platform.";
+          ctaText = "Mulai Gratis";
+        } else if (pkg.slug === "basic") {
+          desc = "Pilihan favorit untuk sepasang calon pengantin.";
+          popular = true;
+          ctaText = "Pilih Paket Basic";
+          ctaVariant = "default";
+        } else if (pkg.slug === "pro") {
+          desc = "Solusi profesional untuk Wedding Organizer & Studio Foto.";
+          ctaText = "Berlangganan Pro";
+        }
+
+        const priceFormatted = pkg.price === 0 
+          ? "Rp 0" 
+          : new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(pkg.price);
+
+        const periodText = pkg.slug === "free" 
+          ? "selamanya" 
+          : pkg.type === "RECURRING" 
+          ? "/ bulan" 
+          : "sekali bayar";
+
+        let features = [];
+        try {
+          features = typeof pkg.features === "string" ? JSON.parse(pkg.features) : pkg.features || [];
+        } catch {
+          features = [];
+        }
+
+        return {
+          name: pkg.name.toUpperCase(),
+          price: priceFormatted,
+          period: periodText,
+          desc,
+          features,
+          popular,
+          ctaText,
+          ctaVariant,
+        };
+      })
+    : [
+        {
+          name: "FREE",
+          price: "Rp 0",
+          period: "selamanya",
+          desc: "Cocok untuk mencoba fitur dasar platform.",
+          features: [
+            "1 Undangan Aktif",
+            "Watermark Platform Aktif",
+            "Pilihan Tema Terbatas",
+            "Masa Aktif 30 Hari",
+          ],
+          popular: false,
+          ctaText: "Mulai Gratis",
+          ctaVariant: "outline",
+        },
+        {
+          name: "BASIC",
+          price: "Rp 99.000",
+          period: "sekali bayar",
+          desc: "Pilihan favorit untuk sepasang calon pengantin.",
+          features: [
+            "1 Undangan Premium Eksklusif",
+            "Tanpa Watermark",
+            "Semua Pilihan Tema",
+            "Fitur Amplop Digital & QRIS",
+            "Masa Aktif 180 Hari",
+          ],
+          popular: true,
+          ctaText: "Pilih Paket Basic",
+          ctaVariant: "default",
+        },
+        {
+          name: "PRO",
+          price: "Rp 199.000",
+          period: "/ bulan",
+          desc: "Solusi profesional untuk Wedding Organizer & Studio Foto.",
+          features: [
+            "Hingga 10 Undangan Aktif/Bulan",
+            "Tanpa Watermark",
+            "Semua Pilihan Tema Premium",
+            "Fitur RSVP & QR Check-in",
+            "Dukungan Custom Domain",
+          ],
+          popular: false,
+          ctaText: "Berlangganan Pro",
+          ctaVariant: "outline",
+        },
+      ];
 
   return (
     <section id="harga" className="py-20 md:py-28 relative">
@@ -85,7 +133,7 @@ export function PricingSection() {
 
         {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-          {plans.map((plan, index) => (
+          {displayPlans.map((plan, index) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 25 }}

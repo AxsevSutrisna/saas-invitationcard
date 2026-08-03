@@ -61,6 +61,22 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
 
   const handleOpenInvitation = () => {
     setIsOpen(true);
+
+    // Kirim analitik kunjungan secara silent di latar belakang
+    if (invitation?.id) {
+      fetch("/api/v1/analytics/visit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          invitationId: invitation.id,
+          referrer: typeof document !== "undefined" ? document.referrer : "Direct",
+        }),
+      }).catch((err) => {
+        console.error("Gagal melacak kunjungan analitik:", err);
+      });
+    }
   };
 
   const handleRsvpSuccess = (newRsvp) => {

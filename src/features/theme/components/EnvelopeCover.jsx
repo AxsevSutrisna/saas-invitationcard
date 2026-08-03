@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
 
-// Fixed configs for background elements to avoid SSR hydration mismatches
 const ROSE_PETALS = [
   { left: "12%", xEnd: 30,  dur: 9,   del: 0   },
   { left: "32%", xEnd: -25, dur: 13,  del: 1.5 },

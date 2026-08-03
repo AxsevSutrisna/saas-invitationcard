@@ -31,7 +31,10 @@ const STORY_PRESETS = [
   { title: "Menuju Pelaminan", date: "2026", description: "Setelah melewati banyak cerita bersama, kami memantapkan hati untuk melangkah ke pernikahan." },
 ];
 
-export function Step4GiftsStories({ register, control, watch, setValue }) {
+export function Step4GiftsStories({ register, control, watch, setValue, quoteTemplates = [] }) {
+  const displayQuotes = quoteTemplates.length > 0
+    ? quoteTemplates.map((q) => ({ title: q.title, text: q.content }))
+    : QUOTES_PRESETS;
   const [showQuotesModal, setShowQuotesModal] = useState(false);
   const galleryLayout = watch("galleryLayout") || "CAROUSEL";
 
@@ -337,7 +340,7 @@ export function Step4GiftsStories({ register, control, watch, setValue }) {
             </div>
 
             <div className="space-y-3">
-              {QUOTES_PRESETS.map((preset, idx) => (
+              {displayQuotes.map((preset, idx) => (
                 <div
                   key={idx}
                   onClick={() => {

@@ -11,27 +11,29 @@ import { ROUTES } from "@/constants/routes";
  * FAQSection Component
  * Akordion tanya jawab umum (FAQ) + Closing Conversion Banner.
  */
-export function FAQSection() {
+export function FAQSection({ faqs = [] }) {
   const [openIndex, setOpenIndex] = useState(0);
 
-  const faqs = [
-    {
-      q: "Berapa lama proses pembuatan undangan digital?",
-      a: "Hanya butuh waktu sekitar 5 menit! Anda cukup mendaftar akun, memilih tema yang disukai, lalu mengisi informasi pengantin & lokasi acara melalui form yang sudah disediakan.",
-    },
-    {
-      q: "Apakah saya bisa mengubah data undangan setelah dipublikasikan?",
-      a: "Tentu saja! Anda memiliki akses penuh ke Dashboard 24/7 untuk mengedit nama, tanggal, lokasi, atau menambah foto kapan saja tanpa biaya tambahan.",
-    },
-    {
-      q: "Bagaimana cara tamu memberikan konfirmasi RSVP?",
-      a: "Tamu Anda cukup mengisi form RSVP sederhana yang ada di bagian bawah undangan. Hasil konfirmasi kehadiran dan jumlah tamu akan langsung masuk ke Dashboard Anda.",
-    },
-    {
-      q: "Apakah fitur Amplop Digital aman?",
-      a: "100% Aman. Uang hadiah atau transfer akan langsung masuk ke rekening bank/e-wallet pribadi Anda sendiri tanpa dipotong komisi oleh pihak kami.",
-    },
-  ];
+  const displayFaqs = faqs.length > 0 
+    ? faqs.map((f) => ({ q: f.question, a: f.answer }))
+    : [
+        {
+          q: "Berapa lama proses pembuatan undangan digital?",
+          a: "Hanya butuh waktu sekitar 5 menit! Anda cukup mendaftar akun, memilih tema yang disukai, lalu mengisi informasi pengantin & lokasi acara melalui form yang sudah disediakan.",
+        },
+        {
+          q: "Apakah saya bisa mengubah data undangan setelah dipublikasikan?",
+          a: "Tentu saja! Anda memiliki akses penuh ke Dashboard 24/7 untuk mengedit nama, tanggal, lokasi, atau menambah foto kapan saja tanpa biaya tambahan.",
+        },
+        {
+          q: "Bagaimana cara tamu memberikan konfirmasi RSVP?",
+          a: "Tamu Anda cukup mengisi form RSVP sederhana yang ada di bagian bawah undangan. Hasil konfirmasi kehadiran dan jumlah tamu akan langsung masuk ke Dashboard Anda.",
+        },
+        {
+          q: "Apakah fitur Amplop Digital aman?",
+          a: "100% Aman. Uang hadiah atau transfer akan langsung masuk ke rekening bank/e-wallet pribadi Anda sendiri tanpa dipotong komisi oleh pihak kami.",
+        },
+      ];
 
   return (
     <section id="faq" className="py-20 md:py-28 bg-white/60 dark:bg-[#1F1F1F]/60 backdrop-blur-md border-t border-border/40 relative">
@@ -54,7 +56,7 @@ export function FAQSection() {
 
         {/* Accordion FAQ */}
         <div className="space-y-4">
-          {faqs.map((faq, idx) => {
+          {displayFaqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <motion.div

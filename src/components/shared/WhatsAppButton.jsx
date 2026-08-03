@@ -5,10 +5,10 @@
  * Tombol WhatsApp melayang di sudut kanan bawah dengan ikon resmi WhatsApp
  * sesuai dengan desain mengundanganda.com.
  */
-export function WhatsAppButton() {
-  const phoneNumber = "6281234567890"; // Nomor WA customer service/admin
+
+export function WhatsAppButton({ phoneNumber = "6282127322357" }) {
   const message = encodeURIComponent(
-    "Halo, saya berminat untuk membuat undangan digital di SaaS Invitation Card. Bisa bantu saya?"
+    "Halo, saya berminat untuk membuat undangan digital di IKARA Invitation. Bisa bantu saya?"
   );
   const waUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
