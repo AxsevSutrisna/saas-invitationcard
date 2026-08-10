@@ -9,7 +9,7 @@ import { CheckCircle2, Sliders, Smartphone, Layout } from "lucide-react";
  */
 export function RealtimeEditorSection() {
   return (
-    <section className="py-20 md:py-28 bg-white/60 dark:bg-[#1F1F1F]/60 backdrop-blur-md border-y border-border/40 relative">
+    <section className="py-20 md:py-28 bg-[#F8F6F2] relative">
       <div className="max-w-6xl mx-auto px-6 space-y-12">
         {/* Header Teks */}
         <motion.div

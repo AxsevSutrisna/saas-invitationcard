@@ -12,9 +12,7 @@ import { Plus, Play, Sparkles, Heart } from "lucide-react";
  */
 export function HeroSection() {
   return (
-    <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
-      {/* Background Decorative Glow */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[#C8A96A]/20 to-[#B76E79]/20 blur-3xl rounded-full pointer-events-none -z-10" />
+    <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden bg-[#F8F6F2]">
 
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column: Text & CTA */}
@@ -39,27 +37,27 @@ export function HeroSection() {
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
+          <p className="text-base sm:text-lg text-zinc-800 dark:text-zinc-200 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
             IKARA adalah ruang ketika cinta menjadi janji, dan setiap janji menjadi kisah terpenting yang diabadikan secara elegan.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-            <Link href={ROUTES.REGISTER} className="w-full sm:w-auto">
+            <Link href={ROUTES.LOGIN} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-medium text-base shadow-lg shadow-[#C8A96A]/25 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl liquid-gold-button text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Plus className="w-5 h-5" />
                 Begin Your Story
               </Button>
             </Link>
 
-            <Link href="#themes" className="w-full sm:w-auto">
+            <Link href="#tema" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-border/80 hover:bg-white/60 dark:hover:bg-zinc-800 text-foreground font-medium text-base flex items-center justify-center gap-2 shadow-sm"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-[#C8A96A]/30 bg-white/10 dark:bg-zinc-950/10 backdrop-blur-[6px] hover:bg-white/25 hover:border-[#C8A96A]/60 dark:hover:bg-zinc-850/25 text-foreground font-medium text-base flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-all duration-300"
               >
                 <Play className="w-4 h-4 fill-current text-[#C8A96A]" />
                 Lihat Demo Tema
@@ -73,38 +71,43 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="lg:col-span-5 flex justify-center"
+          className="lg:col-span-5 flex justify-center z-10 relative"
         >
-          <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl bg-gradient-to-b from-[#e8dec6] to-[#f4eee1] dark:from-zinc-800 dark:to-zinc-900 border-4 border-white dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col items-center justify-center p-6 text-center group">
+
+
+          {/* Glass Card Wrapper with Border and Hover Shine */}
+          <div className="relative w-full max-w-md aspect-[4/5] rounded-[32px] bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-white/20 dark:border-white/5 shadow-2xl flex flex-col items-center justify-center p-6 text-center group transition-all duration-500 hover:-translate-y-1">
+            
             {/* Arch Decoration Background */}
-            <div className="absolute inset-4 rounded-t-full border-2 border-dashed border-[#C8A96A]/40 pointer-events-none" />
+            <div className="absolute inset-4 rounded-t-full border border-dashed border-[#C8A96A]/25 pointer-events-none" />
 
             {/* Dummy Arch Graphic Content */}
-            <div className="relative z-10 space-y-4">
-              <div className="w-20 h-20 mx-auto rounded-full bg-[#C8A96A]/20 flex items-center justify-center text-[#C8A96A] shadow-inner group-hover:scale-110 transition-transform duration-500">
-                <Heart className="w-10 h-10 fill-current" />
+            <div className="relative z-10 space-y-5 p-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-[#C8A96A]/10 border border-[#C8A96A]/35 flex items-center justify-center text-[#C8A96A] shadow-inner group-hover:scale-110 transition-transform duration-500">
+                <Heart className="w-8 h-8 fill-current" />
               </div>
               <div className="space-y-1">
-                <p className="text-xs uppercase tracking-widest text-[#C8A96A] font-semibold">
+                <p className="text-[10px] tracking-[0.3em] font-bold text-[#9e7e40] dark:text-[#E2C785] uppercase">
                   The Wedding of
                 </p>
-                <h3 className="font-heading text-3xl font-bold text-[#1F1F1F] dark:text-zinc-100">
+                <h3 className="font-heading text-4xl font-bold text-[#1F1F1F] dark:text-zinc-50 font-cormorant tracking-wide script-glow">
                   Rani & Budi
                 </h3>
-                <p className="text-xs text-muted-foreground">Sabtu, 24 Oktober 2026</p>
+                <p className="text-xs text-zinc-700 dark:text-zinc-300 font-semibold">Sabtu, 24 Oktober 2026</p>
               </div>
-              <div className="pt-3">
-                <span className="inline-block px-4 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-xs font-medium text-[#C8A96A] shadow-md border border-[#C8A96A]/30">
+              <div className="pt-2">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-white/70 dark:bg-zinc-800/70 text-xs font-semibold text-[#9e7e40] dark:text-[#E2C785] shadow-sm border border-[#C8A96A]/20 backdrop-blur-sm">
                   ✨ Tema Classic Elegance
                 </span>
               </div>
             </div>
 
             {/* Floating Card Accent */}
-            <div className="absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md p-3 rounded-xl border border-white/60 shadow-lg flex items-center justify-between text-xs">
-              <span className="text-muted-foreground font-medium">Status Undangan</span>
-              <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-semibold">
-                ● Ready to Share
+            <div className="absolute bottom-4 left-4 right-4 bg-white/60 dark:bg-zinc-800/60 backdrop-blur-md border border-white/30 dark:border-zinc-700 p-3 rounded-2xl shadow-lg flex items-center justify-between text-xs z-20">
+              <span className="text-zinc-800 dark:text-zinc-200 font-bold">Status Undangan</span>
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-100/90 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-bold text-[10px] uppercase tracking-wider flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Ready to Share
               </span>
             </div>
           </div>

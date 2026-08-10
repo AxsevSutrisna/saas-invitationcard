@@ -41,7 +41,7 @@ export function InteractiveScrollSection() {
   };
 
   return (
-    <section id="fitur" className="py-20 md:py-28 relative overflow-hidden">
+    <section id="fitur" className="py-20 md:py-28 bg-[#F8F6F2]">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column: Descriptions */}
         <motion.div

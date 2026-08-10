@@ -23,10 +23,10 @@ export function Navbar() {
   return (
     <header className="sticky top-4 z-40 px-4 sm:px-6 w-full max-w-6xl mx-auto transition-all duration-300">
       <div
-        className={`flex items-center justify-between px-6 py-3 rounded-full border transition-all duration-300 ${
+        className={`flex items-center justify-between px-6 py-3 rounded-full border transition-all duration-500 ${
           scrolled
-            ? "bg-white/80 dark:bg-[#1F1F1F]/80 backdrop-blur-md shadow-lg border-[#C8A96A]/30"
-            : "bg-white/60 dark:bg-[#1F1F1F]/60 backdrop-blur-sm border-border/50 shadow-sm"
+            ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-lg shadow-[#C8A96A]/5 border-b border-border/40"
+            : "bg-white/35 dark:bg-[#1F1F1F]/35 backdrop-blur-[8px] border-border/40 shadow-sm"
         }`}
       >
         {/* Brand Logo */}
@@ -55,12 +55,6 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
-          <Link
-            href="#faq"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            FAQ
-          </Link>
         </nav>
 
         {/* Action Buttons */}
@@ -70,10 +64,10 @@ export function Navbar() {
               Masuk
             </Button>
           </Link>
-          <Link href={ROUTES.REGISTER}>
+          <Link href={ROUTES.LOGIN}>
             <Button
               size="sm"
-              className="rounded-full bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white shadow-md hover:shadow-lg transition-all text-sm font-medium px-5"
+              className="rounded-full liquid-gold-button text-white text-sm font-medium px-5 cursor-pointer"
             >
               Buat Undangan
             </Button>
@@ -92,7 +86,7 @@ export function Navbar() {
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 p-5 rounded-2xl bg-white/95 dark:bg-[#1F1F1F]/95 backdrop-blur-md border border-[#C8A96A]/30 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2">
+        <div className="md:hidden mt-2 p-5 rounded-2xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-lg border border-[#C8A96A]/35 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2">
           <nav className="flex flex-col gap-3">
             {marketingNav.map((item) => (
               <Link
@@ -104,13 +98,6 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="#faq"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-base font-medium text-foreground py-1 border-b border-border/30"
-            >
-              FAQ
-            </Link>
           </nav>
           <div className="flex flex-col gap-2 pt-2">
             <Link href={ROUTES.LOGIN} onClick={() => setMobileMenuOpen(false)}>
@@ -118,8 +105,8 @@ export function Navbar() {
                 Masuk
               </Button>
             </Link>
-            <Link href={ROUTES.REGISTER} onClick={() => setMobileMenuOpen(false)}>
-              <Button className="w-full justify-center bg-[#C8A96A] hover:bg-[#b39150] text-white">
+            <Link href={ROUTES.LOGIN} onClick={() => setMobileMenuOpen(false)}>
+              <Button className="w-full justify-center liquid-gold-button text-white">
                 Buat Undangan
               </Button>
             </Link>
