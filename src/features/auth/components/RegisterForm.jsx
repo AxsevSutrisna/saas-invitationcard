@@ -1,21 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleButton } from "./GoogleButton";
+import { Eye, EyeOff } from "lucide-react";
 
-/**
- * RegisterForm - Client Component
- * Form registrasi dengan email/password dan Google OAuth.
- */
 export function RegisterForm() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +39,6 @@ export function RegisterForm() {
         throw new Error(errorMessage);
       }
 
-      // Registrasi berhasil → langsung login
       await signIn("credentials", {
         email,
         password,
@@ -67,7 +65,9 @@ export function RegisterForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Full Name</Label>
+          <Label htmlFor="name">
+            Full Name <span className="text-red-500">*</span>
+          </Label>
           <Input
             id="name"
             name="name"
@@ -78,7 +78,9 @@ export function RegisterForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email address</Label>
+          <Label htmlFor="email">
+            Email address <span className="text-red-500">*</span>
+          </Label>
           <Input
             id="email"
             name="email"
@@ -89,15 +91,26 @@ export function RegisterForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Create a password (min. 8 characters)"
-            required
-            className="h-12"
-          />
+          <Label htmlFor="password">
+            Password <span className="text-red-500">*</span>
+          </Label>
+          <div className="relative">
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Create a password (min. 8 characters)"
+              required
+              className="h-12 pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
 
         {error && (

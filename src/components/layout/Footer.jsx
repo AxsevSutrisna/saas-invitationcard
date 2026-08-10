@@ -66,7 +66,7 @@ export function Footer() {
           </h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href={ROUTES.REGISTER} className="hover:text-[#C8A96A] transition-colors">
+              <Link href={ROUTES.LOGIN} className="hover:text-[#C8A96A] transition-colors">
                 Buat Undangan Gratis
               </Link>
             </li>
@@ -78,6 +78,16 @@ export function Footer() {
             <li>
               <Link href="#faq" className="hover:text-[#C8A96A] transition-colors">
                 Tanya Jawab (FAQ)
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="hover:text-[#C8A96A] transition-colors">
+                Syarat & Ketentuan
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy" className="hover:text-[#C8A96A] transition-colors">
+                Kebijakan Privasi
               </Link>
             </li>
           </ul>
@@ -103,11 +113,18 @@ export function Footer() {
       </div>
 
       {/* Copyright Bar */}
-      <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-zinc-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-4">
-        <p>© {new Date().getFullYear()} IKARA. All rights reserved.</p>
-        <p className="flex items-center gap-1">
-          Dibuat dengan <Heart className="w-3.5 h-3.5 text-[#B76E79] fill-current" /> untuk hari spesial Anda.
-        </p>
+      <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-zinc-800/60 flex flex-col items-center justify-center text-center text-xs text-zinc-500 gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-center">
+          <p>© {new Date().getFullYear()} IKARA. All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link href="/terms" className="hover:text-zinc-300 transition-colors">
+              Syarat & Ketentuan
+            </Link>
+            <Link href="/privacy" className="hover:text-zinc-300 transition-colors">
+              Kebijakan Privasi
+            </Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

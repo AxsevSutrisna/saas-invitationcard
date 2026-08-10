@@ -36,7 +36,7 @@ export function FAQSection({ faqs = [] }) {
       ];
 
   return (
-    <section id="faq" className="py-20 md:py-28 bg-white/60 dark:bg-[#1F1F1F]/60 backdrop-blur-md border-t border-border/40 relative">
+    <section id="faq" className="py-20 md:py-28 bg-[#F8F6F2]">
       <div className="max-w-4xl mx-auto px-6 space-y-16">
         {/* Header FAQ */}
         <motion.div
@@ -65,13 +65,17 @@ export function FAQSection({ faqs = [] }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="bg-white dark:bg-zinc-900 rounded-2xl border border-border/70 overflow-hidden shadow-sm"
+                className={`rounded-3xl border transition-all duration-300 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md hover:bg-white/60 dark:hover:bg-zinc-800/60 shadow-sm ${
+                  isOpen
+                    ? "border-[#C8A96A]/80 shadow-[0_6px_25px_rgba(200,169,106,0.08)] bg-white/60 dark:bg-zinc-900/60"
+                    : "border-[#C8A96A]/15"
+                }`}
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? -1 : idx)}
-                  className="w-full p-5 text-left flex items-center justify-between font-semibold text-foreground text-sm sm:text-base hover:text-[#C8A96A] transition-colors"
+                  className="w-full p-6 text-left flex items-center justify-between font-semibold text-foreground text-sm sm:text-base hover:text-[#C8A96A] transition-colors cursor-pointer"
                 >
-                  <span>{faq.q}</span>
+                  <span className="font-poppins">{faq.q}</span>
                   <ChevronDown
                     className={`w-5 h-5 text-[#C8A96A] shrink-0 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
@@ -79,7 +83,7 @@ export function FAQSection({ faqs = [] }) {
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 text-xs sm:text-sm text-muted-foreground leading-relaxed border-t border-border/30 pt-3">
+                  <div className="px-6 pb-6 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed border-t border-[#C8A96A]/10 pt-4 font-normal">
                     {faq.a}
                   </div>
                 )}
@@ -94,16 +98,14 @@ export function FAQSection({ faqs = [] }) {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="rounded-3xl bg-gradient-to-r from-[#1F1F1F] via-[#2D281E] to-[#1F1F1F] text-white p-10 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden border border-[#C8A96A]/40"
+          className="rounded-[32px] bg-[#1F1F1F] text-white p-10 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden border border-[#C8A96A]/40"
         >
-          {/* Background Glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#C8A96A]/20 blur-3xl rounded-full pointer-events-none" />
 
           <div className="space-y-3 relative z-10">
             <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#C8A96A]/20 text-[#E2C785] text-xs font-semibold uppercase tracking-widest">
               <Sparkles className="w-3.5 h-3.5 fill-current" /> Begin Your Story
             </span>
-            <h3 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight">
+            <h3 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight font-cormorant script-glow">
               Your Story is Ready to be Shared
             </h3>
             <p className="text-zinc-300 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">
@@ -112,10 +114,10 @@ export function FAQSection({ faqs = [] }) {
           </div>
 
           <div className="pt-2 relative z-10">
-            <Link href={ROUTES.REGISTER}>
+            <Link href={ROUTES.LOGIN}>
               <Button
                 size="lg"
-                className="h-13 px-8 rounded-full bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-medium text-base shadow-xl flex items-center gap-2 mx-auto hover:scale-105 transition-all"
+                className="h-13 px-8 rounded-full liquid-gold-button text-white font-medium text-base flex items-center gap-2 mx-auto cursor-pointer"
               >
                 Begin Your Story <ArrowRight className="w-5 h-5" />
               </Button>

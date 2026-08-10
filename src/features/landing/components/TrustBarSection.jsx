@@ -27,7 +27,7 @@ export function TrustBarSection() {
   ];
 
   return (
-    <section className="py-8 bg-white/70 dark:bg-[#1F1F1F]/70 backdrop-blur-md border-y border-border/50">
+    <section className="py-8 bg-[#F8F6F2] border-y border-[#C8A96A]/20">
       <div className="max-w-5xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {items.map((item, index) => {
