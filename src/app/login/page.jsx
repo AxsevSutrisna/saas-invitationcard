@@ -16,9 +16,11 @@ export default function LoginPage() {
       <Card className="w-full shadow-2xl border-none">
         <CardHeader className="space-y-3 text-center">
           <div className="flex justify-center mb-2">
-            <h1 className="text-3xl font-heading font-bold text-primary tracking-widest uppercase">
-              IKARA
-            </h1>
+            <Link href="/" aria-label="Kembali ke Beranda">
+              <h1 className="text-3xl font-heading font-bold text-primary tracking-widest uppercase hover:opacity-80 transition-opacity">
+                IKARA
+              </h1>
+            </Link>
           </div>
           <CardTitle className="text-2xl font-semibold tracking-tight">
             Welcome back

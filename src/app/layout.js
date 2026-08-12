@@ -20,9 +20,16 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata = {
-  title: "IKARA — Every Promise Has a Story",
+  title: "IKARA | Undangan Pernikahan Digital Mewah & Elegan",
   description:
-    "IKARA adalah platform digital untuk mengabadikan dan membagikan kisah cinta serta janji pernikahan Anda melalui pengalaman yang indah, personal, dan bermakna.",
+    "IKARA adalah platform undangan pernikahan digital premium. Abadikan kisah cinta dan janji pernikahan Anda dengan desain website pernikahan yang elegan, personal, dan eksklusif.",
+  keywords: ["undangan pernikahan digital", "undangan online mewah", "website pernikahan premium", "bikin undangan digital", "IKARA"],
+  openGraph: {
+    title: "IKARA | Undangan Pernikahan Digital Mewah",
+    description: "Abadikan kisah cinta Anda dengan undangan pernikahan digital premium yang elegan dan bermakna.",
+    type: "website",
+    locale: "id_ID",
+  },
   icons: {
     icon: "/IKARA_LOGO_ICON.png",
     shortcut: "/IKARA_LOGO_ICON.png",
@@ -33,8 +40,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="en"
+      lang="id"
       className={`${poppins.variable} ${cormorant.variable} ${greatVibes.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>

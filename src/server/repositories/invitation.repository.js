@@ -50,10 +50,10 @@ export async function createInvitation(userId, data) {
     isPublished = true,
   } = data;
 
-  const finalGroomNickname = groomNickname || groomName || "Asep";
-  const finalGroomFullName = groomFullName || groomName || "Asep Sutrisna";
-  const finalBrideNickname = brideNickname || brideName || "Salsa";
-  const finalBrideFullName = brideFullName || brideName || "Salsa Camelia";
+  const finalGroomNickname = groomNickname || groomName || "William";
+  const finalGroomFullName = groomFullName || groomName || "William Jonathan";
+  const finalBrideNickname = brideNickname || brideName || "Eleanor";
+  const finalBrideFullName = brideFullName || brideName || "Eleanor Grace";
 
   return db.invitation.create({
     data: {

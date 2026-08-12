@@ -4,11 +4,6 @@ import { motion } from "framer-motion";
 import { UserPlus, Palette, Send } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 
-/**
- * HowItWorksSection Component
- * 3 Langkah praktis pembuatan undangan digital.
- * Menggunakan <GlassCard variant="full"> dari @/components/ui/GlassCard.
- */
 export function HowItWorksSection() {
   const steps = [
     {

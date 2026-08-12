@@ -54,7 +54,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Asep"
+              placeholder="Contoh: William"
               {...register("groomNickname")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />
@@ -69,7 +69,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Asep Sutrisna Suhada Putra"
+              placeholder="Contoh: William Jonathan Tanuwijaya"
               {...register("groomFullName")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />
@@ -84,7 +84,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Bapak Sutrisna"
+              placeholder="Contoh: Bapak William Jonathan"
               {...register("groomFather")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />
@@ -96,7 +96,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Ibu Suhada"
+              placeholder="Contoh: Ibu William Jonathan"
               {...register("groomMother")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />
@@ -127,7 +127,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Salsa"
+              placeholder="Contoh: Eleanor"
               {...register("brideNickname")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />
@@ -142,7 +142,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Salsa Camelia Azzahra"
+              placeholder="Contoh: Eleanor Grace Tanuwidjaja"
               {...register("brideFullName")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />
@@ -157,7 +157,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Bapak Camelia"
+              placeholder="Contoh: Bapak William Jonathan"
               {...register("brideFather")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />
@@ -169,7 +169,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             </label>
             <input
               type="text"
-              placeholder="Contoh: Ibu Azzahra"
+              placeholder="Contoh: Ibu William Jonathan"
               {...register("brideMother")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
             />

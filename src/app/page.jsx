@@ -39,6 +39,13 @@ export default async function LandingPage() {
   const serializedPackages = JSON.parse(JSON.stringify(packages));
   const serializedFaqs = JSON.parse(JSON.stringify(faqs));
 
+  const themes = await db.theme.findMany({
+    where: { isActive: true },
+    orderBy: { sortOrder: "asc" },
+    take: 3,
+  });
+  const serializedThemes = JSON.parse(JSON.stringify(themes));
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F6F2] dark:bg-[#191919] text-foreground font-sans selection:bg-[#C8A96A]/20 selection:text-[#C8A96A] relative overflow-hidden">
       <div className="relative z-10 flex-1 flex flex-col">
@@ -49,7 +56,7 @@ export default async function LandingPage() {
           <TrustBarSection />
 
           {/* 2. Theme Gallery Section (DARK: bg-[#1F1F1F] — has GlassCard) */}
-          <ThemeGallerySection />
+          <ThemeGallerySection initialThemes={serializedThemes} />
 
           {/* 3. Interactive Scroll Showcase (LIGHT: bg-[#F8F6F2]) */}
           <InteractiveScrollSection />

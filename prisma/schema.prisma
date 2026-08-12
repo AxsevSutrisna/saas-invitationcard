@@ -163,7 +163,7 @@ model Invitation {
   themeId     String
 
   // Info Pasangan Pria & Wanita
-  title                 String   // Contoh: "Pernikahan Asep & Salsa"
+  title                 String   // Contoh: "Pernikahan William & Eleanor"
   brideName             String   // Deprecated fallback / Display name
   groomName             String   // Deprecated fallback / Display name
 
