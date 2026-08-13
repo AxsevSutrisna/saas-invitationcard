@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LayoutGrid, Link as LinkIcon, Sparkles, RefreshCw, Search, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const CATEGORIES = ["Semua", "Elegant", "Floral", "Sunda", "Blue"];
+const CATEGORIES = ["Semua", "Elegant", "Floral", "Sunda", "Blue", "Nature"];
 
 export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] }) {
   const selectedThemeId = watch("themeId");

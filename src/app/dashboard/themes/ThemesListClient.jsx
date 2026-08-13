@@ -30,13 +30,19 @@ const CATEGORY_MAP = {
     badgeColor: "bg-sky-100 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300 border border-sky-200 dark:border-sky-900/50",
     gradient: "from-sky-100 to-sky-50 dark:from-zinc-800 dark:to-zinc-900",
   },
+  "nature-harmony": {
+    category: "Nature",
+    tag: "Baru",
+    badgeColor: "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-300 border border-green-200 dark:border-green-900/50",
+    gradient: "from-green-100 to-emerald-50 dark:from-zinc-800 dark:to-zinc-900",
+  },
 };
 
 export function ThemesListClient({ initialThemes = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
 
-  const categories = ["Semua", "Elegant", "Floral", "Minimalist", "Blue"];
+  const categories = ["Semua", "Elegant", "Floral", "Minimalist", "Blue", "Nature"];
 
   // Mapping data tema database dengan meta-style visual
   const themes = initialThemes.map((theme) => {

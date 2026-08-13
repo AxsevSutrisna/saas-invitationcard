@@ -115,6 +115,15 @@ async function main() {
       isPremium: true,
       isActive: true,
       sortOrder: 4,
+    },
+    {
+      name: "Nature Harmony",
+      slug: "nature-harmony",
+      description: "Nuansa alam hijau hutan dan earth tone dengan animasi zoom in/out yang menenangkan.",
+      thumbnailUrl: "/themes/nature-harmony-thumb.jpg",
+      isPremium: true,
+      isActive: true,
+      sortOrder: 5,
     }
   ];
 

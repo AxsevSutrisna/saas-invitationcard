@@ -35,6 +35,13 @@ const THEME_STYLES = {
     cardBg: "bg-white dark:bg-[#1b2633]",
     primaryBtn: "bg-sky-600 text-white",
   },
+  "nature-harmony": {
+    bg: "bg-[#F7F5EE] dark:bg-[#171d14]",
+    accent: "text-[#4A6B3D]",
+    accentBg: "bg-green-100 border-green-300 text-green-700 dark:bg-green-950/40 dark:text-green-300",
+    cardBg: "bg-white dark:bg-[#1e2619]",
+    primaryBtn: "bg-[#4A6B3D] text-white",
+  },
 };
 
 export function LivePhonePreview({ formData, themes = [] }) {

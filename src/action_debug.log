@@ -1,6 +1,6 @@
-[2026-07-27T05:39:46.718Z] START - Payload: {
+[2026-08-13T08:08:44.621Z] START - Payload: {
   "title": "Pernikahan Asep & Salsa",
-  "slug": "asep-salsa",
+  "slug": "asep-mambo",
   "themeId": "cmrn81tud0003v0clvt2pqln3",
   "groomNickname": "Asep",
   "groomFullName": "Asep Sutrisna Suhada Putra",
@@ -16,21 +16,21 @@
   "events": [
     {
       "name": "Akad Nikah",
-      "date": "2026-08-18",
-      "startTime": "08:00",
-      "endTime": "10:00",
-      "locationName": "Masjid Agung Sunda Kelapa",
-      "address": "Jl. Taman Sunda Kelapa No.16, Menteng, Jakarta Pusat",
-      "mapUrl": "https://maps.google.com"
+      "date": "2026-08-08",
+      "startTime": "09:00",
+      "endTime": "10:30",
+      "locationName": "Masjid Raya Al-A'zham",
+      "address": "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
+      "mapUrl": "https://maps.app.goo.gl/kX31s3V4F6T7U8W9"
     },
     {
       "name": "Resepsi Pernikahan",
-      "date": "2026-08-18",
+      "date": "2026-08-08",
       "startTime": "11:00",
       "endTime": "14:00",
-      "locationName": "Hotel Indonesia Kempinski",
-      "address": "Jl. M.H. Thamrin No.1, Menteng, Jakarta Pusat",
-      "mapUrl": "https://maps.google.com"
+      "locationName": "Grand Ballroom Al-A'zham",
+      "address": "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
+      "mapUrl": "https://maps.app.goo.gl/kX31s3V4F6T7U8W9"
     }
   ],
   "loveStories": [
@@ -73,4 +73,4 @@
   "isMusicEnabled": true,
   "isPublished": true
 }
-[SUCCESS] Created Invitation ID: cms2ss3k300000kclltp0bzc9
+[SUCCESS] Created Invitation ID: cmsr8l4o40002nwvtl8ddzmii
