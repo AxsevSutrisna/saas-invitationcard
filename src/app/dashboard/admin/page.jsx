@@ -11,11 +11,11 @@ export const metadata = {
 export default async function AdminPage() {
   const session = await auth();
 
-  // 1. Proteksi Sisi Server: Hanya izinkan email super admin
+  // 1. Proteksi Sisi Server: Hanya izinkan role SUPER_ADMIN
   if (
     !session ||
     !session.user ||
-    session.user.email !== "asepsutrisnasp@gmail.com"
+    session.user.role !== "SUPER_ADMIN"
   ) {
     redirect("/dashboard");
   }

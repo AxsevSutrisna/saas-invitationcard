@@ -112,7 +112,7 @@ export function Sidebar({ user }) {
               );
             })}
 
-            {user?.email === "asepsutrisnasp@gmail.com" && (
+            {user?.role === "SUPER_ADMIN" && (
               <div className="space-y-1">
                 <button
                   type="button"

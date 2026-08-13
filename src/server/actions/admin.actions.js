@@ -8,7 +8,7 @@ import { upsertActiveSubscription } from "@/server/repositories/subscription.rep
 // Helper Keamanan Super Admin
 async function checkSuperAdmin() {
   const session = await auth();
-  if (!session || !session.user || session.user.email !== "asepsutrisnasp@gmail.com") {
+  if (!session || !session.user || session.user.role !== "SUPER_ADMIN") {
     throw new Error("Akses ditolak. Anda tidak memiliki wewenang Super Admin.");
   }
   return session.user;
