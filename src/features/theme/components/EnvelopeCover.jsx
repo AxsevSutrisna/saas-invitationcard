@@ -153,6 +153,76 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
 
   const guestCardClass = theme === "modern-minimalist" ? "rounded-none" : "rounded-2xl";
 
+  if (theme === "classic-elegance") {
+    return (
+      <motion.div
+        initial={{ y: 0 }}
+        exit={{ y: "-100%" }}
+        transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
+        className="absolute inset-0 z-50 flex flex-col items-center justify-between py-12 px-6 select-none overflow-hidden bg-[#F8F6F2]"
+      >
+        {/* Background Photo (Full Screen) */}
+        {invitation?.coverUrl && (
+          <img
+            src={invitation.coverUrl}
+            className="absolute inset-0 w-full h-full object-cover z-0"
+            alt={title}
+          />
+        )}
+        
+        {/* Dark Gradient Overlays for Readability */}
+        <div className="absolute inset-0 bg-black/20 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/40 z-0" />
+
+        {/* Ambient Gold Particles (Optional subtle effect) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+          {GOLD_PARTICLES.map((part, i) => (
+            <motion.div
+              key={`gold-${i}`}
+              className="absolute pointer-events-none select-none w-1.5 h-1.5 rounded-full bg-[#FEFCF8] shadow-[0_0_5px_rgba(255,255,255,0.8)]"
+              style={{ top: "-5%", left: part.left }}
+              animate={{ y: ["0vh", "110vh"], opacity: [0, 0.5, 0] }}
+              transition={{ duration: part.dur, repeat: Infinity, delay: part.del, ease: "linear" }}
+            />
+          ))}
+        </div>
+
+        {/* Foreground Content */}
+        <div className="relative z-20 flex flex-col h-full w-full items-center justify-between">
+          
+          {/* Top Section: Couple Names */}
+          <div className="text-center mt-6 sm:mt-12 space-y-2">
+            <h1 className="font-heading text-5xl sm:text-6xl text-[#FEFCF8] font-semibold leading-tight drop-shadow-md">
+              <span className="block">{groom}</span>
+              <span className="block font-greatvibes text-4xl my-1 text-[#FEFCF8] drop-shadow-sm">&amp;</span>
+              <span className="block">{bride}</span>
+            </h1>
+          </div>
+
+          {/* Bottom Section: Guest & CTA */}
+          <div className="w-full flex flex-col items-center space-y-6 mb-4 sm:mb-8">
+            <div className="text-center space-y-1.5">
+              <p className="text-[10px] tracking-[0.25em] font-bold text-white/80 uppercase">
+                Kepada Yth.
+              </p>
+              <p className="text-lg sm:text-xl font-bold text-white drop-shadow-md">
+                {guestName || "Tamu Undangan"}
+              </p>
+            </div>
+
+            <button
+              onClick={onOpen}
+              className="px-8 py-3.5 bg-[#FEFCF8] hover:bg-white text-[#5C4D3C] text-[11px] font-extrabold tracking-widest uppercase rounded-full shadow-[0_0_20px_rgba(254,252,248,0.2)] transition-all hover:scale-105 active:scale-95"
+            >
+              Buka Undangan
+            </button>
+          </div>
+
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ y: 0 }}
