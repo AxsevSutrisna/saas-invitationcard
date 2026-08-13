@@ -25,12 +25,12 @@
     },
     {
       "name": "Resepsi Pernikahan",
-      "date": "2026-08-18",
+      "date": "2026-08-08",
       "startTime": "11:00",
       "endTime": "14:00",
-      "locationName": "Hotel Indonesia Kempinski",
-      "address": "Jl. M.H. Thamrin No.1, Menteng, Jakarta Pusat",
-      "mapUrl": "https://maps.google.com"
+      "locationName": "Grand Ballroom Al-A'zham",
+      "address": "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
+      "mapUrl": "https://maps.app.goo.gl/kX31s3V4F6T7U8W9"
     }
   ],
   "loveStories": [
@@ -73,4 +73,4 @@
   "isMusicEnabled": true,
   "isPublished": true
 }
-[SUCCESS] Created Invitation ID: cms2ss3k300000kclltp0bzc9
+[SUCCESS] Created Invitation ID: cmsr8l4o40002nwvtl8ddzmii

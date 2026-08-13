@@ -502,7 +502,7 @@ export function AdminClient({
                           <select
                             value={user.role}
                             onChange={(e) => handleUserRoleChange(user.id, e.target.value)}
-                            disabled={loading || user.email === "asepsutrisnasp@gmail.com"}
+                            disabled={loading || user.role === "SUPER_ADMIN"}
                             className="bg-transparent border border-border rounded px-1.5 py-0.5 outline-none font-semibold text-foreground cursor-pointer focus:border-[#C8A96A]"
                           >
                             <option value="USER">USER</option>
