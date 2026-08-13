@@ -116,7 +116,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                 <label className="text-[11px] font-semibold text-muted-foreground">Atas Nama Pemilik</label>
                 <input
                   type="text"
-                  placeholder="Asep Sutrisna"
+                  placeholder="William Jonathan Tanuwidjaja"
                   {...register(`gifts.${index}.accountName`)}
                   className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none"
                 />
@@ -132,7 +132,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
               appendGift({
                 type: "BANK",
                 providerName: "BCA",
-                accountName: "Asep Sutrisna",
+                accountName: "William Jonathan Tanuwidjaja",
                 accountNumber: "1234567890",
               })
             }
@@ -175,7 +175,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
             <label className="text-[11px] font-semibold text-muted-foreground">Nama Penerima</label>
             <input
               type="text"
-              placeholder="Contoh: Asep & Salsa"
+              placeholder="Contoh: William & Elleanor"
               {...register("physicalGiftReceiver")}
               className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none"
             />

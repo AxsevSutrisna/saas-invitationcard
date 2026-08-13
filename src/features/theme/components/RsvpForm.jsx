@@ -90,7 +90,7 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest 
       {/* Input Nama Tamu */}
       <div className="space-y-1">
         <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-          Nama Tamu / Pengirim <span className="text-rose-500">*</span>
+          Tamu Undangan / Pengirim <span className="text-rose-500">*</span>
         </label>
         <input
           type="text"

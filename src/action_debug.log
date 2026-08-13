@@ -1,14 +1,14 @@
-[2026-08-13T08:08:44.621Z] START - Payload: {
-  "title": "Pernikahan Asep & Salsa",
-  "slug": "asep-mambo",
+[2026-07-27T05:39:46.718Z] START - Payload: {
+  "title": "Pernikahan William & Eleanor",
+  "slug": "william-eleanor",
   "themeId": "cmrn81tud0003v0clvt2pqln3",
-  "groomNickname": "Asep",
-  "groomFullName": "Asep Sutrisna Suhada Putra",
+  "groomNickname": "William",
+  "groomFullName": "William Jonathan Tanuwijaya",
   "groomFather": "Bapak Sutrisna",
   "groomMother": "Ibu Suhada",
   "groomPhotoUrl": "",
-  "brideNickname": "Salsa",
-  "brideFullName": "Salsa Camelia Azzahra",
+  "brideNickname": "Eleanor",
+  "brideFullName": "Eleanor Grace Tanuwidjaja",
   "brideFather": "Bapak Camelia",
   "brideMother": "Ibu Azzahra",
   "bridePhotoUrl": "",
@@ -16,12 +16,12 @@
   "events": [
     {
       "name": "Akad Nikah",
-      "date": "2026-08-08",
-      "startTime": "09:00",
-      "endTime": "10:30",
-      "locationName": "Masjid Raya Al-A'zham",
-      "address": "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
-      "mapUrl": "https://maps.app.goo.gl/kX31s3V4F6T7U8W9"
+      "date": "2026-08-18",
+      "startTime": "08:00",
+      "endTime": "10:00",
+      "locationName": "Masjid Istiqlal",
+      "address": "Jl. Taman Sunda Kelapa No.16, Menteng, Jakarta Pusat",
+      "mapUrl": "https://maps.google.com"
     },
     {
       "name": "Resepsi Pernikahan",
@@ -61,12 +61,12 @@
     {
       "type": "BANK",
       "providerName": "BCA",
-      "accountName": "Asep Sutrisna",
+      "accountName": "William Jonathan Tanuwijaya",
       "accountNumber": "1234567890"
     }
   ],
   "physicalGiftAddress": "Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)",
-  "physicalGiftReceiver": "Asep & Salsa",
+  "physicalGiftReceiver": "William & Eleanor",
   "physicalGiftPhone": "081234567890",
   "musicUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
   "musicTitle": "Nadhif Basalamah - Bergema Sampai Selamanya",

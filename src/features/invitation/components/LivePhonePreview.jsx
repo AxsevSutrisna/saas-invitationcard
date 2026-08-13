@@ -54,19 +54,19 @@ export function LivePhonePreview({ formData, themes = [] }) {
   const themeKey = selectedTheme.slug || "classic-elegance";
   const themeStyle = THEME_STYLES[themeKey] || THEME_STYLES["classic-elegance"];
 
-  const title = formData?.title || "Pernikahan Asep & Salsa";
-  const slug = formData?.slug || "asep-salsa";
+  const title = formData?.title || "Pernikahan William & Eleanor";
+  const slug = formData?.slug || "william-eleanor";
 
-  const groomNickname = formData?.groomNickname || formData?.groomName || "Asep";
-  const groomFullName = formData?.groomFullName || "Asep Sutrisna Suhada Putra";
-  const groomFather = formData?.groomFather || "Bapak Sutrisna";
-  const groomMother = formData?.groomMother || "Ibu Suhada";
+  const groomNickname = formData?.groomNickname || formData?.groomName || "William";
+  const groomFullName = formData?.groomFullName || "William Jonathan Tanuwijaya";
+  const groomFather = formData?.groomFather || "Bapak William Jonathan";
+  const groomMother = formData?.groomMother || "Ibu William Jonathan";
   const groomPhotoUrl = formData?.groomPhotoUrl;
 
-  const brideNickname = formData?.brideNickname || formData?.brideName || "Salsa";
-  const brideFullName = formData?.brideFullName || "Salsa Camelia Azzahra";
-  const brideFather = formData?.brideFather || "Bapak Camelia";
-  const brideMother = formData?.brideMother || "Ibu Azzahra";
+  const brideNickname = formData?.brideNickname || formData?.brideName || "Eleanor";
+  const brideFullName = formData?.brideFullName || "Eleanor Grace Tanuwidjaja";
+  const brideFather = formData?.brideFather || "Bapak Eleanor Grace";
+  const brideMother = formData?.brideMother || "Ibu Eleanor Grace";
   const bridePhotoUrl = formData?.bridePhotoUrl;
 
   const coverUrl = formData?.coverUrl;
@@ -82,7 +82,7 @@ export function LivePhonePreview({ formData, themes = [] }) {
             name: "Akad Nikah",
             date: "2026-08-18",
             startTime: "08:00",
-            locationName: "Masjid Agung Sunda Kelapa",
+            locationName: "Masjid Istiqlal",
             address: "Jl. Taman Sunda Kelapa No.16, Menteng, Jakarta Pusat",
           },
           {
@@ -208,7 +208,7 @@ export function LivePhonePreview({ formData, themes = [] }) {
                   groomNickname,
                   brideNickname,
                 }}
-                guestName="Nama Tamu"
+                guestName="Tamu Undangan"
                 onOpen={() => {
                   setIsCoverOpen(true);
                   setIsMuted(false);
@@ -249,7 +249,7 @@ export function LivePhonePreview({ formData, themes = [] }) {
                 gifts: gifts.map((g, idx) => ({ ...g, id: String(idx) })),
               }}
               rsvps={[]}
-              guestName="Nama Tamu"
+              guestName="Tamu Undangan"
               onRsvpSuccess={() => {}}
               isPreview={true}
               isMuted={isMuted}

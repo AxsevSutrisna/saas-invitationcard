@@ -348,7 +348,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
             <thead>
               <tr>
                 <th style="width: 4%;">No</th>
-                <th style="width: 22%;">Nama Tamu</th>
+                <th style="width: 22%;">Tamu Undangan</th>
                 <th style="width: 14%;">No WhatsApp</th>
                 <th style="width: 14%;">Status Dibuka</th>
                 <th style="width: 14%;">Konfirmasi</th>
@@ -511,7 +511,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
             <input
               type="text"
-              placeholder="Cari nama tamu atau nomor WhatsApp..."
+              placeholder="Cari Tamu Undangan atau nomor WhatsApp..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full h-10 pl-10 pr-4 rounded-xl border border-border/60 bg-zinc-50 dark:bg-zinc-900 text-xs focus:ring-1 focus:ring-[#C8A96A] focus:outline-none"
@@ -572,7 +572,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-border/40 text-[10px] uppercase font-bold text-muted-foreground">
-                <th className="py-4 px-6">Nama Tamu</th>
+                <th className="py-4 px-6">Tamu Undangan</th>
                 <th className="py-4 px-4">WhatsApp</th>
                 <th className="py-4 px-4">Status Dibuka</th>
                 <th className="py-4 px-4">Kehadiran</th>
@@ -821,7 +821,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
               )}
 
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase font-bold text-muted-foreground">Daftar Nama Tamu (Satu Nama Per Baris)</label>
+                <label className="text-[10px] uppercase font-bold text-muted-foreground">Daftar Tamu Undangan (Satu Nama Per Baris)</label>
                 <p className="text-[9px] text-muted-foreground font-light leading-relaxed">
                   Tuliskan satu nama per baris. Anda juga bisa menyertakan nomor WhatsApp dipisah tanda koma (koma).
                 </p>

@@ -1,52 +1,79 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { motion } from "framer-motion";
 import { Plus, Play, Sparkles, Heart } from "lucide-react";
 
-/**
- * HeroSection Component
- * Visual headline utama dengan gaya Cormorant Garamond, dual CTA, dan ilustrasi 3D dummy.
- */
 export function HeroSection() {
   return (
-    <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden bg-[#F8F6F2]">
+    <section 
+      className="relative min-h-screen flex items-center pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden bg-[#2C2723]"
+    >
+      {/* Background Images for SEO & Performance (LCP) */}
+      <div className="absolute inset-0 z-0">
+        {/* Mobile Background */}
+        <div className="block md:hidden relative w-full h-full">
+          <Image
+            src="/ikara-hero-section-potrait.png"
+            alt="IKARA Wedding Invitation Hero Mobile"
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 0vw"
+            className="object-cover object-center"
+          />
+        </div>
+        
+        {/* Desktop Background */}
+        <div className="hidden md:block relative w-full h-full">
+          <Image
+            src="/ikara-hero-section.png"
+            alt="IKARA Wedding Invitation Hero Desktop"
+            fill
+            priority
+            sizes="(max-width: 768px) 0vw, 100vw"
+            className="object-cover object-center"
+          />
+        </div>
+      </div>
 
-      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        {/* Left Column: Text & CTA */}
+      {/* Gradient overlay: Gelap di kiri (area teks) memudar ke transparan di kanan */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent backdrop-blur-[2px]"></div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
+        {/* Text Content */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="lg:col-span-7 space-y-6 text-center lg:text-left"
+          className="max-w-2xl space-y-6 text-left"
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C8A96A]/15 border border-[#C8A96A]/30 text-[#9e7e40] dark:text-[#E2C785] text-xs font-semibold uppercase tracking-widest">
-            <Sparkles className="w-3.5 h-3.5 fill-current" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/40 border border-[#C8A96A]/40 text-[#E2C785] text-xs font-semibold uppercase tracking-widest backdrop-blur-md shadow-lg">
             Every Promise Has a Story
           </div>
 
           {/* Headline */}
-          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#1F1F1F] dark:text-zinc-50 leading-[1.15]">
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white drop-shadow-xl leading-[1.15]">
             Your Story Deserves a{" "}
-            <span className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#C8A96A] via-[#b39150] to-[#B98F8F]">
+            <span className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#F6E5B3] via-[#D1A65D] to-[#F6E5B3] drop-shadow-sm">
               Beautiful Beginning
             </span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base sm:text-lg text-zinc-800 dark:text-zinc-200 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
+          <p className="text-base sm:text-lg text-white max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed drop-shadow-lg">
             IKARA adalah ruang ketika cinta menjadi janji, dan setiap janji menjadi kisah terpenting yang diabadikan secara elegan.
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-start gap-4 pt-2">
             <Link href={ROUTES.LOGIN} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl liquid-gold-button text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl bg-[#C8A96A] hover:bg-[#b39150] text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
               >
                 <Plus className="w-5 h-5" />
                 Begin Your Story
@@ -57,59 +84,12 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-[#C8A96A]/30 bg-white/10 dark:bg-zinc-950/10 backdrop-blur-[6px] hover:bg-white/25 hover:border-[#C8A96A]/60 dark:hover:bg-zinc-850/25 text-foreground font-medium text-base flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-all duration-300"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-[#C8A96A]/50 bg-black/40 backdrop-blur-md hover:bg-[#C8A96A]/20 hover:border-[#C8A96A] text-white hover:text-[#F6E5B3] font-medium text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer transition-all active:scale-95"
               >
                 <Play className="w-4 h-4 fill-current text-[#C8A96A]" />
                 Lihat Demo Tema
               </Button>
             </Link>
-          </div>
-        </motion.div>
-
-        {/* Right Column: Dummy 3D Arch Visual Mockup */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="lg:col-span-5 flex justify-center z-10 relative"
-        >
-
-
-          {/* Glass Card Wrapper with Border and Hover Shine */}
-          <div className="relative w-full max-w-md aspect-[4/5] rounded-[32px] bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-white/20 dark:border-white/5 shadow-2xl flex flex-col items-center justify-center p-6 text-center group transition-all duration-500 hover:-translate-y-1">
-            
-            {/* Arch Decoration Background */}
-            <div className="absolute inset-4 rounded-t-full border border-dashed border-[#C8A96A]/25 pointer-events-none" />
-
-            {/* Dummy Arch Graphic Content */}
-            <div className="relative z-10 space-y-5 p-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-[#C8A96A]/10 border border-[#C8A96A]/35 flex items-center justify-center text-[#C8A96A] shadow-inner group-hover:scale-110 transition-transform duration-500">
-                <Heart className="w-8 h-8 fill-current" />
-              </div>
-              <div className="space-y-1">
-                <p className="text-[10px] tracking-[0.3em] font-bold text-[#9e7e40] dark:text-[#E2C785] uppercase">
-                  The Wedding of
-                </p>
-                <h3 className="font-heading text-4xl font-bold text-[#1F1F1F] dark:text-zinc-50 font-cormorant tracking-wide script-glow">
-                  Rani & Budi
-                </h3>
-                <p className="text-xs text-zinc-700 dark:text-zinc-300 font-semibold">Sabtu, 24 Oktober 2026</p>
-              </div>
-              <div className="pt-2">
-                <span className="inline-block px-4 py-1.5 rounded-full bg-white/70 dark:bg-zinc-800/70 text-xs font-semibold text-[#9e7e40] dark:text-[#E2C785] shadow-sm border border-[#C8A96A]/20 backdrop-blur-sm">
-                  ✨ Tema Classic Elegance
-                </span>
-              </div>
-            </div>
-
-            {/* Floating Card Accent */}
-            <div className="absolute bottom-4 left-4 right-4 bg-white/60 dark:bg-zinc-800/60 backdrop-blur-md border border-white/30 dark:border-zinc-700 p-3 rounded-2xl shadow-lg flex items-center justify-between text-xs z-20">
-              <span className="text-zinc-800 dark:text-zinc-200 font-bold">Status Undangan</span>
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-100/90 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-bold text-[10px] uppercase tracking-wider flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Ready to Share
-              </span>
-            </div>
           </div>
         </motion.div>
       </div>
