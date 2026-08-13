@@ -65,7 +65,7 @@ function BlobFrame({ src, alt = "", className = "w-56 h-56", color = "#4A6B3D", 
           </div>
         )}
       </motion.div>
-      <Leaf className="absolute -bottom-1 -right-1 w-8 h-8 lg:w-9 lg:h-9 rotate-[15deg] drop-shadow" style={{ color, opacity: 0.55 }} />
+      <Leaf className="absolute -bottom-1 -right-1 w-8 h-8 @[1024px]:w-9 @[1024px]:h-9 rotate-[15deg] drop-shadow" style={{ color, opacity: 0.55 }} />
     </div>
   );
 }
@@ -128,7 +128,7 @@ function BankCard({ gift, copiedId, onCopy }) {
 // ─────────── Organic Divider ───────────
 function OrganicDivider({ color = "#4A6B3D" }) {
   return (
-    <div className="flex items-center justify-center gap-1.5 sm:gap-3 py-2 w-full max-w-[280px] sm:max-w-md mx-auto" aria-hidden="true">
+    <div className="flex items-center justify-center gap-1.5 @[640px]:gap-3 py-2 w-full max-w-[280px] @[640px]:max-w-md mx-auto" aria-hidden="true">
       <div className="h-px flex-grow max-w-[24px] bg-gradient-to-r from-transparent to-current opacity-40" style={{ color }} />
       <Leaf className="w-4 h-4 shrink-0" style={{ color }} />
       <div className="h-px flex-grow max-w-[48px] bg-gradient-to-r from-current to-transparent opacity-40" style={{ color }} />
@@ -148,11 +148,11 @@ function SectionHeading({ title, subtitle, color = "#4A6B3D" }) {
     <Reveal direction="zoomIn">
       <div className="text-center space-y-3">
         <OrganicDivider color={color} />
-        <h2 className="font-heading text-3xl lg:text-4xl font-bold font-cormorant" style={{ color }}>
+        <h2 className="font-heading text-3xl @[1024px]:text-4xl font-bold font-cormorant" style={{ color }}>
           {title}
         </h2>
         {subtitle && (
-          <p className="text-xs text-gray-500 font-light max-w-xs lg:max-w-sm mx-auto leading-relaxed">
+          <p className="text-xs text-gray-500 font-light max-w-xs @[1024px]:max-w-sm mx-auto leading-relaxed">
             {subtitle}
           </p>
         )}
@@ -282,11 +282,11 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       )}
 
       {/* ════════ 1. HERO SECTION — asymmetric split (stacked on mobile, side-by-side on desktop) ════════ */}
-      <section className="relative min-h-screen flex items-center overflow-hidden px-6 md:px-10 lg:px-16 pt-28 pb-20">
+      <section className="relative min-h-screen flex items-center overflow-hidden px-6 @[768px]:px-10 @[1024px]:px-16 pt-28 pb-20">
         {/* Slow ambient zoom-in/zoom-out backdrop shapes */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden>
           <motion.svg
-            className="absolute top-0 left-0 w-56 lg:w-72 opacity-10"
+            className="absolute top-0 left-0 w-56 @[1024px]:w-72 opacity-10"
             viewBox="0 0 200 200"
             fill={FOREST}
             animate={{ scale: [1, 1.15, 1] }}
@@ -295,7 +295,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
             <circle cx="100" cy="100" r="80" />
           </motion.svg>
           <motion.svg
-            className="absolute bottom-0 right-0 w-56 lg:w-72 opacity-10"
+            className="absolute bottom-0 right-0 w-56 @[1024px]:w-72 opacity-10"
             viewBox="0 0 200 200"
             fill={SAGE}
             animate={{ scale: [1.15, 1, 1.15] }}
@@ -305,9 +305,9 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
           </motion.svg>
         </div>
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-16 items-center">
+        <div className="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-1 @[1024px]:grid-cols-[1.15fr_0.85fr] gap-10 @[1024px]:gap-16 items-center">
           {/* Left: typography block — centered on mobile, left-aligned on desktop */}
-          <div className="text-center lg:text-left space-y-6 order-2 lg:order-1">
+          <div className="text-center @[1024px]:text-left space-y-6 order-2 @[1024px]:order-1">
             <Reveal direction="down">
               <p className="text-[10px] tracking-[0.4em] font-bold uppercase" style={{ color: FOREST }}>
                 ✦ THE WEDDING CELEBRATION ✦
@@ -317,17 +317,17 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
             <Reveal direction="zoomIn" delay={0.15}>
               <h1
                 className="font-heading font-extrabold leading-[0.95] font-cormorant"
-                style={{ color: FOREST, fontSize: "clamp(2.4rem, 4vw + 1.2rem, 5.5rem)" }}
+                style={{ color: FOREST, fontSize: "clamp(2.2rem, 7cqw, 4.8rem)" }}
               >
                 {groom}
-                <span className="block font-greatvibes text-4xl sm:text-5xl lg:text-6xl py-2 lg:py-3 opacity-75">&amp;</span>
+                <span className="block font-greatvibes text-4xl @[640px]:text-5xl @[1024px]:text-6xl py-2 @[1024px]:py-3 opacity-75">&amp;</span>
                 {bride}
               </h1>
             </Reveal>
 
             {invitation?.openingText && (
               <Reveal direction="up" delay={0.25}>
-                <p className="text-xs lg:text-sm text-gray-500 font-light leading-relaxed max-w-sm lg:max-w-md mx-auto lg:mx-0">
+                <p className="text-xs @[1024px]:text-sm text-gray-500 font-light leading-relaxed max-w-sm @[1024px]:max-w-md mx-auto @[1024px]:mx-0">
                   {invitation.openingText}
                 </p>
               </Reveal>
@@ -335,7 +335,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
             {invitation?.events?.[0]?.date && (
               <Reveal direction="up" delay={0.35}>
-                <div className="py-2 flex justify-center lg:justify-start">
+                <div className="py-2 flex justify-center @[1024px]:justify-start">
                   <CountdownTimer targetDate={invitation.events[0].date} />
                 </div>
               </Reveal>
@@ -343,14 +343,14 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
           </div>
 
           {/* Right: organic blob photo frame — bigger stage on desktop */}
-          <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
+          <div className="order-1 @[1024px]:order-2 flex justify-center @[1024px]:justify-end">
             <Reveal direction="zoomOut" delay={0.3}>
               <BlobFrame
                 src={invitation?.coverUrl}
                 alt="Foto Cover Prewedding"
                 fallbackText={`${groom[0]}${bride[0]}`}
                 color={FOREST}
-                className="w-56 h-56 sm:w-64 sm:h-64 lg:w-[24rem] lg:h-[24rem]"
+                className="w-56 h-56 @[640px]:w-64 @[640px]:h-64 @[1024px]:w-[24rem] @[1024px]:h-[24rem]"
               />
             </Reveal>
           </div>
@@ -367,15 +367,15 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </section>
 
       {/* ════════ 2. QUOTES — editorial row (stacked mobile, side-by-side desktop) ════════ */}
-      <section className="py-20 md:py-24 px-6 md:px-10 lg:px-16">
-        <div className="max-w-xl lg:max-w-4xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10 text-center lg:text-left">
+      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+        <div className="max-w-xl @[1024px]:max-w-4xl mx-auto">
+          <div className="flex flex-col @[1024px]:flex-row items-center gap-6 @[1024px]:gap-10 text-center @[1024px]:text-left">
             <Reveal direction="zoomIn" className="shrink-0">
-              <TreePine className="w-10 h-10 lg:w-14 lg:h-14" style={{ color: FOREST }} />
+              <TreePine className="w-10 h-10 @[1024px]:w-14 @[1024px]:h-14" style={{ color: FOREST }} />
             </Reveal>
             <div className="space-y-4">
               <Reveal direction="up" delay={0.1}>
-                <blockquote className="font-heading text-2xl lg:text-3xl font-medium font-cormorant italic leading-relaxed" style={{ color: FOREST }}>
+                <blockquote className="font-heading text-2xl @[1024px]:text-3xl font-medium font-cormorant italic leading-relaxed" style={{ color: FOREST }}>
                   &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya...&rdquo;
                 </blockquote>
               </Reveal>
@@ -390,18 +390,18 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </section>
 
       {/* ════════ 3. COUPLES SECTION — open editorial layout, 3-col with divider on desktop ════════ */}
-      <section className="py-20 md:py-24 px-6 md:px-10 lg:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
-        <div className="max-w-xl lg:max-w-5xl mx-auto space-y-14">
+      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
+        <div className="max-w-xl @[1024px]:max-w-5xl mx-auto space-y-14">
           <SectionHeading title="Mempelai Pengantin" subtitle="Dengan penuh rasa syukur, kami memperkenalkan diri" color={FOREST} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-10 lg:gap-10 items-center">
+          <div className="grid grid-cols-1 @[1024px]:grid-cols-[1fr_auto_1fr] gap-10 @[1024px]:gap-10 items-center">
             {/* Groom */}
             <Reveal direction="zoomOut">
               <div className="flex flex-col items-center gap-4 text-center">
-                <BlobFrame src={invitation?.groomPhotoUrl} alt={groom} fallbackText={groom[0]} color={FOREST} className="w-32 h-32 lg:w-40 lg:h-40" />
+                <BlobFrame src={invitation?.groomPhotoUrl} alt={groom} fallbackText={groom[0]} color={FOREST} className="w-32 h-32 @[1024px]:w-40 @[1024px]:h-40" />
                 <div className="space-y-1">
                   <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: FOREST }}>The Groom</p>
-                  <h3 className="font-cormorant text-xl lg:text-2xl font-bold leading-tight" style={{ color: FOREST }}>{groomFull}</h3>
+                  <h3 className="font-cormorant text-xl @[1024px]:text-2xl font-bold leading-tight" style={{ color: FOREST }}>{groomFull}</h3>
                   <p className="text-[11px] text-gray-500 font-light leading-relaxed max-w-[220px]">
                     Putra dari Bapak {invitation?.groomFather || "—"} &amp; Ibu {invitation?.groomMother || "—"}
                   </p>
@@ -411,20 +411,20 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
             {/* Divider — horizontal on mobile, vertical on desktop */}
             <Reveal direction="zoomIn" delay={0.1}>
-              <div className="flex lg:flex-col items-center justify-center gap-3 lg:gap-4">
-                <div className="h-px w-14 lg:w-px lg:h-28 opacity-20" style={{ background: FOREST }} />
-                <span className="font-greatvibes text-4xl lg:text-5xl opacity-50" style={{ color: FOREST }}>&amp;</span>
-                <div className="h-px w-14 lg:w-px lg:h-28 opacity-20" style={{ background: FOREST }} />
+              <div className="flex @[1024px]:flex-col items-center justify-center gap-3 @[1024px]:gap-4">
+                <div className="h-px w-14 @[1024px]:w-px @[1024px]:h-28 opacity-20" style={{ background: FOREST }} />
+                <span className="font-greatvibes text-4xl @[1024px]:text-5xl opacity-50" style={{ color: FOREST }}>&amp;</span>
+                <div className="h-px w-14 @[1024px]:w-px @[1024px]:h-28 opacity-20" style={{ background: FOREST }} />
               </div>
             </Reveal>
 
             {/* Bride */}
             <Reveal direction="zoomOut">
               <div className="flex flex-col items-center gap-4 text-center">
-                <BlobFrame src={invitation?.bridePhotoUrl} alt={bride} fallbackText={bride[0]} color={FOREST} className="w-32 h-32 lg:w-40 lg:h-40" />
+                <BlobFrame src={invitation?.bridePhotoUrl} alt={bride} fallbackText={bride[0]} color={FOREST} className="w-32 h-32 @[1024px]:w-40 @[1024px]:h-40" />
                 <div className="space-y-1">
                   <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: FOREST }}>The Bride</p>
-                  <h3 className="font-cormorant text-xl lg:text-2xl font-bold leading-tight" style={{ color: FOREST }}>{brideFull}</h3>
+                  <h3 className="font-cormorant text-xl @[1024px]:text-2xl font-bold leading-tight" style={{ color: FOREST }}>{brideFull}</h3>
                   <p className="text-[11px] text-gray-500 font-light leading-relaxed max-w-[220px]">
                     Putri dari Bapak {invitation?.brideFather || "—"} &amp; Ibu {invitation?.brideMother || "—"}
                   </p>
@@ -436,11 +436,11 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </section>
 
       {/* ════════ 4. EVENTS SECTION — grid 2 kolom di desktop ════════ */}
-      <section className="py-20 md:py-24 px-6 md:px-10 lg:px-16">
-        <div className="max-w-xl lg:max-w-5xl mx-auto space-y-10">
+      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+        <div className="max-w-xl @[1024px]:max-w-5xl mx-auto space-y-10">
           <SectionHeading title="Jadwal Akad & Resepsi" subtitle="Dengan segala kerendahan hati, kami mengundang Bapak/Ibu untuk hadir" color={FOREST} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 @[1024px]:grid-cols-2 gap-6 @[1024px]:gap-8">
             {invitation?.events?.map((evt, i) => (
               <Reveal key={evt.id} direction={i % 2 === 0 ? "zoomIn" : "zoomOut"} delay={i * 0.12}>
                 <div className="rounded-3xl bg-white border shadow-sm overflow-hidden h-full" style={{ borderColor: `${FOREST}25` }}>
@@ -495,8 +495,8 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
       {/* ════════ 5. LOVE STORY ════════ */}
       {invitation?.loveStories?.length > 0 && (
-        <section className="py-20 md:py-24 px-6 md:px-10 lg:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
-          <div className="max-w-xl lg:max-w-2xl mx-auto space-y-10">
+        <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
+          <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
             <SectionHeading title="Perjalanan Cinta" color={FOREST} />
 
             <div className="relative pl-8 border-l-2 space-y-10" style={{ borderColor: `${FOREST}30` }}>
@@ -519,13 +519,13 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
       {/* ════════ 6. PHOTO GALLERY — masonry 3-kolom di desktop, carousel tetap fokus di HP ════════ */}
       {galleries.length > 0 && (
-        <section className="py-20 md:py-24 px-6 md:px-10 lg:px-16">
-          <div className="max-w-xl lg:max-w-4xl mx-auto space-y-8">
+        <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+          <div className="max-w-xl @[1024px]:max-w-4xl mx-auto space-y-8">
             <SectionHeading title="Galeri Momen" subtitle="Setiap foto menyimpan seribu cerita cinta" color={FOREST} />
 
             {layout === "CAROUSEL" ? (
               <Reveal direction="zoomIn">
-                <div className="space-y-4 max-w-sm lg:max-w-md mx-auto">
+                <div className="space-y-4 max-w-sm @[1024px]:max-w-md mx-auto">
                   <div className="relative aspect-[3/4] w-full rounded-3xl overflow-hidden border shadow-xl" style={{ borderColor: `${FOREST}30` }}>
                     <AnimatePresence mode="wait">
                       <motion.img
@@ -571,7 +571,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                 </div>
               </Reveal>
             ) : (
-              <div className="columns-2 lg:columns-3 gap-3 space-y-3">
+              <div className="columns-2 @[1024px]:columns-3 gap-3 space-y-3">
                 {galleries.map((gal, i) => (
                   <Reveal key={gal.id} direction={i % 2 === 0 ? "zoomIn" : "zoomOut"} delay={i * 0.07}>
                     <div className="break-inside-avoid rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: `${FOREST}20` }}>
@@ -587,11 +587,11 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
       {/* ════════ 7. DIGITAL GIFTS — grid 2 kolom di desktop ════════ */}
       {invitation?.gifts?.length > 0 && (
-        <section className="py-20 md:py-24 px-6 md:px-10 lg:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
-          <div className="max-w-xl lg:max-w-4xl mx-auto space-y-10">
+        <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
+          <div className="max-w-xl @[1024px]:max-w-4xl mx-auto space-y-10">
             <SectionHeading title="Amplop Digital" subtitle="Bagi Anda yang berkenan memberikan tanda kasih untuk pengantin baru:" color={FOREST} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-sm lg:max-w-none mx-auto">
+            <div className="grid grid-cols-1 @[1024px]:grid-cols-2 gap-6 max-w-sm @[1024px]:max-w-none mx-auto">
               {invitation.gifts.map((gft, i) => (
                 <Reveal key={gft.id} direction="up" delay={i * 0.15}>
                   {gft.type === "PHYSICAL" ? (
@@ -617,11 +617,11 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       )}
 
       {/* ════════ 8. RSVP & UCAPAN — 2 kolom di desktop (form kiri, ucapan kanan) ════════ */}
-      <section className="py-20 md:py-24 px-6 md:px-10 lg:px-16">
-        <div className="max-w-xl lg:max-w-5xl mx-auto space-y-10">
+      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+        <div className="max-w-xl @[1024px]:max-w-5xl mx-auto space-y-10">
           <SectionHeading title="RSVP & Buku Ucapan" subtitle="Berikan konfirmasi kehadiran Anda beserta doa terbaik:" color={FOREST} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 lg:items-start">
+          <div className="grid grid-cols-1 @[1024px]:grid-cols-2 gap-8 @[1024px]:gap-10 @[1024px]:items-start">
             <Reveal direction="up">
               <div className="p-6 rounded-3xl bg-white border shadow-sm" style={{ borderColor: `${FOREST}25` }}>
                 <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} guest={guest} />
