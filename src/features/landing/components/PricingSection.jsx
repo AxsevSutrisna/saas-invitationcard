@@ -7,11 +7,6 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 
-/**
- * PricingSection Component
- * Paket harga SaaS (FREE, BASIC, PRO) sesuai skema monetisasi.
- * Menggunakan <GlassCard variant="full"> dari @/components/ui/GlassCard.
- */
 export function PricingSection({ packages = [] }) {
   const displayPlans =
     packages.length > 0
@@ -220,10 +215,10 @@ export function PricingSection({ packages = [] }) {
                     <Button
                       variant={plan.ctaVariant}
                       className={[
-                        "w-full h-12 rounded-xl text-[16px] font-semibold transition-all cursor-pointer",
+                        "w-full h-12 rounded-xl font-medium text-base flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95",
                         plan.popular
-                          ? "liquid-gold-button text-white"
-                          : "border-2 border-[#C8A96A]/40 bg-white/50 hover:bg-[#C8A96A] text-[#9e7e40] hover:text-white hover:shadow-md hover:shadow-[#C8A96A]/10",
+                          ? "bg-[#C8A96A] hover:bg-[#b39150] text-white shadow-md hover:shadow-lg"
+                          : "border border-[#C8A96A]/50 bg-black/40 backdrop-blur-md hover:bg-[#C8A96A]/20 hover:border-[#C8A96A] text-white hover:text-[#F6E5B3] shadow-md hover:shadow-xl",
                       ].join(" ")}
                     >
                       {plan.ctaText}

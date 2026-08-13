@@ -68,7 +68,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
         </label>
         <input
           type="text"
-          placeholder="Contoh: Pernikahan Asep & Salsa"
+          placeholder="Contoh: Pernikahan William & Elleanor"
           {...register("title")}
           className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
         />
@@ -90,7 +90,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
           </span>
           <input
             type="text"
-            placeholder="asep-salsa"
+            placeholder="william-eleanor"
             {...register("slug")}
             className="w-full px-4 py-3 bg-transparent text-sm focus:outline-none"
           />

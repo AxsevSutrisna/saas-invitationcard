@@ -37,23 +37,23 @@ export function Footer() {
           </h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="#features" className="hover:text-[#C8A96A] transition-colors">
-                Fitur Utama
+              <Link href="#fitur" className="hover:text-[#C8A96A] transition-colors">
+                Fitur
               </Link>
             </li>
             <li>
-              <Link href="#themes" className="hover:text-[#C8A96A] transition-colors">
-                Koleksi Tema
+              <Link href="#tema" className="hover:text-[#C8A96A] transition-colors">
+                Tema
               </Link>
             </li>
             <li>
-              <Link href="#how-it-works" className="hover:text-[#C8A96A] transition-colors">
-                Cara Kerja
+              <Link href="#cara-kerja" className="hover:text-[#C8A96A] transition-colors">
+                Panduan
               </Link>
             </li>
             <li>
-              <Link href="#pricing" className="hover:text-[#C8A96A] transition-colors">
-                Paket Harga
+              <Link href="#harga" className="hover:text-[#C8A96A] transition-colors">
+                Harga
               </Link>
             </li>
           </ul>
@@ -67,27 +67,27 @@ export function Footer() {
           <ul className="space-y-2 text-sm">
             <li>
               <Link href={ROUTES.LOGIN} className="hover:text-[#C8A96A] transition-colors">
-                Buat Undangan Gratis
+                Buat Undangan
               </Link>
             </li>
             <li>
               <Link href={ROUTES.LOGIN} className="hover:text-[#C8A96A] transition-colors">
-                Masuk ke Dashboard
+                Login
               </Link>
             </li>
             <li>
               <Link href="#faq" className="hover:text-[#C8A96A] transition-colors">
-                Tanya Jawab (FAQ)
+                FAQ
               </Link>
             </li>
             <li>
               <Link href="/terms" className="hover:text-[#C8A96A] transition-colors">
-                Syarat & Ketentuan
+                Ketentuan
               </Link>
             </li>
             <li>
               <Link href="/privacy" className="hover:text-[#C8A96A] transition-colors">
-                Kebijakan Privasi
+                Privasi
               </Link>
             </li>
           </ul>

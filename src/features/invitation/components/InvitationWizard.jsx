@@ -45,22 +45,22 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
   } = useForm({
     resolver: zodResolver(invitationFormSchema),
     defaultValues: {
-      title: "Pernikahan Asep & Salsa",
-      slug: "asep-salsa",
+      title: "Pernikahan William & Eleanor",
+      slug: "william-eleanor",
       themeId: defaultThemeId,
 
       // Mempelai Pria
-      groomNickname: "Asep",
-      groomFullName: "Asep Sutrisna Suhada Putra",
-      groomFather: "Bapak Sutrisna",
-      groomMother: "Ibu Suhada",
+      groomNickname: "William",
+      groomFullName: "William Jonathan Tanuwijaya",
+      groomFather: "Bapak William Jonathan",
+      groomMother: "Ibu William Jonathan",
       groomPhotoUrl: "",
 
       // Mempelai Wanita
-      brideNickname: "Salsa",
-      brideFullName: "Salsa Camelia Azzahra",
-      brideFather: "Bapak Camelia",
-      brideMother: "Ibu Azzahra",
+      brideNickname: "Eleanor",
+      brideFullName: "Eleanor Grace Tanuwidjaja",
+      brideFather: "Bapak Eleanor Grace",
+      brideMother: "Ibu Eleanor Grace",
       bridePhotoUrl: "",
 
       // Foto Sampul & Konten
@@ -118,12 +118,12 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
         {
           type: "BANK",
           providerName: "BCA",
-          accountName: "Asep Sutrisna",
+          accountName: "William Jonathan Tanuwijaya",
           accountNumber: "1234567890",
         },
       ],
       physicalGiftAddress: "Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)",
-      physicalGiftReceiver: "Asep & Salsa",
+      physicalGiftReceiver: "William & Eleanor",
       physicalGiftPhone: "081234567890",
 
       // Musik

@@ -7,12 +7,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 
-/**
- * FAQSection Component
- * Akordion tanya jawab umum (FAQ) + Closing Conversion Banner.
- */
 export function FAQSection({ faqs = [] }) {
-  const [openIndex, setOpenIndex] = useState(0);
+  const [openIndex, setOpenIndex] = useState(-1);
 
   const displayFaqs = faqs.length > 0 
     ? faqs.map((f) => ({ q: f.question, a: f.answer }))
@@ -97,14 +93,10 @@ export function FAQSection({ faqs = [] }) {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="rounded-[32px] bg-[#1F1F1F] text-white p-10 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden border border-[#C8A96A]/40"
+          className="rounded-[32px] bg-[#2C2723] text-white p-10 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden border border-[#C8A96A]/40"
         >
 
           <div className="space-y-3 relative z-10">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#C8A96A]/20 text-[#E2C785] text-xs font-semibold uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5 fill-current" /> Begin Your Story
-            </span>
             <h3 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight font-cormorant script-glow">
               Your Story is Ready to be Shared
             </h3>
@@ -117,7 +109,7 @@ export function FAQSection({ faqs = [] }) {
             <Link href={ROUTES.LOGIN}>
               <Button
                 size="lg"
-                className="h-13 px-8 rounded-full liquid-gold-button text-white font-medium text-base flex items-center gap-2 mx-auto cursor-pointer"
+                className="h-13 px-8 rounded-2xl bg-[#C8A96A] hover:bg-[#b39150] text-white font-medium text-base flex items-center gap-2 mx-auto cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
               >
                 Begin Your Story <ArrowRight className="w-5 h-5" />
               </Button>

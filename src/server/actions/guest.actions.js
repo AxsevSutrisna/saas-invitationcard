@@ -22,7 +22,7 @@ const guestSchema = z.object({
 
 const bulkGuestSchema = z.object({
   invitationId: z.string().min(1, "ID Undangan wajib ada"),
-  rawNames: z.string().min(1, "Daftar nama tamu wajib diisi"),
+  rawNames: z.string().min(1, "Daftar Tamu Undangan wajib diisi"),
 });
 
 /**
@@ -68,7 +68,7 @@ export async function createGuestsBulkAction(payload) {
       .filter((line) => line.length > 0);
 
     if (lines.length === 0) {
-      return { success: false, error: "Tidak ada nama tamu yang valid." };
+      return { success: false, error: "Tidak ada Tamu Undangan yang valid." };
     }
 
     const guestsList = lines.map((line) => {
