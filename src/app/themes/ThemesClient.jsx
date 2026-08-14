@@ -6,6 +6,14 @@ import Image from "next/image";
 import { Search, Eye, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const DEFAULT_THUMBNAILS = {
+  "classic-elegance": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600",
+  "floral-blossom": "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=600",
+  "modern-minimalist": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600",
+  "floral-blue": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=600",
+  "nature-harmony": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=600",
+};
+
 const CATEGORY_MAP = {
   "classic-elegance": {
     category: "Elegant",
@@ -47,9 +55,11 @@ export function ThemesClient({ initialThemes = [] }) {
       badgeColor: "bg-zinc-100 text-zinc-600",
       gradient: "from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900",
     };
+    const previewUrl = theme.thumbnailUrl || DEFAULT_THUMBNAILS[theme.slug] || null;
     return {
       ...theme,
       ...meta,
+      previewUrl,
     };
   });
 
@@ -123,9 +133,9 @@ export function ThemesClient({ initialThemes = [] }) {
             {/* Phone Mockup Frame (Taller Android Style) */}
             <div className="p-8 bg-zinc-50 dark:bg-zinc-800/40 flex justify-center relative">
               <div className="relative w-[240px] h-[500px] bg-[#1C1C1E] dark:bg-[#1C1C1E] rounded-[40px] border-[10px] border-[#1C1C1E] shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden group-hover:-translate-y-2 transition-transform duration-500">
-                {theme.thumbnailUrl ? (
+                {theme.previewUrl ? (
                   <Image
-                    src={theme.thumbnailUrl}
+                    src={theme.previewUrl}
                     fill
                     sizes="(max-width: 768px) 100vw, 300px"
                     className="object-cover"

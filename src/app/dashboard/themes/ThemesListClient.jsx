@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, Eye, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const DEFAULT_THUMBNAILS = {
+  "classic-elegance": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600",
+  "floral-blossom": "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=600",
+  "modern-minimalist": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600",
+  "floral-blue": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=600",
+  "nature-harmony": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=600",
+};
 
 const CATEGORY_MAP = {
   "classic-elegance": {
@@ -52,9 +61,11 @@ export function ThemesListClient({ initialThemes = [] }) {
       badgeColor: "bg-zinc-100 text-zinc-600",
       gradient: "from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900",
     };
+    const previewUrl = theme.thumbnailUrl || DEFAULT_THUMBNAILS[theme.slug] || null;
     return {
       ...theme,
       ...meta,
+      previewUrl,
     };
   });
 
@@ -121,14 +132,28 @@ export function ThemesListClient({ initialThemes = [] }) {
           >
             {/* Phone Mockup Frame */}
             <div className={`p-6 bg-gradient-to-b ${theme.gradient} flex justify-center relative`}>
-              <div className="relative w-40 h-72 bg-[#F8F6F2] dark:bg-[#191919] rounded-[30px] border-4 border-zinc-700/80 shadow-2xl p-4 flex flex-col items-center justify-center text-center space-y-2 group-hover:scale-105 transition-transform duration-300">
-                <Sparkles className="w-8 h-8 text-[#C8A96A]" />
-                <p className="font-heading text-sm font-bold text-[#1F1F1F] dark:text-white">
-                  {theme.name}
-                </p>
-                <span className="text-[10px] text-muted-foreground font-light">
-                  {theme.isPremium ? "💎 Premium Template" : "✨ Free Template"}
-                </span>
+              <div className="relative w-[210px] h-[430px] bg-[#1C1C1E] dark:bg-[#1C1C1E] rounded-[36px] border-[8px] border-[#1C1C1E] shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                {theme.previewUrl ? (
+                  <Image
+                    src={theme.previewUrl}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 300px"
+                    className="object-cover"
+                    alt={`Preview tema ${theme.name}`}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-6 space-y-4">
+                    <div className="w-14 h-14 rounded-full bg-white/10 shadow-md flex items-center justify-center">
+                      <Sparkles className="w-6 h-6 text-[#C8A96A]" />
+                    </div>
+                    <h3 className="font-heading text-xl font-bold text-white">
+                      {theme.name}
+                    </h3>
+                    <span className="text-[10px] text-white/70 font-light uppercase tracking-widest border border-white/20 px-3 py-1 rounded-full">
+                      {theme.isPremium ? "Premium" : "Populer"}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
