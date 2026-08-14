@@ -1,27 +1,27 @@
-[2026-07-27T05:39:46.718Z] START - Payload: {
+[2026-08-14T07:21:37.317Z] START - Payload: {
   "title": "Pernikahan William & Eleanor",
   "slug": "william-eleanor",
   "themeId": "cmrn81tud0003v0clvt2pqln3",
   "groomNickname": "William",
   "groomFullName": "William Jonathan Tanuwijaya",
-  "groomFather": "Bapak Sutrisna",
-  "groomMother": "Ibu Suhada",
+  "groomFather": "Bapak William Jonathan",
+  "groomMother": "Ibu William Jonathan",
   "groomPhotoUrl": "",
   "brideNickname": "Eleanor",
   "brideFullName": "Eleanor Grace Tanuwidjaja",
-  "brideFather": "Bapak Camelia",
-  "brideMother": "Ibu Azzahra",
+  "brideFather": "Bapak Eleanor Grace",
+  "brideMother": "Ibu Eleanor Grace",
   "bridePhotoUrl": "",
   "coverUrl": "https://images.unsplash.com/photo-1519741497674-611481863552",
   "events": [
     {
       "name": "Akad Nikah",
-      "date": "2026-08-18",
-      "startTime": "08:00",
-      "endTime": "10:00",
-      "locationName": "Masjid Istiqlal",
-      "address": "Jl. Taman Sunda Kelapa No.16, Menteng, Jakarta Pusat",
-      "mapUrl": "https://maps.google.com"
+      "date": "2026-08-08",
+      "startTime": "09:00",
+      "endTime": "10:30",
+      "locationName": "Masjid Raya Al-A'zham",
+      "address": "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
+      "mapUrl": "https://maps.app.goo.gl/kX31s3V4F6T7U8W9"
     },
     {
       "name": "Resepsi Pernikahan",
@@ -73,4 +73,4 @@
   "isMusicEnabled": true,
   "isPublished": true
 }
-[SUCCESS] Created Invitation ID: cmsr8l4o40002nwvtl8ddzmii
+[SUCCESS] Created Invitation ID: cmssmcdq80002fkcluyv7zi77

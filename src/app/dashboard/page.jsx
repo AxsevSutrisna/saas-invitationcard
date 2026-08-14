@@ -65,7 +65,7 @@ export default async function DashboardPage() {
                 size="lg"
                 className="h-12 px-7 rounded-2xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-medium text-sm shadow-lg shadow-[#C8A96A]/25 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
               >
-                <Sparkles className="w-4 h-4 fill-current" />
+                <Plus className="w-4 h-4" />
                 Buat Undangan Pertama
               </Button>
             </Link>

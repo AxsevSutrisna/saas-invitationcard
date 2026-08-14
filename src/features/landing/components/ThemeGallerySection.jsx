@@ -141,13 +141,15 @@ export function ThemeGallerySection({ initialThemes = [] }) {
 
                 {/* CTA Button */}
                 <div className="mt-4">
-                  <Button
-                    variant="outline"
-                    className="w-full h-10 rounded-xl border border-[#C8A96A]/50 bg-black/40 backdrop-blur-md hover:bg-[#C8A96A]/20 hover:border-[#C8A96A] text-white hover:text-[#F6E5B3] font-medium text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer transition-all active:scale-95"
-                    aria-label={`Lihat demo tema ${theme.name}`}
-                  >
-                    <Eye className="w-4 h-4" aria-hidden="true" /> Lihat Demo Tema
-                  </Button>
+                  <Link href={`/theme/preview/${theme.slug}`} target="_blank" className="w-full block">
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 rounded-xl border border-[#C8A96A]/50 bg-black/40 backdrop-blur-md hover:bg-[#C8A96A]/20 hover:border-[#C8A96A] text-white hover:text-[#F6E5B3] font-medium text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer transition-all active:scale-95"
+                      aria-label={`Lihat demo tema ${theme.name}`}
+                    >
+                      <Eye className="w-4 h-4" aria-hidden="true" /> Lihat Demo Tema
+                    </Button>
+                  </Link>
                 </div>
               </GlassCard>
             </motion.div>

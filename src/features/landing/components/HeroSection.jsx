@@ -80,7 +80,7 @@ export function HeroSection() {
               </Button>
             </Link>
 
-            <Link href="#tema" className="w-full sm:w-auto">
+            <Link href="/theme/preview/classic-elegance" target="_blank" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"
@@ -90,6 +90,7 @@ export function HeroSection() {
                 Lihat Demo Tema
               </Button>
             </Link>
+
           </div>
         </motion.div>
       </div>
