@@ -1,4 +1,8 @@
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  DeleteObjectCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 
 const accountId = process.env.R2_ACCOUNT_ID;
 const accessKeyId = process.env.R2_ACCESS_KEY_ID;
@@ -21,6 +25,37 @@ export const s3Client = new S3Client({
 export const R2_BUCKET_NAME = bucketName || "";
 export const R2_PUBLIC_DOMAIN = process.env.R2_PUBLIC_DOMAIN || "";
 
+/** Domain publik tanpa trailing slash. */
+function normalizedDomain() {
+  return R2_PUBLIC_DOMAIN.endsWith("/")
+    ? R2_PUBLIC_DOMAIN.slice(0, -1)
+    : R2_PUBLIC_DOMAIN;
+}
+
+/** Susun public URL dari object key. */
+export function buildPublicUrl(key) {
+  return `${normalizedDomain()}/${key}`;
+}
+
+/**
+ * Unggah buffer ke R2 dan kembalikan public URL-nya.
+ * @param {string} key Object key tujuan.
+ * @param {Buffer|Uint8Array} body Isi berkas.
+ * @param {string} contentType MIME type (mis. "image/webp").
+ * @returns {Promise<string>} public URL.
+ */
+export async function putObject(key, body, contentType) {
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: R2_BUCKET_NAME,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+    })
+  );
+  return buildPublicUrl(key);
+}
+
 /**
  * Ubah public URL menjadi object key R2.
  * Mengembalikan null bila URL kosong atau BUKAN milik domain publik R2 kita
@@ -28,9 +63,7 @@ export const R2_PUBLIC_DOMAIN = process.env.R2_PUBLIC_DOMAIN || "";
  */
 export function r2KeyFromUrl(url) {
   if (!url || typeof url !== "string") return null;
-  const domain = R2_PUBLIC_DOMAIN.endsWith("/")
-    ? R2_PUBLIC_DOMAIN.slice(0, -1)
-    : R2_PUBLIC_DOMAIN;
+  const domain = normalizedDomain();
   if (!domain || !url.startsWith(`${domain}/`)) return null;
   const key = url.slice(domain.length + 1).split("?")[0]; // buang querystring
   return key ? decodeURIComponent(key) : null;

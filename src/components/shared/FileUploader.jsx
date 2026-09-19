@@ -29,25 +29,110 @@ export function FileUploader({
     }
   };
 
+  // Unggah GAMBAR lewat server → dikonversi ke WebP → disimpan ke R2.
+  const uploadImageViaServer = (file) =>
+    new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/v1/upload", true);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          setUploadProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      };
+
+      xhr.onload = () => {
+        let res = {};
+        try {
+          res = JSON.parse(xhr.responseText || "{}");
+        } catch {
+          return reject(new Error("Respons server tidak valid."));
+        }
+        if (xhr.status >= 200 && xhr.status < 300 && res.success) {
+          onChange(res.data.url);
+          resolve();
+        } else {
+          reject(
+            new Error(
+              res?.error?.details?.[0] || res?.message || "Gagal mengunggah gambar."
+            )
+          );
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Koneksi bermasalah saat mengunggah berkas."));
+      xhr.send(formData);
+    });
+
+  // Unggah AUDIO langsung ke R2 via presigned URL (tanpa konversi).
+  const uploadAudioViaPresigned = async (file) => {
+    const response = await fetch("/api/v1/upload/presigned-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,
+        fileType: file.type || "audio/mpeg",
+        fileSize: file.size,
+      }),
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Gagal mendapatkan izin unggah berkas.");
+    }
+
+    const { presignedUrl, publicUrl } = result.data;
+
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", presignedUrl, true);
+      xhr.setRequestHeader("Content-Type", file.type || "audio/mpeg");
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          setUploadProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          onChange(publicUrl);
+          resolve();
+        } else {
+          reject(new Error("Gagal mengunggah berkas ke penyimpanan R2."));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Koneksi bermasalah saat mengunggah berkas."));
+      xhr.send(file);
+    });
+  };
+
   const validateAndUploadFile = async (file) => {
     setError("");
-
     if (!file) return;
 
-    // 1. Validasi Ukuran File
+    // 1. Validasi ukuran
     if (file.size > maxSize) {
       const sizeInMB = (maxSize / (1024 * 1024)).toFixed(0);
       setError(`Ukuran file melebihi batas. Maksimal ${sizeInMB}MB.`);
       return;
     }
 
-    // 2. Validasi Tipe File (Secara Sederhana)
-    const matchesAccept = isAudioType 
+    // 2. Validasi tipe (gambar apa pun diterima; server yang mengonversi ke WebP)
+    const matchesAccept = isAudioType
       ? file.type.startsWith("audio/") || file.name.endsWith(".m4a") || file.name.endsWith(".mp3")
       : file.type.startsWith("image/");
 
     if (!matchesAccept) {
-      setError(isAudioType ? "Format file harus berupa audio (MP3, WAV, M4A)." : "Format file harus berupa gambar.");
+      setError(
+        isAudioType
+          ? "Format file harus berupa audio (MP3, WAV, M4A)."
+          : "Format file harus berupa gambar."
+      );
       return;
     }
 
@@ -55,60 +140,17 @@ export function FileUploader({
     setUploadProgress(0);
 
     try {
-      // 3. Request Presigned URL
-      const response = await fetch("/api/v1/upload/presigned-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          filename: file.name,
-          fileType: file.type || (isAudioType ? "audio/mpeg" : "image/jpeg"),
-          fileSize: file.size,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Gagal mendapatkan izin unggah berkas.");
+      if (isAudioType) {
+        await uploadAudioViaPresigned(file);
+      } else {
+        await uploadImageViaServer(file);
       }
-
-      const { presignedUrl, publicUrl } = result.data;
-
-      // 4. Upload Direct to Cloudflare R2 via XMLHttpRequest (untuk tracking progress)
-      const xhr = new XMLHttpRequest();
-      xhr.open("PUT", presignedUrl, true);
-      xhr.setRequestHeader("Content-Type", file.type || (isAudioType ? "audio/mpeg" : "image/jpeg"));
-
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress(percentComplete);
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          onChange(publicUrl);
-          setIsUploading(false);
-          setUploadProgress(0);
-        } else {
-          setError("Gagal mengunggah berkas ke server penyimpanan R2.");
-          setIsUploading(false);
-        }
-      };
-
-      xhr.onerror = () => {
-        setError("Koneksi bermasalah saat mengunggah berkas.");
-        setIsUploading(false);
-      };
-
-      xhr.send(file);
     } catch (err) {
       console.error("[UPLOAD_ERROR]", err);
       setError(err.message || "Terjadi kesalahan saat mengunggah berkas.");
+    } finally {
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -204,7 +246,9 @@ export function FileUploader({
               <span className="text-[10px] font-bold text-foreground">{uploadProgress}%</span>
             </div>
             <span className="text-[10px] font-medium text-muted-foreground animate-pulse">
-              Mengunggah berkas...
+              {uploadProgress >= 100 && !isAudioType
+                ? "Mengoptimasi ke WebP..."
+                : "Mengunggah berkas..."}
             </span>
           </div>
         )}
