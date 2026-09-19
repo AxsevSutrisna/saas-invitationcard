@@ -15,6 +15,8 @@ import {
   TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatRupiah } from "@/lib/format";
+import { createCheckoutAction } from "@/features/payment/actions";
 
 const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
 const isProduction = process.env.MIDTRANS_IS_PRODUCTION === "true";
@@ -38,19 +40,11 @@ export function SubscriptionClient({
       setErrorMessage("");
       setLoadingPackageId(packageId);
 
-      // 1. Request presigned snap token dari API kita
-      const response = await fetch("/api/v1/payments/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ packageId }),
-      });
+      // 1. Minta snap token via Server Action
+      const result = await createCheckoutAction(packageId);
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Gagal membuat transaksi.");
+      if (!result.success) {
+        throw new Error(result.error || "Gagal membuat transaksi.");
       }
 
       const { token } = result.data;
@@ -85,14 +79,6 @@ export function SubscriptionClient({
     }
   };
 
-  // Format ke Rupiah
-  const formatIDR = (num) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
 
   // Hitung detail langganan saat ini
   const activePackage = activeSubscription?.package;
@@ -219,7 +205,7 @@ export function SubscriptionClient({
                     </h3>
                     <div className="mt-2 flex items-baseline gap-1">
                       <span className="text-2xl font-extrabold text-foreground font-heading">
-                        {pkg.price === 0 ? "Gratis" : formatIDR(pkg.price)}
+                        {pkg.price === 0 ? "Gratis" : formatRupiah(pkg.price)}
                       </span>
                       {pkg.price > 0 && (
                         <span className="text-xs text-muted-foreground">
@@ -310,7 +296,7 @@ export function SubscriptionClient({
                   <tr key={trx.id} className="border-b border-border/40 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10">
                     <td className="py-3.5 px-4 font-mono font-medium text-foreground">{trx.midtransOrderId}</td>
                     <td className="py-3.5 px-4 text-foreground">{trx.package.name}</td>
-                    <td className="py-3.5 px-4 font-medium text-foreground">{formatIDR(trx.amount)}</td>
+                    <td className="py-3.5 px-4 font-medium text-foreground">{formatRupiah(trx.amount)}</td>
                     <td className="py-3.5 px-4 text-muted-foreground">
                       {new Date(trx.createdAt).toLocaleString("id-ID", {
                         year: "numeric",

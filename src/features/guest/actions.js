@@ -1,8 +1,7 @@
 "use server";
 
-import { z } from "zod";
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { requireSession } from "@/features/auth/guard";
 import {
   createGuest,
   createGuestsBulk,
@@ -11,29 +10,19 @@ import {
   deleteGuest,
   trackGuestOpen,
   getGuestByCode
-} from "@/server/repositories/guest.repository";
-
-// Zod schemas
-const guestSchema = z.object({
-  invitationId: z.string().min(1, "ID Undangan wajib ada"),
-  name: z.string().min(2, "Nama tamu minimal 2 karakter").max(50, "Nama maksimal 50 karakter"),
-  whatsapp: z.string().optional().nullable(),
-});
-
-const bulkGuestSchema = z.object({
-  invitationId: z.string().min(1, "ID Undangan wajib ada"),
-  rawNames: z.string().min(1, "Daftar Tamu Undangan wajib diisi"),
-});
+} from "@/features/guest/repository";
+import {
+  guestSchema,
+  updateGuestSchema,
+  bulkGuestSchema,
+} from "@/features/guest/schema";
 
 /**
  * Action: Create a single guest
  */
 export async function createGuestAction(payload) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
-    }
+    await requireSession();
 
     const validatedData = guestSchema.parse(payload);
     const newGuest = await createGuest(validatedData);
@@ -54,10 +43,7 @@ export async function createGuestAction(payload) {
  */
 export async function createGuestsBulkAction(payload) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
-    }
+    await requireSession();
 
     const { invitationId, rawNames } = bulkGuestSchema.parse(payload);
 
@@ -103,10 +89,7 @@ export async function createGuestsBulkAction(payload) {
  */
 export async function getGuestsAction(invitationId) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
-    }
+    await requireSession();
 
     const guests = await getGuestsByInvitationId(invitationId);
     return { success: true, data: guests };
@@ -121,18 +104,9 @@ export async function getGuestsAction(invitationId) {
  */
 export async function updateGuestAction(guestId, payload) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
-    }
+    await requireSession();
 
-    // Validation schema for update (no invitationId needed)
-    const updateSchema = z.object({
-      name: z.string().min(2, "Nama tamu minimal 2 karakter").max(50, "Nama maksimal 50 karakter"),
-      whatsapp: z.string().optional().nullable(),
-    });
-
-    const validatedData = updateSchema.parse(payload);
+    const validatedData = updateGuestSchema.parse(payload);
     const updated = await updateGuest(guestId, validatedData);
 
     revalidatePath("/dashboard/invitations/new");
@@ -151,10 +125,7 @@ export async function updateGuestAction(guestId, payload) {
  */
 export async function deleteGuestAction(guestId) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
-    }
+    await requireSession();
 
     await deleteGuest(guestId);
 

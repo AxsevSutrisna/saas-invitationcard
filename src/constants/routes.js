@@ -30,19 +30,14 @@ export const ROUTES = {
   ADMIN_TRANSACTIONS: "/admin/transactions",
   ADMIN_THEMES: "/admin/themes",
 
-  // API
+  // API (register, analytics/visit & payments/checkout kini via Server Actions)
   API: {
     AUTH: {
-      REGISTER: "/api/v1/auth/register",
       NEXTAUTH: "/api/auth",
     },
-    INVITATIONS: "/api/v1/invitations",
     PAYMENTS: {
-      CHECKOUT: "/api/v1/payments/checkout",
       WEBHOOK: "/api/v1/payments/webhook",
     },
     UPLOAD: "/api/v1/upload/presigned-url",
-    THEMES: "/api/v1/themes",
-    PACKAGES: "/api/v1/packages",
   },
 };

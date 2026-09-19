@@ -1,10 +1,10 @@
 "use client";
 
-import { ClassicEleganceTheme } from "@/themes/classic-elegance";
-import { FloralBlossomTheme } from "@/themes/floral-blossom";
-import { ModernMinimalistTheme } from "@/themes/modern-minimalist";
-import { FloralBlueTheme } from "@/themes/floral-blue";
-import { NatureHarmonyTheme } from "@/themes/nature-harmony";
+import { ClassicEleganceTheme } from "@/features/theme/designs/classic-elegance";
+import { FloralBlossomTheme } from "@/features/theme/designs/floral-blossom";
+import { ModernMinimalistTheme } from "@/features/theme/designs/modern-minimalist";
+import { FloralBlueTheme } from "@/features/theme/designs/floral-blue";
+import { NatureHarmonyTheme } from "@/features/theme/designs/nature-harmony";
 
 export function ThemeRegistry({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
   const themeSlug = invitation?.theme?.slug || "classic-elegance";

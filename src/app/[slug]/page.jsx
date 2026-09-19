@@ -1,15 +1,16 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
-import { getInvitationBySlug } from "@/server/repositories/invitation.repository";
-import { getRsvpsByInvitationId } from "@/server/repositories/rsvp.repository";
-import { findActiveSubscriptionByUserId } from "@/server/repositories/subscription.repository";
+import { getInvitationBySlug } from "@/features/invitation/repository";
+import { getRsvpsByInvitationId } from "@/features/rsvp/repository";
+import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
 import { PublicInvitationClient } from "@/features/theme/components/PublicInvitationClient";
 
-/**
- * Dynamic Metadata Generator untuk Optimalisasi SEO
- */
+// Dedupe fetch undangan: dipakai generateMetadata & page dalam 1 request
+const loadInvitation = cache((slug) => getInvitationBySlug(slug));
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const invitation = await getInvitationBySlug(slug);
+  const invitation = await loadInvitation(slug);
 
   if (!invitation) {
     return {
@@ -31,27 +32,22 @@ export async function generateMetadata({ params }) {
   };
 }
 
-/**
- * Halaman Rute Dinamis Publik Undangan: /[slug]
- */
 export default async function PublicInvitationPage({ params, searchParams }) {
   const { slug } = await params;
   const resolvedSearchParams = await searchParams;
 
-  // 1. Fetch data undangan
-  const invitation = await getInvitationBySlug(slug);
+  const invitation = await loadInvitation(slug);
 
-  // Jika undangan tidak ditemukan atau belum dipublikasikan, redirect ke 404
   if (!invitation || !invitation.isPublished) {
     notFound();
   }
 
-  // 2. Fetch status langganan pemilik undangan (untuk watermark check)
-  const activeSub = await findActiveSubscriptionByUserId(invitation.userId);
+  // Kedua query di bawah independen -> jalankan paralel
+  const [activeSub, rsvps] = await Promise.all([
+    findActiveSubscriptionByUserId(invitation.userId),
+    getRsvpsByInvitationId(invitation.id),
+  ]);
   const isPremium = !!activeSub;
-
-  // 3. Fetch list ucapan doa (RSVP)
-  const rsvps = await getRsvpsByInvitationId(invitation.id);
 
   const guestName = resolvedSearchParams.to || "";
   const guestCode = resolvedSearchParams.code || "";

@@ -1,9 +1,13 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { getInvitationsByUserId } from "@/server/repositories/invitation.repository";
-import { findActiveSubscriptionByUserId } from "@/server/repositories/subscription.repository";
-import { AnalyticsClient } from "@/features/dashboard/components/AnalyticsClient";
-import { db } from "@/lib/db";
+import { getInvitationsByUserId } from "@/features/invitation/repository";
+import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
+import {
+  getRsvpsWithGuestByInvitationId,
+  countGuestsWithoutRsvp,
+} from "@/features/analytics/repository";
+import { AnalyticsClient } from "@/features/analytics/components/AnalyticsClient";
+import { serialize } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { Mail, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -62,25 +66,12 @@ export default async function AnalyticsPage({ searchParams }) {
     ? invitations.find((i) => i.id === selectedId) || invitations[0]
     : invitations[0];
 
-  // 4. Ambil Daftar Konfirmasi Kehadiran (RSVP) dari Database Neon
-  const rsvps = await db.rSVP.findMany({
-    where: { invitationId: selectedInvitation.id },
-    include: {
-      guest: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // 5. Ambil Jumlah Tamu Undangan yang Belum Mengisi RSVP
-  const nonRespondedCount = await db.guest.count({
-    where: {
-      invitationId: selectedInvitation.id,
-      rsvp: null,
-    },
-  });
-
-  // 6. Ambil Status Langganan Pengguna Aktif
-  const activeSubscription = await findActiveSubscriptionByUserId(session.user.id);
+  // 4-6. Ketiga query di bawah independen -> jalankan paralel
+  const [rsvps, nonRespondedCount, activeSubscription] = await Promise.all([
+    getRsvpsWithGuestByInvitationId(selectedInvitation.id),
+    countGuestsWithoutRsvp(selectedInvitation.id),
+    findActiveSubscriptionByUserId(session.user.id),
+  ]);
 
   // 7. Hitung Selisih Hari Menuju Acara Pertama
   let daysDiff = 0;
@@ -103,12 +94,10 @@ export default async function AnalyticsPage({ searchParams }) {
     .reduce((sum, r) => sum + r.pax, 0);
 
   // 9. Serialisasi Data Objek Prisma (mencegah Next.js SSR Date serialization errors)
-  const serializedInvitations = JSON.parse(JSON.stringify(invitations));
-  const serializedSelectedInvitation = JSON.parse(JSON.stringify(selectedInvitation));
-  const serializedActiveSubscription = activeSubscription
-    ? JSON.parse(JSON.stringify(activeSubscription))
-    : null;
-  const serializedRsvps = JSON.parse(JSON.stringify(rsvps));
+  const serializedInvitations = serialize(invitations);
+  const serializedSelectedInvitation = serialize(selectedInvitation);
+  const serializedActiveSubscription = activeSubscription ? serialize(activeSubscription) : null;
+  const serializedRsvps = serialize(rsvps);
 
   return (
     <AnalyticsClient

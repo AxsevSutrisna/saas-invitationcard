@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getInvitationsByUserId } from "@/server/repositories/invitation.repository";
-import { getGuestsByInvitationId } from "@/server/repositories/guest.repository";
-import { GuestManagementClient } from "@/features/dashboard/components/GuestManagementClient";
+import { getInvitationsByUserId } from "@/features/invitation/repository";
+import { getGuestsByInvitationId } from "@/features/guest/repository";
+import { GuestManagementClient } from "@/features/guest/components/GuestManagementClient";
 import { Button } from "@/components/ui/button";
 import { Mail, Plus } from "lucide-react";
 import { ROUTES } from "@/constants/routes";

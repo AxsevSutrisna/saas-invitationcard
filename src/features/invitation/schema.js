@@ -81,6 +81,7 @@ export const step4ContentSchema = z.object({
   galleryLayout: z.enum(["CAROUSEL", "MASONRY"]).default("CAROUSEL"),
   galleries: z.array(galleryItemSchema).optional(),
   quotes: z.string().optional(),
+  openingText: z.string().optional(),
 });
 
 /**

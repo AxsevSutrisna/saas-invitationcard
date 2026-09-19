@@ -1,32 +1,22 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { invitationFormSchema } from "@/lib/validations/invitation.schema";
+import { invitationFormSchema } from "@/features/invitation/schema";
 import {
   createInvitation,
   deleteInvitation,
   checkSlugAvailability,
-} from "@/server/repositories/invitation.repository";
+} from "@/features/invitation/repository";
 import { db } from "@/lib/db";
-import { findActiveSubscriptionByUserId } from "@/server/repositories/subscription.repository";
-
-import fs from "fs/promises";
-import path from "path";
+import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
+import { requireSession } from "@/features/auth/guard";
 
 /**
  * Action: Memproses Pembuatan Undangan Baru
  */
 export async function createInvitationAction(payload) {
-  const debugPath = path.join(process.cwd(), "src", "action_debug.log");
   try {
-    await fs.writeFile(debugPath, `[${new Date().toISOString()}] START - Payload: ${JSON.stringify(payload, null, 2)}\n`);
-
-    const session = await auth();
-    if (!session?.user?.id) {
-      await fs.appendFile(debugPath, `[ERROR] No Session User ID\n`);
-      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
-    }
+    const user = await requireSession();
 
     // Validasi Zod
     const validatedData = invitationFormSchema.parse(payload);
@@ -34,7 +24,6 @@ export async function createInvitationAction(payload) {
     // Cek keunikan slug
     const isSlugFree = await checkSlugAvailability(validatedData.slug);
     if (!isSlugFree) {
-      await fs.appendFile(debugPath, `[ERROR] Slug already used: ${validatedData.slug}\n`);
       return {
         success: false,
         error: `Alamat URL "${validatedData.slug}" sudah digunakan. Silakan gunakan slug lain.`,
@@ -47,7 +36,7 @@ export async function createInvitationAction(payload) {
     });
 
     if (selectedTheme?.isPremium) {
-      const activeSub = await findActiveSubscriptionByUserId(session.user.id);
+      const activeSub = await findActiveSubscriptionByUserId(user.id);
       if (!activeSub) {
         return {
           success: false,
@@ -57,9 +46,7 @@ export async function createInvitationAction(payload) {
     }
 
     // Eksekusi Simpan di PostgreSQL
-    const newInvitation = await createInvitation(session.user.id, validatedData);
-
-    await fs.appendFile(debugPath, `[SUCCESS] Created Invitation ID: ${newInvitation.id}\n`);
+    const newInvitation = await createInvitation(user.id, validatedData);
 
     revalidatePath("/dashboard");
 
@@ -72,11 +59,6 @@ export async function createInvitationAction(payload) {
     };
   } catch (error) {
     console.error("Error createInvitationAction:", error);
-    try {
-      await fs.appendFile(debugPath, `[ERROR] Exception: ${error.message}\nStack: ${error.stack}\n`);
-    } catch (e) {
-      console.error("Failed to write error log:", e);
-    }
     return {
       success: false,
       error: error.message || "Gagal membuat undangan. Silakan coba lagi.",
@@ -89,12 +71,9 @@ export async function createInvitationAction(payload) {
  */
 export async function deleteInvitationAction(invitationId) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return { success: false, error: "Sesi telah berakhir. Silakan login kembali." };
-    }
+    const user = await requireSession();
 
-    await deleteInvitation(invitationId, session.user.id);
+    await deleteInvitation(invitationId, user.id);
 
     revalidatePath("/dashboard");
 

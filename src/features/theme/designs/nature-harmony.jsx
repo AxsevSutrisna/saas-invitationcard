@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Copy, Check, Leaf, TreePine, Gift, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
 import { CountdownTimer } from "@/features/theme/components/CountdownTimer";
-import { RsvpForm } from "@/features/theme/components/RsvpForm";
-import { GuestWishes } from "@/features/theme/components/GuestWishes";
+import { RsvpForm } from "@/features/rsvp/components/RsvpForm";
+import { GuestWishes } from "@/features/rsvp/components/GuestWishes";
 
 // ─────────── Reusable Scroll-Reveal Wrapper (zoom-in & zoom-out variants) ───────────
 function Reveal({ children, delay = 0, direction = "up", className = "" }) {

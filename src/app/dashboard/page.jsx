@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { getInvitationsByUserId } from "@/server/repositories/invitation.repository";
+import { getInvitationsByUserId } from "@/features/invitation/repository";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { Mail, Plus, Sparkles, ExternalLink, Edit3, Eye, Trash2, Heart } from "lucide-react";
-import { deleteInvitationAction } from "@/server/actions/invitation.actions";
+import { deleteInvitationAction } from "@/features/invitation/actions";
 
 /**
  * Dashboard Page - Undangan Saya Overview

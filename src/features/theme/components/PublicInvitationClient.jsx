@@ -5,7 +5,8 @@ import { AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 import { EnvelopeCover } from "./EnvelopeCover";
 import { ThemeRegistry } from "./ThemeRegistry";
-import { trackGuestOpenAction, getGuestByCodeAction } from "@/server/actions/guest.actions";
+import { trackGuestOpenAction, getGuestByCodeAction } from "@/features/guest/actions";
+import { logVisitAction } from "@/features/analytics/actions";
 
 export function PublicInvitationClient({ invitation, initialRsvps, guestName, guestCode, isPremium = false }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,15 +65,9 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
 
     // Kirim analitik kunjungan secara silent di latar belakang
     if (invitation?.id) {
-      fetch("/api/v1/analytics/visit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          invitationId: invitation.id,
-          referrer: typeof document !== "undefined" ? document.referrer : "Direct",
-        }),
+      logVisitAction({
+        invitationId: invitation.id,
+        referrer: typeof document !== "undefined" ? document.referrer : "Direct",
       }).catch((err) => {
         console.error("Gagal melacak kunjungan analitik:", err);
       });

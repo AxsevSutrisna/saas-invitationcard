@@ -26,7 +26,8 @@ import {
   createGuestsBulkAction,
   updateGuestAction,
   deleteGuestAction
-} from "@/server/actions/guest.actions";
+} from "@/features/guest/actions";
+import { buildWhatsAppUrl } from "@/lib/format";
 
 export function GuestManagementClient({ invitations, selectedInvitation, initialGuests }) {
   const router = useRouter();
@@ -159,9 +160,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
   const getWaShareUrl = (guest) => {
     const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
     const message = `Halo ${guest.name}, tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami. Berikut adalah tautan undangan digital kami:\n\n${link}`;
-    const cleanPhone = guest.whatsapp.replace(/[^0-9]/g, "");
-    const phoneWithCountry = cleanPhone.startsWith("0") ? "62" + cleanPhone.slice(1) : cleanPhone;
-    return `https://api.whatsapp.com/send?phone=${phoneWithCountry}&text=${encodeURIComponent(message)}`;
+    return buildWhatsAppUrl(guest.whatsapp, message);
   };
 
   // Print and Generate PDF report of Guests list

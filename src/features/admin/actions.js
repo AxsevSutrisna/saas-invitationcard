@@ -1,17 +1,21 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { upsertActiveSubscription } from "@/server/repositories/subscription.repository";
+import { upsertActiveSubscription } from "@/features/subscription/repository";
+import { requireSuperAdmin } from "@/features/auth/guard";
 
-// Helper Keamanan Super Admin
-async function checkSuperAdmin() {
-  const session = await auth();
-  if (!session || !session.user || session.user.role !== "SUPER_ADMIN") {
-    throw new Error("Akses ditolak. Anda tidak memiliki wewenang Super Admin.");
+/**
+ * Menentukan urutan (sortOrder) FAQ: pakai nilai yang diberikan bila valid,
+ * jika tidak, taruh di urutan paling akhir.
+ */
+async function resolveFaqSortOrder(sortOrder) {
+  const parsed = parseInt(sortOrder);
+  if (isNaN(parsed)) {
+    const maxFaq = await db.fAQ.findFirst({ orderBy: { sortOrder: "desc" } });
+    return maxFaq ? maxFaq.sortOrder + 1 : 0;
   }
-  return session.user;
+  return Math.max(0, parsed);
 }
 
 // =============================================================================
@@ -20,7 +24,7 @@ async function checkSuperAdmin() {
 
 export async function updateUserRoleAction(userId, role) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     
     await db.user.update({
       where: { id: userId },
@@ -36,7 +40,7 @@ export async function updateUserRoleAction(userId, role) {
 
 export async function upgradeUserSubscriptionAction(userId, packageId) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
 
     const pkg = await db.package.findUnique({
       where: { id: packageId },
@@ -66,7 +70,7 @@ export async function upgradeUserSubscriptionAction(userId, packageId) {
 
 export async function createThemeAction(data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { name, slug, description, thumbnailUrl, isPremium, isActive } = data;
 
     // Cek duplikasi slug
@@ -96,7 +100,7 @@ export async function createThemeAction(data) {
 
 export async function updateThemeAction(themeId, data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { name, slug, description, thumbnailUrl, isPremium, isActive } = data;
 
     await db.theme.update({
@@ -121,7 +125,7 @@ export async function updateThemeAction(themeId, data) {
 
 export async function deleteThemeAction(themeId) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
 
     // Pastikan tema tidak sedang digunakan oleh undangan manapun
     const count = await db.invitation.count({
@@ -153,7 +157,7 @@ export async function deleteThemeAction(themeId) {
 
 export async function createQuoteTemplateAction(data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { title, content, category } = data;
 
     const created = await db.quoteTemplate.create({
@@ -173,7 +177,7 @@ export async function createQuoteTemplateAction(data) {
 
 export async function updateQuoteTemplateAction(quoteId, data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { title, content, category } = data;
 
     await db.quoteTemplate.update({
@@ -194,7 +198,7 @@ export async function updateQuoteTemplateAction(quoteId, data) {
 
 export async function deleteQuoteTemplateAction(quoteId) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
 
     await db.quoteTemplate.delete({
       where: { id: quoteId },
@@ -213,7 +217,7 @@ export async function deleteQuoteTemplateAction(quoteId) {
 
 export async function createMusicTemplateAction(data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { title, url, isActive } = data;
 
     const created = await db.musicTemplate.create({
@@ -233,7 +237,7 @@ export async function createMusicTemplateAction(data) {
 
 export async function updateMusicTemplateAction(musicId, data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { title, url, isActive } = data;
 
     await db.musicTemplate.update({
@@ -254,7 +258,7 @@ export async function updateMusicTemplateAction(musicId, data) {
 
 export async function deleteMusicTemplateAction(musicId) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
 
     await db.musicTemplate.delete({
       where: { id: musicId },
@@ -273,18 +277,10 @@ export async function deleteMusicTemplateAction(musicId) {
 
 export async function createFaqAction(data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { question, answer, sortOrder } = data;
 
-    let finalSortOrder = parseInt(sortOrder);
-    if (isNaN(finalSortOrder) || finalSortOrder === undefined || finalSortOrder === null) {
-      const maxFaq = await db.fAQ.findFirst({
-        orderBy: { sortOrder: "desc" },
-      });
-      finalSortOrder = maxFaq ? maxFaq.sortOrder + 1 : 0;
-    } else {
-      finalSortOrder = Math.max(0, finalSortOrder);
-    }
+    const finalSortOrder = await resolveFaqSortOrder(sortOrder);
 
     const created = await db.fAQ.create({
       data: {
@@ -304,18 +300,10 @@ export async function createFaqAction(data) {
 
 export async function updateFaqAction(faqId, data) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
     const { question, answer, sortOrder } = data;
 
-    let finalSortOrder = parseInt(sortOrder);
-    if (isNaN(finalSortOrder) || finalSortOrder === undefined || finalSortOrder === null) {
-      const maxFaq = await db.fAQ.findFirst({
-        orderBy: { sortOrder: "desc" },
-      });
-      finalSortOrder = maxFaq ? maxFaq.sortOrder + 1 : 0;
-    } else {
-      finalSortOrder = Math.max(0, finalSortOrder);
-    }
+    const finalSortOrder = await resolveFaqSortOrder(sortOrder);
 
     await db.fAQ.update({
       where: { id: faqId },
@@ -336,7 +324,7 @@ export async function updateFaqAction(faqId, data) {
 
 export async function deleteFaqAction(faqId) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
 
     await db.fAQ.delete({
       where: { id: faqId },
@@ -356,7 +344,7 @@ export async function deleteFaqAction(faqId) {
 
 export async function updateSystemSettingAction(key, value) {
   try {
-    await checkSuperAdmin();
+    await requireSuperAdmin();
 
     await db.systemSetting.upsert({
       where: { key },

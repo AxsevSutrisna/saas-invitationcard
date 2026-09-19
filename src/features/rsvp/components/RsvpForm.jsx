@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { submitRsvpAction } from "@/server/actions/rsvp.actions";
+import { submitRsvpAction } from "@/features/rsvp/actions";
 import { Check, Send, AlertCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

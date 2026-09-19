@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import {
   findUserByEmail,
   createUser,
-} from "@/server/repositories/user.repository";
+} from "@/features/auth/repository";
 
 
 export async function registerUser(data) {

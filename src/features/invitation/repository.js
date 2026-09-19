@@ -6,6 +6,24 @@ import { db } from "@/lib/db";
  * Mengelola transaksi database PostgreSQL via Prisma ORM.
  */
 
+// Bentuk relasi undangan yang dipakai berulang di beberapa query
+const invitationRelations = {
+  theme: true,
+  events: true,
+  loveStories: true,
+  galleries: true,
+  gifts: true,
+};
+
+// Versi terurut (untuk tampilan publik)
+const invitationRelationsOrdered = {
+  theme: true,
+  events: { orderBy: { sortOrder: "asc" } },
+  loveStories: { orderBy: { sortOrder: "asc" } },
+  galleries: { orderBy: { sortOrder: "asc" } },
+  gifts: { orderBy: { sortOrder: "asc" } },
+};
+
 /**
  * Membuat record undangan baru beserta relasi Events, LoveStories, Galleries, dan Gifts secara atomic
  */
@@ -131,13 +149,7 @@ export async function createInvitation(userId, data) {
         })),
       },
     },
-    include: {
-      theme: true,
-      events: true,
-      loveStories: true,
-      galleries: true,
-      gifts: true,
-    },
+    include: invitationRelations,
   });
 }
 
@@ -148,11 +160,7 @@ export async function getInvitationsByUserId(userId) {
   return db.invitation.findMany({
     where: { userId },
     include: {
-      theme: true,
-      events: true,
-      loveStories: true,
-      galleries: true,
-      gifts: true,
+      ...invitationRelations,
       _count: {
         select: {
           guests: true,
@@ -166,42 +174,12 @@ export async function getInvitationsByUserId(userId) {
 }
 
 /**
- * Mengambil detail 1 undangan berdasarkan ID dan milik pengguna
- */
-export async function getInvitationById(id, userId) {
-  return db.invitation.findFirst({
-    where: { id, userId },
-    include: {
-      theme: true,
-      events: true,
-      loveStories: true,
-      galleries: true,
-      gifts: true,
-    },
-  });
-}
-
-/**
  * Mengambil detail undangan secara publik berdasarkan slug URL
  */
 export async function getInvitationBySlug(slug) {
   return db.invitation.findUnique({
     where: { slug },
-    include: {
-      theme: true,
-      events: {
-        orderBy: { sortOrder: "asc" },
-      },
-      loveStories: {
-        orderBy: { sortOrder: "asc" },
-      },
-      galleries: {
-        orderBy: { sortOrder: "asc" },
-      },
-      gifts: {
-        orderBy: { sortOrder: "asc" },
-      },
-    },
+    include: invitationRelationsOrdered,
   });
 }
 

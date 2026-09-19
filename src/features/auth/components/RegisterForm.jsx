@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleButton } from "./GoogleButton";
+import { registerAction } from "@/features/auth/actions";
 import { Eye, EyeOff } from "lucide-react";
 
 export function RegisterForm() {
@@ -27,16 +28,10 @@ export function RegisterForm() {
     const password = formData.get("password");
 
     try {
-      const res = await fetch("/api/v1/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+      const res = await registerAction({ name, email, password });
 
-      if (!res.ok) {
-        const data = await res.json();
-        const errorMessage = data.error?.details?.[0] || data.message || "Gagal mendaftar.";
-        throw new Error(errorMessage);
+      if (!res.success) {
+        throw new Error(res.error || "Gagal mendaftar.");
       }
 
       await signIn("credentials", {

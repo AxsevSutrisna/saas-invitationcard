@@ -10,14 +10,10 @@ export const metadata = {
 };
 
 export default async function PublicThemesPage() {
-  const themes = await db.theme.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: "asc" },
-  });
-
-  const whatsappSetting = await db.systemSetting.findUnique({
-    where: { key: "CS_WHATSAPP_NUMBER" },
-  });
+  const [themes, whatsappSetting] = await Promise.all([
+    db.theme.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } }),
+    db.systemSetting.findUnique({ where: { key: "CS_WHATSAPP_NUMBER" } }),
+  ]);
   const whatsappNumber = whatsappSetting?.value || "6281234567890";
 
   return (

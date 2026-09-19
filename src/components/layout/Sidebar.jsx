@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { dashboardNav } from "@/config/navigation.config";
-import { useUIStore } from "@/store/uiStore";
+import { useUIStore } from "@/stores/uiStore";
 import {
   LayoutGrid,
   BarChart3,

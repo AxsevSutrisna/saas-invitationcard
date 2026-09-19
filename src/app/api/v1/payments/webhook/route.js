@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { verifyWebhookSignature } from "@/lib/midtrans";
+import { verifyWebhookSignature } from "@/features/payment/services/midtrans";
 import {
   findTransactionByOrderId,
   updateTransactionStatus,
-} from "@/server/repositories/transaction.repository";
-import { upsertActiveSubscription } from "@/server/repositories/subscription.repository";
+} from "@/features/payment/repository";
+import { upsertActiveSubscription } from "@/features/subscription/repository";
 
 export async function POST(request) {
   try {

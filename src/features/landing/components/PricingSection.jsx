@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
+import { formatRupiah } from "@/lib/format";
 
 export function PricingSection({ packages = [] }) {
   const displayPlans =
@@ -29,14 +30,7 @@ export function PricingSection({ packages = [] }) {
             ctaText = "Berlangganan Pro";
           }
 
-          const priceFormatted =
-            pkg.price === 0
-              ? "Rp 0"
-              : new Intl.NumberFormat("id-ID", {
-                  style: "currency",
-                  currency: "IDR",
-                  minimumFractionDigits: 0,
-                }).format(pkg.price);
+          const priceFormatted = formatRupiah(pkg.price);
 
           const periodText =
             pkg.slug === "free"

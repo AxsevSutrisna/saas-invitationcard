@@ -40,7 +40,8 @@ import {
   updateFaqAction,
   deleteFaqAction,
   updateSystemSettingAction
-} from "@/server/actions/admin.actions";
+} from "@/features/admin/actions";
+import { formatRupiah } from "@/lib/format";
 
 const TAB_TITLES = {
   users: {
@@ -429,11 +430,6 @@ export function AdminClient({
     } else {
       triggerFeedback("error", res.error);
     }
-  };
-
-  // Format Mata Uang Rupiah
-  const formatRupiah = (val) => {
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(val);
   };
 
   // Hitung Pendapatan Omzet Sukses

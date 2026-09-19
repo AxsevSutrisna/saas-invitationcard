@@ -3,10 +3,11 @@ import { auth } from "@/lib/auth";
 import {
   findActiveSubscriptionByUserId,
   findAllActivePackages,
-} from "@/server/repositories/subscription.repository";
-import { findTransactionsByUserId } from "@/server/repositories/transaction.repository";
-import { SubscriptionClient } from "@/features/dashboard/components/SubscriptionClient";
+} from "@/features/subscription/repository";
+import { findTransactionsByUserId } from "@/features/payment/repository";
+import { SubscriptionClient } from "@/features/subscription/components/SubscriptionClient";
 import { ROUTES } from "@/constants/routes";
+import { serialize } from "@/lib/utils";
 
 export default async function SubscriptionPage() {
   const session = await auth();
@@ -16,18 +17,17 @@ export default async function SubscriptionPage() {
     redirect(ROUTES.LOGIN || "/login");
   }
 
-  // 2. Fetch Data dari Database Neon (Server-Side)
-  const activeSubscription = await findActiveSubscriptionByUserId(session.user.id);
-  const packages = await findAllActivePackages();
-  const transactions = await findTransactionsByUserId(session.user.id);
+  // 2. Fetch Data paralel dari Database (Server-Side)
+  const [activeSubscription, packages, transactions] = await Promise.all([
+    findActiveSubscriptionByUserId(session.user.id),
+    findAllActivePackages(),
+    findTransactionsByUserId(session.user.id),
+  ]);
 
   // 3. Serialisasi Data untuk Mencegah Next.js SSR Serialization Warnings (karena properti Date)
-  const serializedSubscription = activeSubscription
-    ? JSON.parse(JSON.stringify(activeSubscription))
-    : null;
-
-  const serializedPackages = JSON.parse(JSON.stringify(packages));
-  const serializedTransactions = JSON.parse(JSON.stringify(transactions));
+  const serializedSubscription = activeSubscription ? serialize(activeSubscription) : null;
+  const serializedPackages = serialize(packages);
+  const serializedTransactions = serialize(transactions);
 
   return (
     <SubscriptionClient

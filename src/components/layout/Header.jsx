@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useUIStore } from "@/store/uiStore";
+import { useUIStore } from "@/stores/uiStore";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { signOut } from "next-auth/react";

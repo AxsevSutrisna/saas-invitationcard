@@ -5,10 +5,6 @@ export async function findUserByEmail(email) {
   return db.user.findUnique({ where: { email } });
 }
 
-export async function findUserById(id) {
-  return db.user.findUnique({ where: { id } });
-}
-
 export async function createUser(data) {
   return db.user.create({
     data: {
@@ -17,8 +13,4 @@ export async function createUser(data) {
       password: data.password,
     },
   });
-}
-
-export async function updateUser(id, data) {
-  return db.user.update({ where: { id }, data });
 }

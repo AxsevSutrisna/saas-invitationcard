@@ -2,6 +2,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { db } from "@/lib/db";
+import { serialize } from "@/lib/utils";
 import {
   HeroSection,
   TrustBarSection,
@@ -20,31 +21,20 @@ export const metadata = {
 };
 
 export default async function LandingPage() {
-  // 1. Ambil data dinamis paket, FAQ, dan setelan WA dari database
-  const packages = await db.package.findMany({
-    where: { isActive: true },
-    orderBy: { price: "asc" },
-  });
+  // Ambil data dinamis paralel: paket, FAQ, setelan WA, dan tema
+  const [packages, faqs, whatsappSetting, themes] = await Promise.all([
+    db.package.findMany({ where: { isActive: true }, orderBy: { price: "asc" } }),
+    db.fAQ.findMany({ orderBy: { sortOrder: "asc" } }),
+    db.systemSetting.findUnique({ where: { key: "CS_WHATSAPP_NUMBER" } }),
+    db.theme.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" }, take: 3 }),
+  ]);
 
-  const faqs = await db.fAQ.findMany({
-    orderBy: { sortOrder: "asc" },
-  });
-
-  const whatsappSetting = await db.systemSetting.findUnique({
-    where: { key: "CS_WHATSAPP_NUMBER" },
-  });
   const whatsappNumber = whatsappSetting?.value || "6281234567890";
 
   // Serialisasi data untuk mencegah warning Next.js SSR Date
-  const serializedPackages = JSON.parse(JSON.stringify(packages));
-  const serializedFaqs = JSON.parse(JSON.stringify(faqs));
-
-  const themes = await db.theme.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: "asc" },
-    take: 3,
-  });
-  const serializedThemes = JSON.parse(JSON.stringify(themes));
+  const serializedPackages = serialize(packages);
+  const serializedFaqs = serialize(faqs);
+  const serializedThemes = serialize(themes);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F6F2] dark:bg-[#191919] text-foreground font-sans selection:bg-[#C8A96A]/20 selection:text-[#C8A96A] relative overflow-hidden">
