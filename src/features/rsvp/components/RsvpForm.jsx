@@ -20,11 +20,23 @@ const clientRsvpSchema = z.object({
   message: z.string().max(500, "Ucapan maksimal 500 karakter").optional(),
 });
 
-export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest }) {
+export function RsvpForm({
+  invitationId,
+  defaultGuestName,
+  onRsvpSuccess,
+  guest,
+  accent = "#C8A96A",
+  accentDark = "#b39150",
+  accentDarker = "#9e7e40",
+}) {
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
 
   const prevRsvp = guest?.rsvp;
+
+  // Class input bersama — warna aksen via CSS var (bisa dipakai di state focus)
+  const inputClass =
+    "w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-[var(--accent)]/20 focus:border-[var(--accent)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--accent)]";
 
   const {
     register,
@@ -79,10 +91,14 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest 
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 text-left"
+      style={{ "--accent": accent, "--accent-dark": accentDark, "--accent-darker": accentDarker }}
+    >
       {serverError && (
-        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
+        <div role="alert" className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
           <span>{serverError}</span>
         </div>
       )}
@@ -95,8 +111,10 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest 
         <input
           type="text"
           placeholder="Tuliskan nama Anda..."
+          aria-label="Tamu undangan atau pengirim"
+          aria-invalid={!!errors.name}
           {...register("name")}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-[#C8A96A]/20 focus:border-[#C8A96A] text-xs focus:outline-none focus:ring-1 focus:ring-[#C8A96A]"
+          className={inputClass}
         />
         {errors.name && (
           <p className="text-[10px] text-rose-500 font-medium">{errors.name.message}</p>
@@ -109,8 +127,10 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest 
           Konfirmasi Kehadiran <span className="text-rose-500">*</span>
         </label>
         <select
+          aria-label="Konfirmasi kehadiran"
+          aria-invalid={!!errors.attendance}
           {...register("attendance")}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-[#C8A96A]/20 focus:border-[#C8A96A] text-xs focus:outline-none focus:ring-1 focus:ring-[#C8A96A]"
+          className={inputClass}
         >
           <option value="YES">🟢 Insya Allah Hadir</option>
           <option value="MAYBE">🟡 Ragu-Ragu / Mungkin Hadir</option>
@@ -128,8 +148,10 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest 
             Jumlah Tamu (Pax) <span className="text-rose-500">*</span>
           </label>
           <select
+            aria-label="Jumlah tamu (pax)"
+            aria-invalid={!!errors.pax}
             {...register("pax")}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-[#C8A96A]/20 focus:border-[#C8A96A] text-xs focus:outline-none focus:ring-1 focus:ring-[#C8A96A]"
+            className={inputClass}
           >
             {[1, 2, 3, 4, 5].map((num) => (
               <option key={num} value={num}>{num} Orang</option>
@@ -149,8 +171,10 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest 
         <textarea
           rows={3}
           placeholder="Tuliskan ucapan selamat dan doa terbaik untuk kedua mempelai di sini..."
+          aria-label="Ucapan selamat dan doa restu"
+          aria-invalid={!!errors.message}
           {...register("message")}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-[#C8A96A]/20 focus:border-[#C8A96A] text-xs focus:outline-none focus:ring-1 focus:ring-[#C8A96A] leading-relaxed"
+          className={`${inputClass} leading-relaxed`}
         />
         {errors.message && (
           <p className="text-[10px] text-rose-500 font-medium">{errors.message.message}</p>
@@ -161,7 +185,7 @@ export function RsvpForm({ invitationId, defaultGuestName, onRsvpSuccess, guest 
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-11 rounded-xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-semibold text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-300"
+        className="w-full h-11 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] hover:from-[var(--accent-dark)] hover:to-[var(--accent-darker)] text-white font-semibold text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-300"
       >
         <Send className="w-3.5 h-3.5" />
         <span>{isSubmitting ? "Mengirim..." : "Kirim Konfirmasi"}</span>

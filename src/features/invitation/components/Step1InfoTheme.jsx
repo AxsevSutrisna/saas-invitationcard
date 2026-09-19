@@ -25,24 +25,24 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
   });
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="animate-in fade-in space-y-6 duration-200">
       <div className="space-y-1">
         <h3 className="font-heading text-xl font-bold text-foreground">
           Step 1: Info Dasar &amp; Pilih Tema
         </h3>
-        <p className="text-xs text-muted-foreground font-light">
+        <p className="text-xs font-light text-muted-foreground">
           Tentukan judul undangan, alamat link publik unik Anda, dan pilih desain tema.
         </p>
       </div>
 
       {/* Box Tema Saat Ini & Tombol Ubah Tema */}
-      <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-border/60 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="space-y-3 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="text-[11px] font-medium text-muted-foreground block">
+            <span className="block text-[11px] font-medium text-muted-foreground">
               Tema saat ini
             </span>
-            <p className="font-heading text-lg font-bold text-[#C8A96A]">
+            <p className="font-heading text-lg font-bold text-gold-500">
               {selectedTheme.name}
             </p>
           </div>
@@ -52,9 +52,8 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
             onClick={() => setShowThemeModal(true)}
             variant="outline"
             size="sm"
-            className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A] hover:bg-[#C8A96A]/10"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw aria-hidden="true" />
             <span>Ubah Tema</span>
           </Button>
         </div>
@@ -62,15 +61,19 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
 
       {/* Input Judul Undangan */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+        <label
+          htmlFor="invitation-title"
+          className="flex items-center gap-1.5 text-sm font-semibold text-foreground"
+        >
           <span>Judul Undangan</span>
           <span className="text-rose-500">*</span>
         </label>
         <input
+          id="invitation-title"
           type="text"
           placeholder="Contoh: Pernikahan William & Elleanor"
           {...register("title")}
-          className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all"
+          className="w-full rounded-xl border border-border bg-zinc-50 px-4 py-3 text-sm transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
         />
         {errors.title && (
           <p className="text-xs text-rose-500">{errors.title.message}</p>
@@ -79,20 +82,24 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
 
       {/* Input Slug URL */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-          <LinkIcon className="w-3.5 h-3.5 text-[#C8A96A]" />
+        <label
+          htmlFor="invitation-slug"
+          className="flex items-center gap-1.5 text-sm font-semibold text-foreground"
+        >
+          <LinkIcon className="h-3.5 w-3.5 text-gold-500" aria-hidden="true" />
           <span>Alamat URL Publik (Slug)</span>
           <span className="text-rose-500">*</span>
         </label>
-        <div className="flex items-center rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 overflow-hidden focus-within:ring-2 focus-within:ring-[#C8A96A]/50 transition-all">
-          <span className="px-4 py-3 text-xs font-medium text-muted-foreground bg-zinc-100 dark:bg-zinc-800 border-r border-border/50 select-none">
+        <div className="flex items-center overflow-hidden rounded-xl border border-border bg-zinc-50 transition-all focus-within:border-gold-400 focus-within:ring-2 focus-within:ring-gold-400/30 dark:bg-zinc-900">
+          <span className="select-none border-r border-border/50 bg-zinc-100 px-4 py-3 text-xs font-medium text-muted-foreground dark:bg-zinc-800">
             ikara.id/
           </span>
           <input
+            id="invitation-slug"
             type="text"
             placeholder="william-eleanor"
             {...register("slug")}
-            className="w-full px-4 py-3 bg-transparent text-sm focus:outline-none"
+            className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none"
           />
         </div>
         {errors.slug && (
@@ -102,16 +109,21 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
 
       {/* Modal Popup Pilih Tema Undangan (Screenshot Referensi 2) */}
       {showThemeModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-2xl rounded-3xl border border-border/60 shadow-2xl p-6 space-y-5 max-h-[90vh] overflow-y-auto">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="theme-modal-title"
+          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200"
+        >
+          <div className="max-h-[90vh] w-full max-w-2xl space-y-5 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-border/40">
+            <div className="flex items-center justify-between border-b border-border/40 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-2xl bg-[#C8A96A]/15 text-[#C8A96A] flex items-center justify-center">
-                  <LayoutGrid className="w-5 h-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gold-400/15 text-gold-500">
+                  <LayoutGrid className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-lg font-bold text-foreground">
+                  <h3 id="theme-modal-title" className="font-heading text-lg font-bold text-foreground">
                     Pilih Tema Undangan
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -123,21 +135,26 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
               <button
                 type="button"
                 onClick={() => setShowThemeModal(false)}
-                className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-muted-foreground hover:text-foreground flex items-center justify-center text-xs"
+                aria-label="Tutup dialog pilih tema"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 dark:bg-zinc-800"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
 
             {/* Search Input Bar */}
             <div className="relative">
-              <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-3.5" />
+              <label htmlFor="theme-search" className="sr-only">
+                Cari tema
+              </label>
+              <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <input
+                id="theme-search"
                 type="text"
                 placeholder="Cari tema..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50"
+                className="w-full rounded-xl border border-border bg-zinc-50 py-2.5 pl-10 pr-4 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
               />
             </div>
 
@@ -148,10 +165,11 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                  aria-pressed={selectedCategory === cat}
+                  className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                     selectedCategory === cat
-                      ? "bg-[#C8A96A] text-white shadow-sm"
-                      : "bg-zinc-100 dark:bg-zinc-800 text-muted-foreground hover:bg-zinc-200"
+                      ? "bg-gold-400 text-white shadow-sm"
+                      : "bg-zinc-100 text-muted-foreground hover:bg-zinc-200 dark:bg-zinc-800"
                   }`}
                 >
                   {cat}
@@ -160,41 +178,43 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
             </div>
 
             {/* Theme Grid Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+            <div className="grid grid-cols-2 gap-4 pt-2 sm:grid-cols-3">
               {filteredThemes.map((theme) => {
                 const isSelected = selectedThemeId === theme.id;
                 return (
-                  <div
+                  <button
                     key={theme.id}
+                    type="button"
+                    aria-pressed={isSelected}
                     onClick={() => {
                       setValue("themeId", theme.id, { shouldValidate: true });
                       setShowThemeModal(false);
                     }}
-                    className={`p-3 rounded-2xl border cursor-pointer transition-all space-y-2 flex flex-col justify-between relative group ${
+                    className={`group relative flex cursor-pointer flex-col justify-between space-y-2 rounded-2xl border p-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                       isSelected
-                        ? "bg-[#C8A96A]/10 border-[#C8A96A] shadow-md ring-2 ring-[#C8A96A]/40"
-                        : "bg-zinc-50 dark:bg-zinc-900/60 border-border/60 hover:border-[#C8A96A]"
+                        ? "border-gold-400 bg-gold-400/10 shadow-md ring-2 ring-gold-400/40"
+                        : "border-border/60 bg-zinc-50 hover:border-gold-400 dark:bg-zinc-900/60"
                     }`}
                   >
                     {/* Mockup Preview Card */}
-                    <div className="w-full aspect-[3/4] rounded-xl bg-zinc-200 dark:bg-zinc-800 overflow-hidden relative flex items-center justify-center">
-                      <div className="text-center p-2">
-                        <Sparkles className="w-6 h-6 mx-auto text-[#C8A96A] mb-1" />
+                    <div className="relative flex aspect-3/4 w-full items-center justify-center overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-800">
+                      <div className="p-2 text-center">
+                        <Sparkles className="mx-auto mb-1 h-6 w-6 text-gold-500" aria-hidden="true" />
                         <span className="text-[10px] font-bold text-foreground">
                           {theme.name}
                         </span>
                       </div>
 
                       {theme.isPremium && (
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#C8A96A] to-amber-600 text-white text-[8px] font-bold tracking-wider uppercase flex items-center gap-1">
-                          <Sparkles className="w-2 h-2 fill-current" />
+                        <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-gold-400 to-amber-600 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white">
+                          <Sparkles className="h-2 w-2 fill-current" aria-hidden="true" />
                           <span>PREMIUM</span>
                         </div>
                       )}
 
                       {isSelected && (
-                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#C8A96A] text-white text-[9px] font-bold flex items-center gap-1">
-                          <Check className="w-2.5 h-2.5" />
+                        <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-gold-400 px-2 py-0.5 text-[9px] font-bold text-white">
+                          <Check className="h-2.5 w-2.5" aria-hidden="true" />
                           <span>Aktif</span>
                         </div>
                       )}
@@ -203,7 +223,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
                     <div className="flex items-center justify-between text-xs font-bold text-foreground">
                       <span>{theme.name}</span>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>

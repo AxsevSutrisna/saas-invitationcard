@@ -146,9 +146,9 @@ export function FileUploader({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+        <span className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
           {label}
-        </label>
+        </span>
       )}
 
       {/* Main Drag-and-Drop Area */}
@@ -158,9 +158,9 @@ export function FileUploader({
         onDragLeave={handleDrag}
         onDrop={handleDrop}
         onClick={!isUploading && !value ? handleButtonClick : undefined}
-        className={`relative min-h-[140px] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all duration-300 ${
+        className={`relative min-h-35 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all duration-300 ${
           isDragActive
-            ? "border-[#C8A96A] bg-[#C8A96A]/5"
+            ? "border-gold-400 bg-gold-400/5"
             : value
             ? "border-emerald-500/20 bg-emerald-50/5 dark:bg-emerald-950/5"
             : "border-border/60 hover:border-zinc-400 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/30"
@@ -177,7 +177,7 @@ export function FileUploader({
 
         {/* 1. STATE: Sedang Upload (Progress Loader) */}
         {isUploading && (
-          <div className="w-full max-w-[200px] flex flex-col items-center space-y-3">
+          <div className="w-full max-w-50 flex flex-col items-center space-y-3">
             <div className="relative w-12 h-12 flex items-center justify-center">
               <svg className="absolute w-full h-full transform -rotate-90">
                 <circle
@@ -198,7 +198,7 @@ export function FileUploader({
                   fill="transparent"
                   strokeDasharray={2 * Math.PI * 20}
                   strokeDashoffset={2 * Math.PI * 20 * (1 - uploadProgress / 100)}
-                  className="text-[#C8A96A] transition-all duration-150"
+                  className="text-gold-400 transition-all duration-150"
                 />
               </svg>
               <span className="text-[10px] font-bold text-foreground">{uploadProgress}%</span>
@@ -216,12 +216,12 @@ export function FileUploader({
               // Tampilan Berhasil Unggah Audio
               <div className="flex items-center gap-3 w-full bg-white dark:bg-zinc-950 border border-emerald-500/10 p-3 rounded-xl shadow-inner max-w-sm">
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-                  <Music className="w-4 h-4" />
+                  <Music className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
                     <span>Musik Latar Aktif</span>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <Check className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
                   </div>
                   <audio src={value} controls className="w-full h-6 mt-1 text-[10px] focus:outline-none" />
                 </div>
@@ -238,10 +238,11 @@ export function FileUploader({
                   <button
                     onClick={handleRemove}
                     type="button"
-                    className="p-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors shadow-lg cursor-pointer"
+                    aria-label="Hapus gambar"
+                    className="p-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60"
                     title="Hapus Gambar"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -252,9 +253,10 @@ export function FileUploader({
               <button
                 type="button"
                 onClick={handleRemove}
-                className="flex items-center gap-1.5 px-3 py-1.5 border border-red-500/20 hover:border-red-500 bg-red-500/5 hover:bg-red-500/10 text-red-600 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                aria-label="Hapus berkas audio"
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-rose-500/20 hover:border-rose-500 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Hapus Berkas</span>
               </button>
             )}
@@ -265,14 +267,14 @@ export function FileUploader({
         {!isUploading && !value && (
           <div className="flex flex-col items-center text-center space-y-2.5">
             <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-border/50 flex items-center justify-center text-zinc-500">
-              {isAudioType ? <Music className="w-5 h-5" /> : <UploadCloud className="w-5 h-5" />}
+              {isAudioType ? <Music className="w-5 h-5" aria-hidden="true" /> : <UploadCloud className="w-5 h-5" aria-hidden="true" />}
             </div>
             <div className="space-y-0.5">
               <p className="text-[11px] font-bold text-foreground">
                 Tarik & Lepas berkas di sini
               </p>
               <p className="text-[9px] text-muted-foreground">
-                atau <span className="text-[#C8A96A] hover:underline font-semibold">pilih dari perangkat</span>
+                atau <span className="text-gold-400 hover:underline font-semibold">pilih dari perangkat</span>
               </p>
             </div>
             {helperText && (
@@ -286,8 +288,8 @@ export function FileUploader({
 
       {/* Error Alert */}
       {error && (
-        <div className="flex items-center gap-1.5 text-red-600 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-950/40 p-2.5 rounded-xl text-[10px] font-medium leading-relaxed">
-          <AlertCircle className="w-4 h-4 shrink-0" />
+        <div role="alert" className="flex items-center gap-1.5 text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-950/40 p-2.5 rounded-xl text-[10px] font-medium leading-relaxed">
+          <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       )}

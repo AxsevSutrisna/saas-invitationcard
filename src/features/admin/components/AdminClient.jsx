@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FileUploader } from "@/components/shared/FileUploader";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/Badge";
+import { Surface } from "@/components/ui/Surface";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Users as UsersIcon,
   CreditCard as CreditCardIcon,
@@ -84,6 +89,13 @@ const TAB_ICONS = {
   settings: Settings,
 };
 
+// Kelas field seragam (rule desain: rounded-xl + border-border + fokus emas).
+const FIELD_CLASS =
+  "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
+
+// Kelas header sel tabel seragam.
+const TH_CLASS = "px-4 py-3 font-semibold";
+
 export function AdminClient({
   initialUsers,
   initialTransactions,
@@ -96,18 +108,12 @@ export function AdminClient({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const queryTab = searchParams.get("tab") || "users";
 
-  const [activeTab, setActiveTab] = useState(queryTab);
-
-  useEffect(() => {
-    if (queryTab) {
-      setActiveTab(queryTab);
-    }
-  }, [queryTab]);
+  // Tab aktif diturunkan langsung dari URL (?tab=) sebagai satu sumber kebenaran —
+  // tanpa state lokal + efek sinkronisasi. Sidebar admin memakai pola yang sama.
+  const activeTab = searchParams.get("tab") || "users";
 
   const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
     router.push(`/dashboard/admin?tab=${tabId}`);
   };
   const [loading, setLoading] = useState(false);
@@ -444,96 +450,114 @@ export function AdminClient({
   return (
     <div className="space-y-8">
       {/* 1. Header Admin Panel */}
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl font-bold text-[#1F1F1F] dark:text-zinc-50 tracking-tight flex items-center gap-2.5">
-          <HeaderIcon className="w-7 h-7 text-[#C8A96A]" />
-          {currentTitle}
-        </h1>
-        <p className="text-sm text-muted-foreground font-light">
-          {currentDesc}
-        </p>
-      </div>
+      <PageHeader
+        title={
+          <span className="inline-flex items-center gap-2.5">
+            <HeaderIcon className="h-7 w-7 text-gold-400" aria-hidden="true" />
+            {currentTitle}
+          </span>
+        }
+        description={currentDesc}
+      />
 
       {/* 2. Banner Notifikasi Feedback */}
       {feedback.message && (
         <div
-          className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-sm border transition-all ${
+          role="status"
+          aria-live="polite"
+          className={`flex items-center gap-2 rounded-2xl border p-4 text-xs font-semibold shadow-sm transition-all ${
             feedback.type === "success"
-              ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-500/20"
-              : "bg-red-50 text-red-800 dark:bg-red-950/20 dark:text-red-400 border-red-500/20"
+              ? "border-emerald-500/20 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400"
+              : "border-rose-500/20 bg-rose-50 text-rose-800 dark:bg-rose-950/20 dark:text-rose-400"
           }`}
         >
-          <CheckCircle className="w-5 h-5 shrink-0" />
+          {feedback.type === "success" ? (
+            <CheckCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
+          ) : (
+            <AlertTriangle className="h-5 w-5 shrink-0" aria-hidden="true" />
+          )}
           <span>{feedback.message}</span>
         </div>
       )}
 
       {/* 4. Tab Contents Panel */}
-      <div className="bg-white dark:bg-[#1A1A1A] border border-border/60 rounded-3xl p-6 sm:p-8 shadow-sm">
-        
+      <Surface as="section" padding="none" className="p-6 sm:p-8">
+
         {/* ==================================== TAB 1: USERS ==================================== */}
         {activeTab === "users" && (
           <div className="space-y-6">
-            <h2 className="font-bold text-foreground text-lg">Daftar Pengguna ({users.length})</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-semibold">
-                    <th className="pb-3 pr-4">Nama & Email</th>
-                    <th className="pb-3 pr-4">Peran (Role)</th>
-                    <th className="pb-3 pr-4">Paket Aktif</th>
-                    <th className="pb-3 text-right">Tindakan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {users.map((user) => {
-                    const activeSub = user.subscriptions?.[0];
-                    return (
-                      <tr key={user.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors">
-                        <td className="py-3.5 pr-4">
-                          <div className="font-semibold text-foreground">{user.name || "Tanpa Nama"}</div>
-                          <div className="text-[10px] text-muted-foreground font-light">{user.email}</div>
-                        </td>
-                        <td className="py-3.5 pr-4">
-                          <select
-                            value={user.role}
-                            onChange={(e) => handleUserRoleChange(user.id, e.target.value)}
-                            disabled={loading || user.role === "SUPER_ADMIN"}
-                            className="bg-transparent border border-border rounded px-1.5 py-0.5 outline-none font-semibold text-foreground cursor-pointer focus:border-[#C8A96A]"
-                          >
-                            <option value="USER">USER</option>
-                            <option value="ADMIN">ADMIN</option>
-                            <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-                          </select>
-                        </td>
-                        <td className="py-3.5 pr-4">
-                          {activeSub ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#C8A96A]">
-                              <Sparkles className="w-3.5 h-3.5 fill-current" />
-                              {activeSub.package.name} (s.d. {new Date(activeSub.validUntil).toLocaleDateString("id-ID")})
-                            </span>
-                          ) : (
-                            <span className="text-muted-foreground font-light">Free Trial</span>
-                          )}
-                        </td>
-                        <td className="py-3.5 text-right">
-                          <button
-                            onClick={() => {
-                              setUpgradeInput({ userId: user.id, userName: user.name || user.email, packageId: packages[0]?.id || "" });
-                              setModalType("upgrade_user");
-                              setModalOpen(true);
-                            }}
-                            className="px-2.5 py-1.5 rounded-lg bg-[#C8A96A]/15 text-[#C8A96A] font-bold text-[10px] hover:bg-[#C8A96A]/25 transition-colors"
-                          >
-                            Upgrade Manual
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <h2 className="font-heading text-lg font-bold text-foreground">Daftar Pengguna ({users.length})</h2>
+            {users.length === 0 ? (
+              <EmptyState
+                icon={UsersIcon}
+                title="Belum Ada Pengguna"
+                description="Data pengguna platform akan tampil di sini setelah ada yang mendaftar."
+              />
+            ) : (
+              <Surface padding="none" className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-muted/40 text-muted-foreground">
+                      <th scope="col" className={TH_CLASS}>Nama & Email</th>
+                      <th scope="col" className={TH_CLASS}>Peran (Role)</th>
+                      <th scope="col" className={TH_CLASS}>Paket Aktif</th>
+                      <th scope="col" className={`${TH_CLASS} text-right`}>Tindakan</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {users.map((user) => {
+                      const activeSub = user.subscriptions?.[0];
+                      return (
+                        <tr key={user.id} className="transition-colors hover:bg-gold-400/5">
+                          <td className="px-4 py-3.5">
+                            <div className="font-semibold text-foreground">{user.name || "Tanpa Nama"}</div>
+                            <div className="text-[10px] font-light text-muted-foreground">{user.email}</div>
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <select
+                              value={user.role}
+                              onChange={(e) => handleUserRoleChange(user.id, e.target.value)}
+                              disabled={loading || user.role === "SUPER_ADMIN"}
+                              aria-label={`Ubah peran untuk ${user.name || user.email}`}
+                              className="cursor-pointer rounded-lg border border-border bg-transparent px-1.5 py-0.5 font-semibold text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30"
+                            >
+                              <option value="USER">USER</option>
+                              <option value="ADMIN">ADMIN</option>
+                              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                            </select>
+                          </td>
+                          <td className="px-4 py-3.5">
+                            {activeSub ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gold-400">
+                                <Sparkles className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+                                {activeSub.package.name} (s.d. {new Date(activeSub.validUntil).toLocaleDateString("id-ID")})
+                              </span>
+                            ) : (
+                              <span className="font-light text-muted-foreground">Free Trial</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3.5 text-right">
+                            <div className="flex items-center justify-end">
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => {
+                                  setUpgradeInput({ userId: user.id, userName: user.name || user.email, packageId: packages[0]?.id || "" });
+                                  setModalType("upgrade_user");
+                                  setModalOpen(true);
+                                }}
+                              >
+                                Upgrade Manual
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </Surface>
+            )}
           </div>
         )}
 
@@ -541,13 +565,13 @@ export function AdminClient({
         {activeTab === "transactions" && (
           <div className="space-y-8">
             {/* Revenue Grid Overview */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-              <div className="p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-500/15 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center">
-                  <DollarSign className="w-6 h-6" />
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+              <div className="flex items-center gap-4 rounded-2xl border border-emerald-500/15 bg-emerald-50 p-6 dark:bg-emerald-950/10">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-white">
+                  <DollarSign className="h-6 w-6" aria-hidden="true" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Total Omzet Kotor
                   </span>
                   <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
@@ -556,12 +580,12 @@ export function AdminClient({
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-blue-50 dark:bg-blue-950/10 border border-blue-500/15 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-500 text-white flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6" />
+              <div className="flex items-center gap-4 rounded-2xl border border-blue-500/15 bg-blue-50 p-6 dark:bg-blue-950/10">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 text-white">
+                  <CheckCircle className="h-6 w-6" aria-hidden="true" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Transaksi Sukses
                   </span>
                   <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
@@ -570,12 +594,12 @@ export function AdminClient({
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-amber-50 dark:bg-amber-950/10 border border-amber-500/15 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center">
-                  <Clock className="w-6 h-6" />
+              <div className="flex items-center gap-4 rounded-2xl border border-amber-500/15 bg-amber-50 p-6 dark:bg-amber-950/10">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500 text-white">
+                  <Clock className="h-6 w-6" aria-hidden="true" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Transaksi Pending
                   </span>
                   <div className="text-xl font-bold text-amber-600 dark:text-amber-400">
@@ -586,50 +610,58 @@ export function AdminClient({
             </div>
 
             <div className="space-y-4">
-              <h2 className="font-bold text-foreground text-lg">Daftar Transaksi ({transactions.length})</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-border text-muted-foreground font-semibold">
-                      <th className="pb-3 pr-4">Order ID</th>
-                      <th className="pb-3 pr-4">Pengguna</th>
-                      <th className="pb-3 pr-4">Item Paket</th>
-                      <th className="pb-3 pr-4">Nominal</th>
-                      <th className="pb-3 pr-4">Status</th>
-                      <th className="pb-3 text-right">Tanggal</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/40">
-                    {transactions.map((t) => (
-                      <tr key={t.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors">
-                        <td className="py-3.5 pr-4 font-semibold text-foreground font-mono">{t.midtransOrderId}</td>
-                        <td className="py-3.5 pr-4">
-                          <div className="font-semibold text-foreground">{t.user?.name || "User"}</div>
-                          <div className="text-[10px] text-muted-foreground font-light">{t.user?.email}</div>
-                        </td>
-                        <td className="py-3.5 pr-4 font-semibold text-[#C8A96A]">{t.package?.name}</td>
-                        <td className="py-3.5 pr-4">{formatRupiah(t.amount)}</td>
-                        <td className="py-3.5 pr-4">
-                          <span
-                            className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${
-                              t.status === "SUCCESS"
-                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400"
-                                : t.status === "FAILED"
-                                ? "bg-red-100 text-red-800 dark:bg-red-950/20 dark:text-red-400"
-                                : "bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400"
-                            }`}
-                          >
-                            {t.status}
-                          </span>
-                        </td>
-                        <td className="py-3.5 text-right font-light text-muted-foreground">
-                          {new Date(t.createdAt).toLocaleDateString("id-ID", { hour: "2-digit", minute: "2-digit" })}
-                        </td>
+              <h2 className="font-heading text-lg font-bold text-foreground">Daftar Transaksi ({transactions.length})</h2>
+              {transactions.length === 0 ? (
+                <EmptyState
+                  icon={CreditCardIcon}
+                  title="Belum Ada Transaksi"
+                  description="Riwayat pembayaran dari Midtrans akan muncul di sini setelah ada transaksi masuk."
+                />
+              ) : (
+                <Surface padding="none" className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="bg-muted/40 text-muted-foreground">
+                        <th scope="col" className={TH_CLASS}>Order ID</th>
+                        <th scope="col" className={TH_CLASS}>Pengguna</th>
+                        <th scope="col" className={TH_CLASS}>Item Paket</th>
+                        <th scope="col" className={TH_CLASS}>Nominal</th>
+                        <th scope="col" className={TH_CLASS}>Status</th>
+                        <th scope="col" className={`${TH_CLASS} text-right`}>Tanggal</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-border/40">
+                      {transactions.map((t) => (
+                        <tr key={t.id} className="transition-colors hover:bg-gold-400/5">
+                          <td className="px-4 py-3.5 font-mono font-semibold text-foreground">{t.midtransOrderId}</td>
+                          <td className="px-4 py-3.5">
+                            <div className="font-semibold text-foreground">{t.user?.name || "User"}</div>
+                            <div className="text-[10px] font-light text-muted-foreground">{t.user?.email}</div>
+                          </td>
+                          <td className="px-4 py-3.5 font-semibold text-gold-400">{t.package?.name}</td>
+                          <td className="px-4 py-3.5">{formatRupiah(t.amount)}</td>
+                          <td className="px-4 py-3.5">
+                            <Badge
+                              variant={
+                                t.status === "SUCCESS"
+                                  ? "success"
+                                  : t.status === "FAILED"
+                                  ? "danger"
+                                  : "neutral"
+                              }
+                            >
+                              {t.status}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3.5 text-right font-light text-muted-foreground">
+                            {new Date(t.createdAt).toLocaleDateString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Surface>
+              )}
             </div>
           </div>
         )}
@@ -637,257 +669,281 @@ export function AdminClient({
         {/* ==================================== TAB 3: THEMES ==================================== */}
         {activeTab === "themes" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-bold text-foreground text-lg">Tema Undangan ({themes.length})</h2>
-              <button
-                onClick={() => openAddModal("theme")}
-                className="px-4 py-2 rounded-xl bg-[#C8A96A] hover:bg-[#b39150] text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-              >
-                <Plus className="w-4 h-4" /> Tambah Tema
-              </button>
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-lg font-bold text-foreground">Tema Undangan ({themes.length})</h2>
+              <Button size="sm" onClick={() => openAddModal("theme")}>
+                <Plus aria-hidden="true" /> Tambah Tema
+              </Button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-semibold">
-                    <th className="pb-3 pr-4">Nama Tema</th>
-                    <th className="pb-3 pr-4">Slug URL</th>
-                    <th className="pb-3 pr-4">Tipe Kategori</th>
-                    <th className="pb-3 pr-4">Status</th>
-                    <th className="pb-3 text-right">Tindakan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {themes.map((theme) => (
-                    <tr key={theme.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors">
-                      <td className="py-3.5 pr-4 font-semibold text-foreground">{theme.name}</td>
-                      <td className="py-3.5 pr-4 font-mono text-muted-foreground">{theme.slug}</td>
-                      <td className="py-3.5 pr-4">
-                        <span
-                          className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${
-                            theme.isPremium
-                              ? "bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400"
-                              : "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
-                          }`}
-                        >
-                          {theme.isPremium ? "PREMIUM" : "FREE"}
-                        </span>
-                      </td>
-                      <td className="py-3.5 pr-4">
-                        <span
-                          className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${
-                            theme.isActive
-                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-950/20 dark:text-red-400"
-                          }`}
-                        >
-                          {theme.isActive ? "AKTIF" : "NON-AKTIF"}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-right space-x-1">
-                        <button
-                          onClick={() => openEditModal("theme", theme)}
-                          className="p-1.5 rounded-lg border border-border hover:border-[#C8A96A] text-muted-foreground hover:text-[#C8A96A] inline-flex items-center"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleThemeDelete(theme.id)}
-                          className="p-1.5 rounded-lg border border-border hover:border-red-500 text-muted-foreground hover:text-red-500 inline-flex items-center"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
+            {themes.length === 0 ? (
+              <EmptyState
+                icon={Palette}
+                title="Belum Ada Tema"
+                description="Tambahkan tema undangan pertama Anda untuk mulai menawarkannya ke pengguna."
+              />
+            ) : (
+              <Surface padding="none" className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-muted/40 text-muted-foreground">
+                      <th scope="col" className={TH_CLASS}>Nama Tema</th>
+                      <th scope="col" className={TH_CLASS}>Slug URL</th>
+                      <th scope="col" className={TH_CLASS}>Tipe Kategori</th>
+                      <th scope="col" className={TH_CLASS}>Status</th>
+                      <th scope="col" className={`${TH_CLASS} text-right`}>Tindakan</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {themes.map((theme) => (
+                      <tr key={theme.id} className="transition-colors hover:bg-gold-400/5">
+                        <td className="px-4 py-3.5 font-semibold text-foreground">{theme.name}</td>
+                        <td className="px-4 py-3.5 font-mono text-muted-foreground">{theme.slug}</td>
+                        <td className="px-4 py-3.5">
+                          <Badge variant={theme.isPremium ? "goldSoft" : "neutral"}>
+                            {theme.isPremium ? "PREMIUM" : "FREE"}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <Badge variant={theme.isActive ? "success" : "neutral"}>
+                            {theme.isActive ? "AKTIF" : "NON-AKTIF"}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="icon-sm"
+                              onClick={() => openEditModal("theme", theme)}
+                              aria-label={`Edit tema ${theme.name}`}
+                            >
+                              <Edit aria-hidden="true" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon-sm"
+                              onClick={() => handleThemeDelete(theme.id)}
+                              aria-label={`Hapus tema ${theme.name}`}
+                            >
+                              <Trash2 aria-hidden="true" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Surface>
+            )}
           </div>
         )}
 
         {/* ==================================== TAB 4: QUOTES ==================================== */}
         {activeTab === "quotes" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-bold text-foreground text-lg">Templat Ayat & Kutipan ({quotes.length})</h2>
-              <button
-                onClick={() => openAddModal("quote")}
-                className="px-4 py-2 rounded-xl bg-[#C8A96A] hover:bg-[#b39150] text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-              >
-                <Plus className="w-4 h-4" /> Tambah Kutipan
-              </button>
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-lg font-bold text-foreground">Templat Ayat & Kutipan ({quotes.length})</h2>
+              <Button size="sm" onClick={() => openAddModal("quote")}>
+                <Plus aria-hidden="true" /> Tambah Kutipan
+              </Button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-semibold">
-                    <th className="pb-3 pr-4">Judul Ayat</th>
-                    <th className="pb-3 pr-4">Kategori</th>
-                    <th className="pb-3 pr-4">Teks Kutipan</th>
-                    <th className="pb-3 text-right">Tindakan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {quotes.map((q) => (
-                    <tr key={q.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors">
-                      <td className="py-3.5 pr-4 font-semibold text-foreground min-w-[150px]">{q.title}</td>
-                      <td className="py-3.5 pr-4">
-                        <span className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-[10px] text-foreground font-semibold">
-                          {q.category}
-                        </span>
-                      </td>
-                      <td className="py-3.5 pr-4 text-muted-foreground italic font-light max-w-sm truncate">
-                        "{q.content}"
-                      </td>
-                      <td className="py-3.5 text-right space-x-1">
-                        <button
-                          onClick={() => openEditModal("quote", q)}
-                          className="p-1.5 rounded-lg border border-border hover:border-[#C8A96A] text-muted-foreground hover:text-[#C8A96A] inline-flex items-center"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleQuoteDelete(q.id)}
-                          className="p-1.5 rounded-lg border border-border hover:border-red-500 text-muted-foreground hover:text-red-500 inline-flex items-center"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
+            {quotes.length === 0 ? (
+              <EmptyState
+                icon={Quote}
+                title="Belum Ada Kutipan"
+                description="Tambahkan preset ayat atau kutipan cinta pertama untuk digunakan pengguna."
+              />
+            ) : (
+              <Surface padding="none" className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-muted/40 text-muted-foreground">
+                      <th scope="col" className={TH_CLASS}>Judul Ayat</th>
+                      <th scope="col" className={TH_CLASS}>Kategori</th>
+                      <th scope="col" className={TH_CLASS}>Teks Kutipan</th>
+                      <th scope="col" className={`${TH_CLASS} text-right`}>Tindakan</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {quotes.map((q) => (
+                      <tr key={q.id} className="transition-colors hover:bg-gold-400/5">
+                        <td className="min-w-37.5 px-4 py-3.5 font-semibold text-foreground">{q.title}</td>
+                        <td className="px-4 py-3.5">
+                          <Badge variant="neutral">{q.category}</Badge>
+                        </td>
+                        <td className="max-w-sm truncate px-4 py-3.5 font-light italic text-muted-foreground">
+                          &ldquo;{q.content}&rdquo;
+                        </td>
+                        <td className="px-4 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="icon-sm"
+                              onClick={() => openEditModal("quote", q)}
+                              aria-label={`Edit kutipan ${q.title}`}
+                            >
+                              <Edit aria-hidden="true" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon-sm"
+                              onClick={() => handleQuoteDelete(q.id)}
+                              aria-label={`Hapus kutipan ${q.title}`}
+                            >
+                              <Trash2 aria-hidden="true" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Surface>
+            )}
           </div>
         )}
 
         {/* ==================================== TAB 5: MUSICS ==================================== */}
         {activeTab === "musics" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-bold text-foreground text-lg">Pustaka Lagu Latar ({musics.length})</h2>
-              <button
-                onClick={() => openAddModal("music")}
-                className="px-4 py-2 rounded-xl bg-[#C8A96A] hover:bg-[#b39150] text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-              >
-                <Plus className="w-4 h-4" /> Tambah Lagu
-              </button>
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-lg font-bold text-foreground">Pustaka Lagu Latar ({musics.length})</h2>
+              <Button size="sm" onClick={() => openAddModal("music")}>
+                <Plus aria-hidden="true" /> Tambah Lagu
+              </Button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-semibold">
-                    <th className="pb-3 pr-4">Judul Lagu</th>
-                    <th className="pb-3 pr-4">URL File (.mp3)</th>
-                    <th className="pb-3 pr-4">Status</th>
-                    <th className="pb-3 text-right">Tindakan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {musics.map((m) => (
-                    <tr key={m.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors">
-                      <td className="py-3.5 pr-4 font-semibold text-foreground">{m.title}</td>
-                      <td className="py-3.5 pr-4 font-mono text-muted-foreground max-w-xs truncate">{m.url}</td>
-                      <td className="py-3.5 pr-4">
-                        <span
-                          className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${
-                            m.isActive
-                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-950/20 dark:text-red-400"
-                          }`}
-                        >
-                          {m.isActive ? "AKTIF" : "NON-AKTIF"}
-                        </span>
-                      </td>
-                      <td className="py-3.5 text-right space-x-1">
-                        <button
-                          onClick={() => openEditModal("music", m)}
-                          className="p-1.5 rounded-lg border border-border hover:border-[#C8A96A] text-muted-foreground hover:text-[#C8A96A] inline-flex items-center"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleMusicDelete(m.id)}
-                          className="p-1.5 rounded-lg border border-border hover:border-red-500 text-muted-foreground hover:text-red-500 inline-flex items-center"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
+            {musics.length === 0 ? (
+              <EmptyState
+                icon={Music}
+                title="Belum Ada Lagu"
+                description="Unggah lagu latar pertama agar tersedia sebagai pilihan musik undangan."
+              />
+            ) : (
+              <Surface padding="none" className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-muted/40 text-muted-foreground">
+                      <th scope="col" className={TH_CLASS}>Judul Lagu</th>
+                      <th scope="col" className={TH_CLASS}>URL File (.mp3)</th>
+                      <th scope="col" className={TH_CLASS}>Status</th>
+                      <th scope="col" className={`${TH_CLASS} text-right`}>Tindakan</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {musics.map((m) => (
+                      <tr key={m.id} className="transition-colors hover:bg-gold-400/5">
+                        <td className="px-4 py-3.5 font-semibold text-foreground">{m.title}</td>
+                        <td className="max-w-xs truncate px-4 py-3.5 font-mono text-muted-foreground">{m.url}</td>
+                        <td className="px-4 py-3.5">
+                          <Badge variant={m.isActive ? "success" : "neutral"}>
+                            {m.isActive ? "AKTIF" : "NON-AKTIF"}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="icon-sm"
+                              onClick={() => openEditModal("music", m)}
+                              aria-label={`Edit lagu ${m.title}`}
+                            >
+                              <Edit aria-hidden="true" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon-sm"
+                              onClick={() => handleMusicDelete(m.id)}
+                              aria-label={`Hapus lagu ${m.title}`}
+                            >
+                              <Trash2 aria-hidden="true" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Surface>
+            )}
           </div>
         )}
 
         {/* ==================================== TAB 6: FAQS ==================================== */}
         {activeTab === "faqs" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-bold text-foreground text-lg">Kelola FAQ Landing Page ({faqs.length})</h2>
-              <button
-                onClick={() => openAddModal("faq")}
-                className="px-4 py-2 rounded-xl bg-[#C8A96A] hover:bg-[#b39150] text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-              >
-                <Plus className="w-4 h-4" /> Tambah FAQ
-              </button>
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-lg font-bold text-foreground">Kelola FAQ Landing Page ({faqs.length})</h2>
+              <Button size="sm" onClick={() => openAddModal("faq")}>
+                <Plus aria-hidden="true" /> Tambah FAQ
+              </Button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-border text-muted-foreground font-semibold">
-                    <th className="pb-3 pr-4 w-12">No. Urut</th>
-                    <th className="pb-3 pr-4">Pertanyaan</th>
-                    <th className="pb-3 pr-4">Jawaban</th>
-                    <th className="pb-3 text-right">Tindakan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {faqs.map((f) => (
-                    <tr key={f.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors">
-                      <td className="py-3.5 pr-4 font-mono font-bold text-muted-foreground">{f.sortOrder}</td>
-                      <td className="py-3.5 pr-4 font-semibold text-foreground max-w-xs truncate">{f.question}</td>
-                      <td className="py-3.5 pr-4 text-muted-foreground font-light max-w-sm truncate">{f.answer}</td>
-                      <td className="py-3.5 text-right space-x-1">
-                        <button
-                          onClick={() => openEditModal("faq", f)}
-                          className="p-1.5 rounded-lg border border-border hover:border-[#C8A96A] text-muted-foreground hover:text-[#C8A96A] inline-flex items-center"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleFaqDelete(f.id)}
-                          className="p-1.5 rounded-lg border border-border hover:border-red-500 text-muted-foreground hover:text-red-500 inline-flex items-center"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
+            {faqs.length === 0 ? (
+              <EmptyState
+                icon={HelpCircle}
+                title="Belum Ada FAQ"
+                description="Tambahkan pertanyaan umum pertama yang akan ditampilkan di landing page."
+              />
+            ) : (
+              <Surface padding="none" className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-muted/40 text-muted-foreground">
+                      <th scope="col" className={`${TH_CLASS} w-12`}>No. Urut</th>
+                      <th scope="col" className={TH_CLASS}>Pertanyaan</th>
+                      <th scope="col" className={TH_CLASS}>Jawaban</th>
+                      <th scope="col" className={`${TH_CLASS} text-right`}>Tindakan</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {faqs.map((f) => (
+                      <tr key={f.id} className="transition-colors hover:bg-gold-400/5">
+                        <td className="px-4 py-3.5 font-mono font-bold text-muted-foreground">{f.sortOrder}</td>
+                        <td className="max-w-xs truncate px-4 py-3.5 font-semibold text-foreground">{f.question}</td>
+                        <td className="max-w-sm truncate px-4 py-3.5 font-light text-muted-foreground">{f.answer}</td>
+                        <td className="px-4 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="icon-sm"
+                              onClick={() => openEditModal("faq", f)}
+                              aria-label={`Edit FAQ ${f.question}`}
+                            >
+                              <Edit aria-hidden="true" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon-sm"
+                              onClick={() => handleFaqDelete(f.id)}
+                              aria-label={`Hapus FAQ ${f.question}`}
+                            >
+                              <Trash2 aria-hidden="true" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Surface>
+            )}
           </div>
         )}
 
         {/* ==================================== TAB 7: SETTINGS ==================================== */}
         {activeTab === "settings" && (
           <div className="w-full space-y-6">
-            <div className="p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/40 border border-border/60 space-y-6">
-              
+            <div className="space-y-6 rounded-3xl border border-border/60 bg-muted/40 p-6">
+
               {/* WhatsApp Service Info Box */}
-              <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-400">
-                <Globe className="w-8 h-8 shrink-0 text-emerald-500 mt-1" />
+              <div className="flex items-start gap-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-800 dark:text-emerald-400">
+                <Globe className="mt-1 h-8 w-8 shrink-0 text-emerald-500" aria-hidden="true" />
                 <div className="space-y-1 text-xs">
-                  <div className="font-bold flex items-center gap-2">
+                  <div className="flex items-center gap-2 font-bold">
                     WhatsApp Chat Button Active
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" aria-hidden="true" />
                   </div>
                   <p className="font-light leading-relaxed">
                     Tombol chat melayang WhatsApp di landing page utama menggunakan nomor ini sebagai kontak layanan bantuan pelanggan (CS) langsung.
@@ -898,112 +954,116 @@ export function AdminClient({
               {/* Form Input */}
               <form onSubmit={handleWaSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <label htmlFor="wa-number" className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                     Nomor WhatsApp Penerima
                   </label>
                   <div className="relative">
                     <input
+                      id="wa-number"
                       type="text"
                       value={waNumberInput}
                       onChange={(e) => setWaNumberInput(e.target.value.replace(/[^0-9+]/g, ""))}
                       placeholder="Contoh: 6282127322357"
-                      className="w-full pl-4 pr-12 py-3 rounded-2xl border border-border bg-white dark:bg-zinc-800 text-sm font-semibold outline-none focus:ring-2 focus:ring-[#C8A96A]/30 focus:border-[#C8A96A] transition-all"
+                      className="w-full rounded-2xl border border-border bg-white py-3 pl-4 pr-12 text-sm font-semibold text-foreground outline-none transition-all focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
                     />
-                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#C8A96A] bg-[#C8A96A]/10 px-2 py-0.5 rounded-md">
+                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-md bg-gold-400/10 px-2 py-0.5 text-xs font-bold text-gold-400">
                       WA
                     </div>
                   </div>
 
                   {/* Warning Alerts */}
                   {(waNumberInput.startsWith("0") || waNumberInput.startsWith("+")) && (
-                    <div className="p-3 rounded-xl bg-amber-50 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-500/20 text-[10px] flex items-center gap-1.5 font-medium leading-relaxed">
-                      <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500" />
+                    <div className="flex items-center gap-1.5 rounded-xl border border-amber-500/20 bg-amber-50 p-3 text-[10px] font-medium leading-relaxed text-amber-800 dark:bg-amber-950/20 dark:text-amber-400">
+                      <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
                       <span>
                         Peringatan: Gunakan kode negara (contoh: <strong>62</strong>) di awal nomor tanpa tanda <strong>+</strong> atau <strong>0</strong> agar tombol chat WA melayang dapat berfungsi dengan baik.
                       </span>
                     </div>
                   )}
 
-                  <span className="text-[10px] text-muted-foreground font-light block leading-relaxed">
+                  <span className="block text-[10px] font-light leading-relaxed text-muted-foreground">
                     Format aman: Hanya angka, diawali dengan kode negara (62). Contoh: <strong>6282127322357</strong>.
                   </span>
                 </div>
 
                 {/* Link Preview box */}
                 {waNumberInput && !waNumberInput.startsWith("0") && !waNumberInput.startsWith("+") && (
-                  <div className="p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-border/40 space-y-1 text-xs">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  <div className="space-y-1 rounded-xl border border-border/40 bg-muted/50 p-3.5 text-xs">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                       Uji Tautan WA (Live Preview):
                     </span>
                     <a
                       href={`https://wa.me/${waNumberInput}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#C8A96A] hover:underline font-mono block break-all font-semibold"
+                      className="block break-all font-mono font-semibold text-gold-400 hover:underline"
                     >
                       https://wa.me/{waNumberInput}
                     </a>
                   </div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md hover:scale-[1.01] active:scale-98"
-                >
+                <Button type="submit" disabled={loading} size="lg" className="w-full">
                   {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="animate-spin" aria-hidden="true" />
                   ) : (
-                    <Globe className="w-4 h-4" />
+                    <Globe aria-hidden="true" />
                   )}
                   Simpan Setelan WhatsApp Support
-                </button>
+                </Button>
               </form>
             </div>
           </div>
         )}
 
-      </div>
+      </Surface>
 
       {/* ==================================== GLOBAL CRUD MODALS ==================================== */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-2xl p-6 sm:p-8 space-y-6 relative">
-            
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="admin-modal-title"
+        >
+          <div className="relative w-full max-w-lg space-y-6 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8">
+
             {/* Modal Header */}
-            <div className="flex justify-between items-center border-b border-border/40 pb-4">
-              <h3 className="font-heading text-lg font-bold text-foreground">
+            <div className="flex items-center justify-between border-b border-border/40 pb-4">
+              <h3 id="admin-modal-title" className="font-heading text-lg font-bold text-foreground">
                 {modalType === "upgrade_user" && "Upgrade Paket Langganan Manual"}
                 {modalType === "theme" && (editItem ? "Edit Tema Undangan" : "Tambah Tema Baru")}
                 {modalType === "quote" && (editItem ? "Edit Templat Ayat/Kutipan" : "Tambah Templat Ayat/Kutipan")}
                 {modalType === "music" && (editItem ? "Edit Lagu Latar" : "Tambah Lagu Latar")}
                 {modalType === "faq" && (editItem ? "Edit FAQ" : "Tambah FAQ Baru")}
               </h3>
-              <button onClick={closeModal} className="p-1 rounded-lg text-muted-foreground hover:text-foreground">
-                <X className="w-5 h-5" />
-              </button>
+              <Button variant="ghost" size="icon-sm" onClick={closeModal} aria-label="Tutup dialog">
+                <X aria-hidden="true" />
+              </Button>
             </div>
 
             {/* Modal Form Body */}
-            
+
             {/* 1. Form Upgrade Langganan Manual */}
             {modalType === "upgrade_user" && (
               <form onSubmit={handleUpgradeSubscription} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground font-semibold">Nama / Email Pengguna</label>
+                  <label htmlFor="upgrade-user" className="text-xs font-semibold text-muted-foreground">Nama / Email Pengguna</label>
                   <input
+                    id="upgrade-user"
                     type="text"
                     value={upgradeInput.userName}
                     disabled
-                    className="w-full px-3 py-2 border border-border bg-zinc-50 dark:bg-zinc-900 rounded-xl text-xs text-muted-foreground cursor-not-allowed outline-none"
+                    className="w-full cursor-not-allowed rounded-xl border border-border bg-muted/60 px-3 py-2 text-xs text-muted-foreground outline-none"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-foreground font-semibold">Pilih Paket</label>
+                  <label htmlFor="upgrade-package" className="text-xs font-semibold text-foreground">Pilih Paket</label>
                   <select
+                    id="upgrade-package"
                     value={upgradeInput.packageId}
                     onChange={(e) => setUpgradeInput({ ...upgradeInput, packageId: e.target.value })}
-                    className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A] cursor-pointer"
+                    className={`${FIELD_CLASS} cursor-pointer`}
                   >
                     {packages.map((pkg) => (
                       <option key={pkg.id} value={pkg.id}>
@@ -1012,14 +1072,10 @@ export function AdminClient({
                     ))}
                   </select>
                 </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 rounded-xl bg-[#C8A96A] text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#b39150]"
-                >
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
                   Upgrade Paket Sekarang
-                </button>
+                </Button>
               </form>
             )}
 
@@ -1028,48 +1084,53 @@ export function AdminClient({
               <form onSubmit={handleThemeSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">Nama Tema</label>
+                    <label htmlFor="theme-name" className="text-xs font-semibold text-foreground">Nama Tema</label>
                     <input
+                      id="theme-name"
                       type="text"
                       required
                       value={themeInput.name}
                       onChange={(e) => setThemeInput({ ...themeInput, name: e.target.value })}
                       placeholder="Contoh: Classic Elegance"
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={FIELD_CLASS}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">Slug URL (Unik)</label>
+                    <label htmlFor="theme-slug" className="text-xs font-semibold text-foreground">Slug URL (Unik)</label>
                     <input
+                      id="theme-slug"
                       type="text"
                       required
                       value={themeInput.slug}
                       onChange={(e) => setThemeInput({ ...themeInput, slug: e.target.value })}
                       placeholder="Contoh: classic-elegance"
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-foreground font-semibold">Deskripsi Singkat</label>
+                  <label htmlFor="theme-description" className="text-xs font-semibold text-foreground">Deskripsi Singkat</label>
                   <input
+                    id="theme-description"
                     type="text"
                     value={themeInput.description}
                     onChange={(e) => setThemeInput({ ...themeInput, description: e.target.value })}
                     placeholder="Contoh: Tema floral klasik berwarna cream lembut..."
-                    className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                    className={FIELD_CLASS}
                   />
                 </div>
                 {/* Tab Switcher for Thumbnail Source Mode */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-foreground font-semibold">Sumber Gambar Thumbnail</label>
-                  <div className="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                  <span className="text-xs font-semibold text-foreground">Sumber Gambar Thumbnail</span>
+                  <div role="tablist" aria-label="Sumber gambar thumbnail" className="flex gap-2 rounded-xl bg-muted/60 p-1">
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={themeThumbnailSourceTab === "upload"}
                       onClick={() => setThemeThumbnailSourceTab("upload")}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                         themeThumbnailSourceTab === "upload"
-                          ? "bg-white dark:bg-zinc-700 text-[#C8A96A] shadow-sm"
+                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -1077,10 +1138,12 @@ export function AdminClient({
                     </button>
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={themeThumbnailSourceTab === "url"}
                       onClick={() => setThemeThumbnailSourceTab("url")}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                         themeThumbnailSourceTab === "url"
-                          ? "bg-white dark:bg-zinc-700 text-[#C8A96A] shadow-sm"
+                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -1092,7 +1155,7 @@ export function AdminClient({
                 {/* Tab 1: Upload Image */}
                 {themeThumbnailSourceTab === "upload" && (
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">Unggah Berkas Gambar</label>
+                    <span className="text-xs font-semibold text-foreground">Unggah Berkas Gambar</span>
                     <FileUploader
                       value={themeInput.thumbnailUrl}
                       onChange={(url) => setThemeInput({ ...themeInput, thumbnailUrl: url })}
@@ -1102,10 +1165,10 @@ export function AdminClient({
                       helperText="Format berkas JPG, PNG, WEBP, atau GIF (Maksimal 5MB)"
                     />
                     {themeInput.thumbnailUrl && (
-                      <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs flex flex-col gap-1.5">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Pratinjau Gambar:</span>
-                        <div className="relative w-full h-32 rounded-xl overflow-hidden border border-border bg-zinc-100 flex items-center justify-center">
-                          <img src={themeInput.thumbnailUrl} alt="Thumbnail Preview" className="max-h-full max-w-full object-contain" />
+                      <div className="flex flex-col gap-1.5 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-xs">
+                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Pratinjau Gambar:</span>
+                        <div className="relative flex h-32 w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-muted">
+                          <img src={themeInput.thumbnailUrl} alt="Pratinjau thumbnail tema" className="max-h-full max-w-full object-contain" />
                         </div>
                       </div>
                     )}
@@ -1115,52 +1178,49 @@ export function AdminClient({
                 {/* Tab 2: URL Input */}
                 {themeThumbnailSourceTab === "url" && (
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">URL Gambar Thumbnail</label>
+                    <label htmlFor="theme-thumbnail-url" className="text-xs font-semibold text-foreground">URL Gambar Thumbnail</label>
                     <input
+                      id="theme-thumbnail-url"
                       type="text"
                       value={themeInput.thumbnailUrl}
                       onChange={(e) => setThemeInput({ ...themeInput, thumbnailUrl: e.target.value })}
                       placeholder="Contoh: https://example.com/thumbnail.jpg"
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={FIELD_CLASS}
                     />
                     {themeInput.thumbnailUrl && (
-                      <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs flex flex-col gap-1.5 mt-2">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Pratinjau Gambar:</span>
-                        <div className="relative w-full h-32 rounded-xl overflow-hidden border border-border bg-zinc-100 flex items-center justify-center">
-                          <img src={themeInput.thumbnailUrl} alt="Thumbnail Preview" className="max-h-full max-w-full object-contain" />
+                      <div className="mt-2 flex flex-col gap-1.5 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-xs">
+                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Pratinjau Gambar:</span>
+                        <div className="relative flex h-32 w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-muted">
+                          <img src={themeInput.thumbnailUrl} alt="Pratinjau thumbnail tema" className="max-h-full max-w-full object-contain" />
                         </div>
                       </div>
                     )}
                   </div>
                 )}
                 <div className="flex items-center gap-6 pt-2">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-foreground cursor-pointer">
+                  <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-foreground">
                     <input
                       type="checkbox"
                       checked={themeInput.isPremium}
                       onChange={(e) => setThemeInput({ ...themeInput, isPremium: e.target.checked })}
-                      className="accent-[#C8A96A]"
+                      className="accent-gold-400"
                     />
                     Tema Premium
                   </label>
-                  <label className="flex items-center gap-2 text-xs font-semibold text-foreground cursor-pointer">
+                  <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-foreground">
                     <input
                       type="checkbox"
                       checked={themeInput.isActive}
                       onChange={(e) => setThemeInput({ ...themeInput, isActive: e.target.checked })}
-                      className="accent-[#C8A96A]"
+                      className="accent-gold-400"
                     />
                     Status Aktif
                   </label>
                 </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 rounded-xl bg-[#C8A96A] text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#b39150] pt-2"
-                >
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
                   {editItem ? "Perbarui Tema" : "Simpan Tema Baru"}
-                </button>
+                </Button>
               </form>
             )}
 
@@ -1169,22 +1229,24 @@ export function AdminClient({
               <form onSubmit={handleQuoteSubmit} className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2 space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">Judul / Sumber Ayat</label>
+                    <label htmlFor="quote-title" className="text-xs font-semibold text-foreground">Judul / Sumber Ayat</label>
                     <input
+                      id="quote-title"
                       type="text"
                       required
                       value={quoteInput.title}
                       onChange={(e) => setQuoteInput({ ...quoteInput, title: e.target.value })}
                       placeholder="Contoh: QS. Ar-Rum Ayat 21"
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={FIELD_CLASS}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">Kategori</label>
+                    <label htmlFor="quote-category" className="text-xs font-semibold text-foreground">Kategori</label>
                     <select
+                      id="quote-category"
                       value={quoteInput.category}
                       onChange={(e) => setQuoteInput({ ...quoteInput, category: e.target.value })}
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={`${FIELD_CLASS} cursor-pointer`}
                     >
                       <option value="Islami">Islami</option>
                       <option value="Kristiani">Kristiani</option>
@@ -1194,24 +1256,21 @@ export function AdminClient({
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-foreground font-semibold">Teks Kutipan Lengkap</label>
+                  <label htmlFor="quote-content" className="text-xs font-semibold text-foreground">Teks Kutipan Lengkap</label>
                   <textarea
+                    id="quote-content"
                     required
                     rows={4}
                     value={quoteInput.content}
                     onChange={(e) => setQuoteInput({ ...quoteInput, content: e.target.value })}
                     placeholder="Masukkan isi kutipan lengkap di sini..."
-                    className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A] resize-none"
+                    className={`${FIELD_CLASS} resize-none`}
                   />
                 </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 rounded-xl bg-[#C8A96A] text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#b39150]"
-                >
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
                   {editItem ? "Perbarui Templat Ayat" : "Simpan Templat Ayat"}
-                </button>
+                </Button>
               </form>
             )}
 
@@ -1219,27 +1278,30 @@ export function AdminClient({
             {modalType === "music" && (
               <form onSubmit={handleMusicSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-foreground font-semibold">Judul Lagu & Penyanyi</label>
+                  <label htmlFor="music-title" className="text-xs font-semibold text-foreground">Judul Lagu & Penyanyi</label>
                   <input
+                    id="music-title"
                     type="text"
                     required
                     value={musicInput.title}
                     onChange={(e) => setMusicInput({ ...musicInput, title: e.target.value })}
                     placeholder="Contoh: Judika - Sampai Akhir"
-                    className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                    className={FIELD_CLASS}
                   />
                 </div>
 
                 {/* Tab Switcher for Source Mode */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-foreground font-semibold">Sumber Berkas Musik</label>
-                  <div className="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                  <span className="text-xs font-semibold text-foreground">Sumber Berkas Musik</span>
+                  <div role="tablist" aria-label="Sumber berkas musik" className="flex gap-2 rounded-xl bg-muted/60 p-1">
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={musicSourceTab === "upload"}
                       onClick={() => setMusicSourceTab("upload")}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                         musicSourceTab === "upload"
-                          ? "bg-white dark:bg-zinc-700 text-[#C8A96A] shadow-sm"
+                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -1247,10 +1309,12 @@ export function AdminClient({
                     </button>
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={musicSourceTab === "url"}
                       onClick={() => setMusicSourceTab("url")}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                         musicSourceTab === "url"
-                          ? "bg-white dark:bg-zinc-700 text-[#C8A96A] shadow-sm"
+                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
@@ -1262,7 +1326,7 @@ export function AdminClient({
                 {/* Tab 1: Upload File MP3 */}
                 {musicSourceTab === "upload" && (
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">Unggah Berkas Audio (.mp3)</label>
+                    <span className="text-xs font-semibold text-foreground">Unggah Berkas Audio (.mp3)</span>
                     <FileUploader
                       value={musicInput.url}
                       onChange={(url) => setMusicInput({ ...musicInput, url })}
@@ -1272,11 +1336,11 @@ export function AdminClient({
                       helperText="Format berkas .mp3 (Maksimal 10MB)"
                     />
                     {musicInput.url && (
-                      <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs flex flex-col gap-1.5">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase">File Terunggah:</span>
-                        <span className="font-mono text-foreground break-all truncate block">{musicInput.url}</span>
+                      <div className="flex flex-col gap-1.5 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-xs">
+                        <span className="text-[10px] font-bold uppercase text-muted-foreground">File Terunggah:</span>
+                        <span className="block truncate break-all font-mono text-foreground">{musicInput.url}</span>
                         {/* Audio preview element */}
-                        <audio src={musicInput.url} controls className="w-full h-8 mt-1" />
+                        <audio src={musicInput.url} controls className="mt-1 h-8 w-full" />
                       </div>
                     )}
                   </div>
@@ -1285,42 +1349,39 @@ export function AdminClient({
                 {/* Tab 2: URL Input */}
                 {musicSourceTab === "url" && (
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">URL Berkas (.mp3)</label>
+                    <label htmlFor="music-url" className="text-xs font-semibold text-foreground">URL Berkas (.mp3)</label>
                     <input
+                      id="music-url"
                       type="url"
                       required={musicSourceTab === "url"}
                       value={musicInput.url}
                       onChange={(e) => setMusicInput({ ...musicInput, url: e.target.value })}
                       placeholder="Contoh: https://example.com/song.mp3"
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={FIELD_CLASS}
                     />
                     {musicInput.url && (
-                      <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs flex flex-col gap-1.5 mt-2">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase">Tinjauan Musik:</span>
-                        <audio src={musicInput.url} controls className="w-full h-8 mt-1" />
+                      <div className="mt-2 flex flex-col gap-1.5 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-xs">
+                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Tinjauan Musik:</span>
+                        <audio src={musicInput.url} controls className="mt-1 h-8 w-full" />
                       </div>
                     )}
                   </div>
                 )}
                 <div className="flex items-center pt-2">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-foreground cursor-pointer">
+                  <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-foreground">
                     <input
                       type="checkbox"
                       checked={musicInput.isActive}
                       onChange={(e) => setMusicInput({ ...musicInput, isActive: e.target.checked })}
-                      className="accent-[#C8A96A]"
+                      className="accent-gold-400"
                     />
                     Musik Aktif (Tampil di Pilihan User)
                   </label>
                 </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 rounded-xl bg-[#C8A96A] text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#b39150] pt-2"
-                >
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
                   {editItem ? "Perbarui Lagu Latar" : "Simpan Lagu Baru"}
-                </button>
+                </Button>
               </form>
             )}
 
@@ -1329,47 +1390,46 @@ export function AdminClient({
               <form onSubmit={handleFaqSubmit} className="space-y-4">
                 <div className="grid grid-cols-4 gap-4">
                   <div className="col-span-3 space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">Pertanyaan (Question)</label>
+                    <label htmlFor="faq-question" className="text-xs font-semibold text-foreground">Pertanyaan (Question)</label>
                     <input
+                      id="faq-question"
                       type="text"
                       required
                       value={faqInput.question}
                       onChange={(e) => setFaqInput({ ...faqInput, question: e.target.value })}
                       placeholder="Berapa lama proses pembuatan?"
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={FIELD_CLASS}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs text-foreground font-semibold">No. Urut Sort</label>
+                    <label htmlFor="faq-sort" className="text-xs font-semibold text-foreground">No. Urut Sort</label>
                     <input
+                      id="faq-sort"
                       type="number"
                       min="0"
                       value={faqInput.sortOrder}
                       onChange={(e) => setFaqInput({ ...faqInput, sortOrder: e.target.value === "" ? "" : Math.max(0, parseInt(e.target.value)) })}
                       placeholder="Posisi terakhir"
-                      className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A]"
+                      className={FIELD_CLASS}
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-foreground font-semibold">Jawaban (Answer)</label>
+                  <label htmlFor="faq-answer" className="text-xs font-semibold text-foreground">Jawaban (Answer)</label>
                   <textarea
+                    id="faq-answer"
                     required
                     rows={4}
                     value={faqInput.answer}
                     onChange={(e) => setFaqInput({ ...faqInput, answer: e.target.value })}
                     placeholder="Tulis jawaban lengkap FAQ di sini..."
-                    className="w-full px-3 py-2 border border-border bg-transparent rounded-xl text-xs outline-none focus:border-[#C8A96A] resize-none"
+                    className={`${FIELD_CLASS} resize-none`}
                   />
                 </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 rounded-xl bg-[#C8A96A] text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#b39150]"
-                >
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
                   {editItem ? "Perbarui FAQ" : "Simpan FAQ Baru"}
-                </button>
+                </Button>
               </form>
             )}
 

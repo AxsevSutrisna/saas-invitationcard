@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
-import { Heart, Plus, Trash2, LayoutGrid, Quote, Image as ImageIcon, Sparkles, BookOpen, Info, Check, X } from "lucide-react";
+import { Heart, Plus, Trash2, LayoutGrid, Quote, Image as ImageIcon, Sparkles, BookOpen, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FileUploader } from "@/components/shared/FileUploader";
 
@@ -61,33 +61,33 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="animate-in fade-in space-y-6 duration-200">
       <div className="space-y-1">
         <h3 className="font-heading text-xl font-bold text-foreground">
           Step 4: Konten Undangan
         </h3>
-        <p className="text-xs text-muted-foreground font-light">
+        <p className="text-xs font-light text-muted-foreground">
           Lengkapi linimasa cerita cinta, galeri foto prewedding, dan kutipan ayat suci.
         </p>
       </div>
 
-      {/* Modul A: ♡ Love Story (Kisah Cinta) */}
-      <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-border/60 space-y-4">
+      {/* Modul A: Love Story (Kisah Cinta) */}
+      <div className="space-y-4 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <h4 className="font-heading text-base font-bold text-foreground flex items-center gap-2">
-              <Heart className="w-4 h-4 text-rose-500 fill-current" />
+            <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+              <Heart className="h-4 w-4 fill-current text-rose-500" aria-hidden="true" />
               <span>Love Story</span>
             </h4>
-            <p className="text-xs text-muted-foreground font-light">
+            <p className="text-xs font-light text-muted-foreground">
               Ceritakan perjalanan cinta kalian (opsional).
             </p>
           </div>
         </div>
 
         {/* Info Callout Banner */}
-        <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-xs flex items-start gap-2">
-          <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
           <p className="font-light leading-relaxed">
             Klik <span className="font-bold">&quot;+ Tambah Cerita&quot;</span> untuk menambahkan momen, misalnya: <span className="font-bold">&quot;2020 — Pertama Bertemu&quot;</span>, <span className="font-bold">&quot;2023 — Lamaran&quot;</span>. Bagian ini opsional.
           </p>
@@ -98,54 +98,60 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
           {storyFields.map((field, index) => (
             <div
               key={field.id}
-              className="p-4 rounded-2xl bg-white dark:bg-zinc-800 border border-border/60 space-y-3 relative"
+              className="relative space-y-3 rounded-2xl border border-border/60 bg-white p-4 dark:bg-zinc-800"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-[#C8A96A]/20 text-[#C8A96A] font-bold text-xs flex items-center justify-center">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold-400/20 text-xs font-bold text-gold-500">
                     {index + 1}
                   </span>
                   <span className="text-xs font-bold text-foreground">Momen #{index + 1}</span>
                 </div>
 
-                <button
+                <Button
                   type="button"
                   onClick={() => removeStory(index)}
-                  className="w-7 h-7 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-500 hover:text-rose-700 flex items-center justify-center text-xs"
+                  variant="destructive"
+                  size="icon-sm"
+                  aria-label={`Hapus momen ${index + 1}`}
+                  className="rounded-full"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                  <Trash2 aria-hidden="true" />
+                </Button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-muted-foreground">Tahun / Tanggal</label>
+                  <label htmlFor={`loveStories-${index}-date`} className="text-[11px] font-semibold text-muted-foreground">Tahun / Tanggal</label>
                   <input
+                    id={`loveStories-${index}-date`}
                     type="text"
                     placeholder="Contoh: 2025"
                     {...register(`loveStories.${index}.date`)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50"
+                    className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
                 </div>
 
-                <div className="sm:col-span-2 space-y-1">
-                  <label className="text-[11px] font-semibold text-muted-foreground">Judul Momen</label>
+                <div className="space-y-1 sm:col-span-2">
+                  <label htmlFor={`loveStories-${index}-title`} className="text-[11px] font-semibold text-muted-foreground">Judul Momen</label>
                   <input
+                    id={`loveStories-${index}-title`}
                     type="text"
                     placeholder="Contoh: Menuju Pelaminan"
                     {...register(`loveStories.${index}.title`)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50"
+                    className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-muted-foreground">Deskripsi Cerita</label>
+                <label htmlFor={`loveStories-${index}-description`} className="text-[11px] font-semibold text-muted-foreground">Deskripsi Cerita</label>
                 <textarea
+                  id={`loveStories-${index}-description`}
                   rows={2}
                   placeholder="Setelah melewati banyak cerita bersama, kami memantapkan hati..."
                   {...register(`loveStories.${index}.description`)}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 leading-relaxed"
+                  className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs leading-relaxed focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                 />
               </div>
             </div>
@@ -165,9 +171,8 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
             }
             variant="outline"
             size="sm"
-            className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A] hover:bg-[#C8A96A]/10"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus aria-hidden="true" />
             <span>Tambah Cerita</span>
           </Button>
 
@@ -177,29 +182,28 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
               onClick={handleApplyStoryPresets}
               variant="outline"
               size="sm"
-              className="rounded-xl text-xs flex items-center gap-1.5"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#C8A96A]" />
+              <Sparkles className="text-gold-500" aria-hidden="true" />
               <span>Pilih Template Cerita</span>
             </Button>
           )}
         </div>
       </div>
 
-      {/* Modul B: 🖼️ Galeri Foto (Photo Gallery) */}
-      <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-border/60 space-y-4">
+      {/* Modul B: Galeri Foto (Photo Gallery) */}
+      <div className="space-y-4 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
         <div className="space-y-0.5">
-          <h4 className="font-heading text-base font-bold text-foreground flex items-center gap-2">
-            <ImageIcon className="w-4 h-4 text-[#C8A96A]" />
+          <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+            <ImageIcon className="h-4 w-4 text-gold-500" aria-hidden="true" />
             <span>Galeri Foto</span>
           </h4>
-          <p className="text-xs text-muted-foreground font-light">
+          <p className="text-xs font-light text-muted-foreground">
             Upload foto-foto prewedding atau momen spesial.
           </p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-xs flex items-start gap-2">
-          <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
           <p className="font-light leading-relaxed">
             Bisa upload banyak foto sekaligus. Pilih mode <span className="font-bold">Carousel</span> (slideshow) atau <span className="font-bold">Masonry</span> (grid bertumpuk). Bagian ini opsional.
           </p>
@@ -207,38 +211,42 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
 
         {/* Tipe Tampilan Galeri Selector Cards */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-foreground">Tipe Tampilan Galeri</label>
+          <span className="text-xs font-semibold text-foreground">Tipe Tampilan Galeri</span>
           <div className="grid grid-cols-2 gap-3">
-            <div
+            <button
+              type="button"
+              aria-pressed={galleryLayout === "CAROUSEL"}
               onClick={() => setValue("galleryLayout", "CAROUSEL")}
-              className={`p-4 rounded-2xl border cursor-pointer text-center space-y-1 transition-all ${
+              className={`space-y-1 rounded-2xl border p-4 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                 galleryLayout === "CAROUSEL"
-                  ? "bg-[#C8A96A] text-white border-[#C8A96A] shadow-md"
-                  : "bg-white dark:bg-zinc-800 border-border/60 text-muted-foreground hover:border-[#C8A96A]"
+                  ? "border-gold-400 bg-gold-400 text-white shadow-md"
+                  : "border-border/60 bg-white text-muted-foreground hover:border-gold-400 dark:bg-zinc-800"
               }`}
             >
-              <Sparkles className="w-5 h-5 mx-auto" />
-              <p className="text-xs font-bold">Carousel</p>
-              <span className="text-[10px] block opacity-80">Slideshow satu per satu</span>
-            </div>
+              <Sparkles className="mx-auto h-5 w-5" aria-hidden="true" />
+              <span className="block text-xs font-bold">Carousel</span>
+              <span className="block text-[10px] opacity-80">Slideshow satu per satu</span>
+            </button>
 
-            <div
+            <button
+              type="button"
+              aria-pressed={galleryLayout === "MASONRY"}
               onClick={() => setValue("galleryLayout", "MASONRY")}
-              className={`p-4 rounded-2xl border cursor-pointer text-center space-y-1 transition-all ${
+              className={`space-y-1 rounded-2xl border p-4 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
                 galleryLayout === "MASONRY"
-                  ? "bg-[#C8A96A] text-white border-[#C8A96A] shadow-md"
-                  : "bg-white dark:bg-zinc-800 border-border/60 text-muted-foreground hover:border-[#C8A96A]"
+                  ? "border-gold-400 bg-gold-400 text-white shadow-md"
+                  : "border-border/60 bg-white text-muted-foreground hover:border-gold-400 dark:bg-zinc-800"
               }`}
             >
-              <LayoutGrid className="w-5 h-5 mx-auto" />
-              <p className="text-xs font-bold">Masonry</p>
-              <span className="text-[10px] block opacity-80">Grid bertumpuk estetik</span>
-            </div>
+              <LayoutGrid className="mx-auto h-5 w-5" aria-hidden="true" />
+              <span className="block text-xs font-bold">Masonry</span>
+              <span className="block text-[10px] opacity-80">Grid bertumpuk estetik</span>
+            </button>
           </div>
         </div>
 
         {/* Multi-Photo Input */}
-        <div className="p-4 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 space-y-3">
+        <div className="space-y-3 rounded-2xl border-2 border-dashed border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-foreground">Daftar Foto Galeri ({galleryFields.length})</span>
             <Button
@@ -246,28 +254,30 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
               onClick={() => appendGallery({ mediaUrl: "", type: "PHOTO" })}
               variant="outline"
               size="sm"
-              className="rounded-xl text-xs flex items-center gap-1 border-[#C8A96A]/40 text-[#C8A96A]"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus aria-hidden="true" />
               <span>Tambah Foto</span>
             </Button>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
             {galleryFields.map((field, index) => (
-              <div key={field.id} className="relative p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 space-y-3">
+              <div key={field.id} className="relative space-y-3 rounded-2xl border border-border/60 bg-zinc-50 p-4 dark:bg-zinc-900">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Foto Galeri #{index + 1}
                   </span>
-                  <button
+                  <Button
                     type="button"
                     onClick={() => removeGallery(index)}
-                    className="flex items-center gap-1 text-red-500 hover:text-red-700 text-[10px] font-semibold uppercase tracking-wider cursor-pointer"
+                    variant="ghost"
+                    size="sm"
+                    aria-label={`Hapus foto galeri ${index + 1}`}
+                    className="gap-1 text-[10px] font-semibold uppercase tracking-wider text-rose-500 hover:text-rose-700"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 aria-hidden="true" />
                     <span>Hapus</span>
-                  </button>
+                  </Button>
                 </div>
                 <FileUploader
                   value={watch(`galleries.${index}.mediaUrl`)}
@@ -282,30 +292,34 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
         </div>
       </div>
 
-      {/* Modul C: 💬 Kutipan / Ayat (Quotes) */}
-      <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-border/60 space-y-3">
+      {/* Modul C: Kutipan / Ayat (Quotes) */}
+      <div className="space-y-3 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
         <div className="space-y-0.5">
-          <h4 className="font-heading text-base font-bold text-foreground flex items-center gap-2">
-            <Quote className="w-4 h-4 text-[#C8A96A]" />
+          <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+            <Quote className="h-4 w-4 text-gold-500" aria-hidden="true" />
             <span>Kutipan / Ayat</span>
           </h4>
-          <p className="text-xs text-muted-foreground font-light">
+          <p className="text-xs font-light text-muted-foreground">
             Kutipan atau ayat yang ditampilkan di undangan.
           </p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-xs flex items-start gap-2">
-          <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
           <p className="font-light leading-relaxed">
             Contoh: Kutipan dari film, puisi, atau kitab suci (Ar-Rum ayat 21). Kosongkan jika tidak diperlukan.
           </p>
         </div>
 
+        <label htmlFor="quotes" className="sr-only">
+          Kutipan atau ayat undangan
+        </label>
         <textarea
+          id="quotes"
           rows={4}
           placeholder="Tuliskan ayat suci atau kutipan romantis..."
           {...register("quotes")}
-          className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all leading-relaxed"
+          className="w-full rounded-xl border border-border bg-white px-4 py-3 text-xs leading-relaxed transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
         />
 
         <div className="flex justify-end">
@@ -314,9 +328,8 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
             onClick={() => setShowQuotesModal(true)}
             variant="outline"
             size="sm"
-            className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A] hover:bg-[#C8A96A]/10"
           >
-            <BookOpen className="w-3.5 h-3.5" />
+            <BookOpen aria-hidden="true" />
             <span>Pilih dari Template</span>
           </Button>
         </div>
@@ -324,36 +337,43 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
 
       {/* Modal Popup Preset Kutipan / Ayat */}
       {showQuotesModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-lg rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-2 border-b border-border/40">
-              <h3 className="font-heading text-base font-bold text-foreground">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="quotes-modal-title"
+          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200"
+        >
+          <div className="max-h-[85vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border/40 pb-2">
+              <h3 id="quotes-modal-title" className="font-heading text-base font-bold text-foreground">
                 Pilihan Template Ayat &amp; Kutipan
               </h3>
               <button
                 type="button"
                 onClick={() => setShowQuotesModal(false)}
-                className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 text-muted-foreground flex items-center justify-center"
+                aria-label="Tutup dialog template kutipan"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100 text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 dark:bg-zinc-800"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
 
             <div className="space-y-3">
               {displayQuotes.map((preset, idx) => (
-                <div
+                <button
                   key={idx}
+                  type="button"
                   onClick={() => {
                     setValue("quotes", preset.text, { shouldValidate: true });
                     setShowQuotesModal(false);
                   }}
-                  className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 hover:border-[#C8A96A] cursor-pointer space-y-1 transition-all"
+                  className="w-full space-y-1 rounded-2xl border border-border/60 bg-zinc-50 p-3.5 text-left transition-all hover:border-gold-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 dark:bg-zinc-900"
                 >
-                  <p className="text-xs font-bold text-[#C8A96A]">{preset.title}</p>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+                  <p className="text-xs font-bold text-gold-500">{preset.title}</p>
+                  <p className="text-[11px] italic leading-relaxed text-muted-foreground">
                     &ldquo;{preset.text}&rdquo;
                   </p>
-                </div>
+                </button>
               ))}
             </div>
           </div>

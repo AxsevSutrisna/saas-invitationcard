@@ -64,6 +64,30 @@
   /* Custom Blob Animations */
   --animate-blob: blob 22s infinite ease-in-out;
   --animate-blob-reverse: blob-reverse 26s infinite ease-in-out;
+
+  /* =====================================================================
+   * Brand Gold Scale — sumber tunggal warna emas IKARA.
+   * Menggantikan hex #C8A96A yang tersebar. Karena terdaftar di @theme,
+   * kelas statis seperti bg-gold-400 / text-gold-500 / from-gold-400 /
+   * ring-gold-400 dikompilasi Tailwind (bukan kelas dinamis).
+   * ===================================================================== */
+  --color-gold-50: #FBF8F1;
+  --color-gold-100: #F4EAD5;
+  --color-gold-200: #E9D5AC;
+  --color-gold-300: #DCBE82;
+  --color-gold-400: #C8A96A; /* brand primary */
+  --color-gold-500: #B39150;
+  --color-gold-600: #9E7E40;
+  --color-gold-700: #7D612C;
+  --color-gold-800: #5D461F;
+
+  /* Rose accent (aksen sekunder) & netral halus */
+  --color-rose-accent: #B76E79;
+
+  /* Elevation lembut bernuansa emas (dipakai via shadow-[var(--shadow-*)] bila perlu) */
+  --shadow-gold-sm: 0 1px 2px rgba(31, 31, 31, 0.06), 0 1px 3px rgba(200, 169, 106, 0.10);
+  --shadow-gold-md: 0 4px 14px rgba(200, 169, 106, 0.18);
+  --shadow-gold-lg: 0 10px 30px rgba(200, 169, 106, 0.22);
 }
 
 :root {

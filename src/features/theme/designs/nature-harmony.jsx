@@ -1,153 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Copy, Check, Leaf, TreePine, Gift, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
+import { MapPin, Leaf, TreePine, Gift, ChevronLeft, ChevronRight } from "lucide-react";
 import { CountdownTimer } from "@/features/theme/components/CountdownTimer";
 import { RsvpForm } from "@/features/rsvp/components/RsvpForm";
 import { GuestWishes } from "@/features/rsvp/components/GuestWishes";
+import { Reveal } from "@/features/theme/components/Reveal";
+import { Divider } from "@/features/theme/components/Divider";
+import { BlobFrame } from "@/features/theme/components/frames";
+import { BankCard } from "@/features/theme/components/BankCard";
+import { MusicToggle } from "@/features/theme/components/MusicToggle";
+import { ParticleField } from "@/features/theme/components/ParticleField";
+import { useCarousel } from "@/features/theme/hooks/useCarousel";
+import { useClipboard } from "@/features/theme/hooks/useClipboard";
+import { formatEventDate } from "@/lib/format";
+import { getThemeConfig } from "@/features/theme/theme-config";
 
-// ─────────── Reusable Scroll-Reveal Wrapper (zoom-in & zoom-out variants) ───────────
-function Reveal({ children, delay = 0, direction = "up", className = "" }) {
-  const variants = {
-    up:       { hidden: { opacity: 0, y: 48 },        visible: { opacity: 1, y: 0 } },
-    down:     { hidden: { opacity: 0, y: -48 },       visible: { opacity: 1, y: 0 } },
-    left:     { hidden: { opacity: 0, x: -48 },       visible: { opacity: 1, x: 0 } },
-    right:    { hidden: { opacity: 0, x: 48 },        visible: { opacity: 1, x: 0 } },
-    zoomIn:   { hidden: { opacity: 0, scale: 0.8 },   visible: { opacity: 1, scale: 1 } },
-    zoomOut:  { hidden: { opacity: 0, scale: 1.2 },   visible: { opacity: 1, scale: 1 } },
-    fade:     { hidden: { opacity: 0 },               visible: { opacity: 1 } },
-  };
-  return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-60px" }}
-      variants={variants[direction]}
-      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// ─────────── Organic Blob Photo Frame (morphs slowly — replaces circle+wreath) ───────────
-function BlobFrame({ src, alt = "", className = "w-56 h-56", color = "#4A6B3D", fallbackText = "" }) {
-  return (
-    <div className={`relative shrink-0 ${className}`}>
-      <motion.div
-        className="absolute inset-0 overflow-hidden shadow-2xl border-[6px] border-white"
-        style={{ borderRadius: "63% 37% 54% 46% / 55% 45% 55% 45%" }}
-        animate={{
-          borderRadius: [
-            "63% 37% 54% 46% / 55% 45% 55% 45%",
-            "40% 60% 62% 38% / 48% 45% 55% 52%",
-            "63% 37% 54% 46% / 55% 45% 55% 45%",
-          ],
-        }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-      >
-        {src ? (
-          <motion.img
-            src={src}
-            alt={alt}
-            className="w-full h-full object-cover"
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-          />
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center font-cormorant text-4xl font-black"
-            style={{ background: `${color}15`, color }}
-          >
-            {fallbackText}
-          </div>
-        )}
-      </motion.div>
-      <Leaf className="absolute -bottom-1 -right-1 w-8 h-8 @[1024px]:w-9 @[1024px]:h-9 rotate-[15deg] drop-shadow" style={{ color, opacity: 0.55 }} />
-    </div>
-  );
-}
-
-// ─────────── Realistic ATM/Bank Card UI ───────────
-function BankCard({ gift, copiedId, onCopy }) {
-  return (
-    <div
-      className="relative w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-xl"
-      style={{
-        background: "linear-gradient(135deg, #4A6B3D 0%, #2F4A28 50%, #1B2E16 100%)",
-        minHeight: 180,
-      }}
-    >
-      <div className="absolute inset-0 opacity-10 bg-gradient-to-tr from-white/30 via-transparent to-white/10" />
-      <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full border border-white/10" />
-      <div className="absolute -top-5 -right-5 w-32 h-32 rounded-full border border-white/10" />
-      <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full border border-white/10" />
-
-      <div className="relative z-10 p-6 flex flex-col h-full gap-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[9px] text-white/60 tracking-[0.25em] uppercase">Bank Transfer</p>
-            <p className="text-white font-bold text-lg tracking-wide">{gift.providerName}</p>
-          </div>
-          <div className="w-10 h-8 rounded-md bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-600 shadow-inner flex items-center justify-center opacity-90">
-            <div className="w-6 h-5 rounded border border-amber-600/60 grid grid-cols-2 gap-[2px] p-[2px]">
-              {[...Array(4)].map((_, i) => <div key={i} className="bg-amber-500/60 rounded-[1px]" />)}
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <p className="text-[9px] text-white/50 tracking-[0.2em] uppercase">Nomor Rekening</p>
-          <p className="text-white font-mono font-bold text-xl tracking-[0.18em] select-all">
-            {(gift.accountNumber || "").replace(/(\d{4})(?=\d)/g, "$1 ")}
-          </p>
-        </div>
-
-        <div className="flex items-end justify-between pt-2">
-          <div className="space-y-0.5">
-            <p className="text-[9px] text-white/50 tracking-[0.15em] uppercase">Atas Nama</p>
-            <p className="text-white font-semibold text-sm">{gift.accountName}</p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => onCopy(gift.accountNumber, gift.id)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-[10px] font-semibold transition-all cursor-pointer backdrop-blur-sm"
-          >
-            {copiedId === gift.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-            {copiedId === gift.id ? "Tersalin!" : "Salin"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─────────── Organic Divider ───────────
-function OrganicDivider({ color = "#4A6B3D" }) {
-  return (
-    <div className="flex items-center justify-center gap-1.5 @[640px]:gap-3 py-2 w-full max-w-[280px] @[640px]:max-w-md mx-auto" aria-hidden="true">
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-r from-transparent to-current opacity-40" style={{ color }} />
-      <Leaf className="w-4 h-4 shrink-0" style={{ color }} />
-      <div className="h-px flex-grow max-w-[48px] bg-gradient-to-r from-current to-transparent opacity-40" style={{ color }} />
-      <svg width="10" height="10" viewBox="0 0 24 24" fill={color} opacity="0.4" className="shrink-0">
-        <circle cx="12" cy="12" r="5" />
-      </svg>
-      <div className="h-px flex-grow max-w-[48px] bg-gradient-to-l from-current to-transparent opacity-40" style={{ color }} />
-      <Leaf className="w-4 h-4 shrink-0 -scale-x-100" style={{ color }} />
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-l from-transparent to-current opacity-40" style={{ color }} />
-    </div>
-  );
-}
-
-// ─────────── Section Heading ───────────
+// ─────────── Section Heading (bespoke — responsif, tengah) ───────────
 function SectionHeading({ title, subtitle, color = "#4A6B3D" }) {
   return (
     <Reveal direction="zoomIn">
       <div className="text-center space-y-3">
-        <OrganicDivider color={color} />
+        <Divider glyph="leaf" color={color} />
         <h2 className="font-heading text-3xl @[1024px]:text-4xl font-bold font-cormorant" style={{ color }}>
           {title}
         </h2>
@@ -156,66 +30,18 @@ function SectionHeading({ title, subtitle, color = "#4A6B3D" }) {
             {subtitle}
           </p>
         )}
-        <OrganicDivider color={color} />
+        <Divider glyph="leaf" color={color} />
       </div>
     </Reveal>
-  );
-}
-
-// ─────────── FALLING LEAVES (ambient, deterministic to avoid SSR hydration mismatch) ───────────
-const LEAF_CONFIGS = [
-  { xEnd: 40,  dur: 10, del: 0,   spin: 340 },
-  { xEnd: -35, dur: 14, del: 1.5, spin: -280 },
-  { xEnd: 30,  dur: 12, del: 3,   spin: 300 },
-  { xEnd: -40, dur: 16, del: 0.5, spin: -320 },
-  { xEnd: 20,  dur: 11, del: 5,   spin: 260 },
-  { xEnd: -25, dur: 15, del: 2,   spin: -300 },
-  { xEnd: 38,  dur: 13, del: 4,   spin: 320 },
-  { xEnd: -30, dur: 10, del: 6.5, spin: -260 },
-  { xEnd: 45,  dur: 17, del: 1,   spin: 300 },
-  { xEnd: -20, dur: 12, del: 7,   spin: -340 },
-];
-
-const LEAF_POSITIONS = [
-  { left: "3%",  top: "-8px",  fontSize: "16px" },
-  { left: "13%", top: "-16px", fontSize: "20px" },
-  { left: "23%", top: "-5px",  fontSize: "14px" },
-  { left: "33%", top: "-20px", fontSize: "18px" },
-  { left: "43%", top: "-10px", fontSize: "15px" },
-  { left: "54%", top: "-24px", fontSize: "22px" },
-  { left: "64%", top: "-7px",  fontSize: "14px" },
-  { left: "74%", top: "-18px", fontSize: "19px" },
-  { left: "84%", top: "-3px",  fontSize: "16px" },
-  { left: "93%", top: "-14px", fontSize: "17px" },
-];
-
-function FallingLeaf({ style, xEnd = 40, dur = 10, del = 0, spin = 300 }) {
-  return (
-    <motion.div
-      className="absolute pointer-events-none select-none"
-      style={style}
-      animate={{
-        y: ["0vh", "110vh"],
-        x: [0, xEnd],
-        rotate: [0, spin],
-        scale: [0.8, 1.1, 0.8],
-        opacity: [0, 0.4, 0],
-      }}
-      transition={{ duration: dur, repeat: Infinity, delay: del, ease: "linear" }}
-    >
-      🍃
-    </motion.div>
   );
 }
 
 // ════════════════════════════════════════════
 //              MAIN COMPONENT
 // ════════════════════════════════════════════
-export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
-  const [copiedId, setCopiedId] = useState(null);
-  const [carouselIndex, setCarouselIndex] = useState(0);
-
-  const FOREST = "#4A6B3D";
+export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess, guest, isMuted, setIsMuted }) {
+  const cfg = getThemeConfig("nature-harmony");
+  const FOREST = cfg.accent; // #4A6B3D
   const SAGE   = "#8FA980";
   const CREAM  = "#F7F5EE";
 
@@ -226,63 +52,33 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
   const galleries = invitation?.galleries      || [];
   const layout    = invitation?.galleryLayout  || "CAROUSEL";
 
-  // ── Carousel auto-play ──
-  useEffect(() => {
-    if (layout !== "CAROUSEL" || galleries.length <= 1) return;
-    const interval = setInterval(
-      () => setCarouselIndex((p) => (p + 1) % galleries.length),
-      4500
-    );
-    return () => clearInterval(interval);
-  }, [layout, galleries.length]);
-
-  const handleCopy = (text, id) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2500);
-  };
+  const { index: carouselIndex, setIndex: setCarouselIndex, next, prev } = useCarousel(
+    galleries.length,
+    layout === "CAROUSEL" ? 4500 : 0
+  );
+  const { copiedId, copy: handleCopy } = useClipboard();
 
   return (
-    <div
+    <main
       className="w-full text-[#2E3B27] font-sans overflow-x-hidden min-h-screen relative pb-16 selection:bg-[#4A6B3D] selection:text-white @container"
       style={{ background: `linear-gradient(180deg, ${CREAM} 0%, #FBFAF6 60%, ${CREAM} 100%)` }}
     >
       {/* ── AMBIENT FALLING LEAVES (fullscreen) ── */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {LEAF_POSITIONS.map((p, i) => (
-          <FallingLeaf
-            key={i}
-            style={{ left: p.left, top: p.top, fontSize: p.fontSize }}
-            xEnd={LEAF_CONFIGS[i].xEnd}
-            dur={LEAF_CONFIGS[i].dur}
-            del={LEAF_CONFIGS[i].del}
-            spin={LEAF_CONFIGS[i].spin}
-          />
-        ))}
-      </div>
+      <ParticleField type="leaves" accent={FOREST} />
 
       {/* ── MUSIC TOGGLE BUTTON ── */}
       {invitation?.isMusicEnabled && (
-        <motion.button
-          type="button"
-          onClick={() => setIsMuted((p) => !p)}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white border-2 shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-          style={{ borderColor: FOREST }}
-          whileTap={{ scale: 0.9 }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1 }}
+        <MusicToggle
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
+          accent={FOREST}
+          bg="#FFFFFF"
           title={isMuted ? "Mainkan Musik" : "Senyap"}
-        >
-          {isMuted
-            ? <VolumeX className="w-5 h-5" style={{ color: FOREST }} />
-            : <Volume2 className="w-5 h-5 animate-pulse" style={{ color: FOREST }} />
-          }
-        </motion.button>
+        />
       )}
 
       {/* ════════ 1. HERO SECTION — asymmetric split (stacked on mobile, side-by-side on desktop) ════════ */}
-      <section className="relative min-h-screen flex items-center overflow-hidden px-6 @[768px]:px-10 @[1024px]:px-16 pt-28 pb-20">
+      <section aria-label="Pembuka undangan" className="relative min-h-screen flex items-center overflow-hidden px-6 @[768px]:px-10 @[1024px]:px-16 pt-28 pb-20">
         {/* Slow ambient zoom-in/zoom-out backdrop shapes */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden>
           <motion.svg
@@ -336,7 +132,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
             {invitation?.events?.[0]?.date && (
               <Reveal direction="up" delay={0.35}>
                 <div className="py-2 flex justify-center @[1024px]:justify-start">
-                  <CountdownTimer targetDate={invitation.events[0].date} />
+                  <CountdownTimer targetDate={invitation.events[0].date} accent={FOREST} />
                 </div>
               </Reveal>
             )}
@@ -347,7 +143,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
             <Reveal direction="zoomOut" delay={0.3}>
               <BlobFrame
                 src={invitation?.coverUrl}
-                alt="Foto Cover Prewedding"
+                alt={`Foto sampul ${groom} & ${bride}`}
                 fallbackText={`${groom[0]}${bride[0]}`}
                 color={FOREST}
                 className="w-56 h-56 @[640px]:w-64 @[640px]:h-64 @[1024px]:w-[24rem] @[1024px]:h-[24rem]"
@@ -367,7 +163,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </section>
 
       {/* ════════ 2. QUOTES — editorial row (stacked mobile, side-by-side desktop) ════════ */}
-      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+      <section aria-label="Kutipan" className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
         <div className="max-w-xl @[1024px]:max-w-4xl mx-auto">
           <div className="flex flex-col @[1024px]:flex-row items-center gap-6 @[1024px]:gap-10 text-center @[1024px]:text-left">
             <Reveal direction="zoomIn" className="shrink-0">
@@ -390,7 +186,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </section>
 
       {/* ════════ 3. COUPLES SECTION — open editorial layout, 3-col with divider on desktop ════════ */}
-      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
+      <section aria-label="Mempelai" className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
         <div className="max-w-xl @[1024px]:max-w-5xl mx-auto space-y-14">
           <SectionHeading title="Mempelai Pengantin" subtitle="Dengan penuh rasa syukur, kami memperkenalkan diri" color={FOREST} />
 
@@ -398,7 +194,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
             {/* Groom */}
             <Reveal direction="zoomOut">
               <div className="flex flex-col items-center gap-4 text-center">
-                <BlobFrame src={invitation?.groomPhotoUrl} alt={groom} fallbackText={groom[0]} color={FOREST} className="w-32 h-32 @[1024px]:w-40 @[1024px]:h-40" />
+                <BlobFrame src={invitation?.groomPhotoUrl} alt={`Foto ${groomFull}`} fallbackText={groom[0]} color={FOREST} className="w-32 h-32 @[1024px]:w-40 @[1024px]:h-40" />
                 <div className="space-y-1">
                   <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: FOREST }}>The Groom</p>
                   <h3 className="font-cormorant text-xl @[1024px]:text-2xl font-bold leading-tight" style={{ color: FOREST }}>{groomFull}</h3>
@@ -421,7 +217,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
             {/* Bride */}
             <Reveal direction="zoomOut">
               <div className="flex flex-col items-center gap-4 text-center">
-                <BlobFrame src={invitation?.bridePhotoUrl} alt={bride} fallbackText={bride[0]} color={FOREST} className="w-32 h-32 @[1024px]:w-40 @[1024px]:h-40" />
+                <BlobFrame src={invitation?.bridePhotoUrl} alt={`Foto ${brideFull}`} fallbackText={bride[0]} color={FOREST} className="w-32 h-32 @[1024px]:w-40 @[1024px]:h-40" />
                 <div className="space-y-1">
                   <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: FOREST }}>The Bride</p>
                   <h3 className="font-cormorant text-xl @[1024px]:text-2xl font-bold leading-tight" style={{ color: FOREST }}>{brideFull}</h3>
@@ -436,7 +232,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </section>
 
       {/* ════════ 4. EVENTS SECTION — grid 2 kolom di desktop ════════ */}
-      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+      <section aria-label="Acara" className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
         <div className="max-w-xl @[1024px]:max-w-5xl mx-auto space-y-10">
           <SectionHeading title="Jadwal Akad & Resepsi" subtitle="Dengan segala kerendahan hati, kami mengundang Bapak/Ibu untuk hadir" color={FOREST} />
 
@@ -456,7 +252,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                     <div className="space-y-1">
                       <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-400">Tanggal</p>
                       <p className="font-semibold text-gray-800 leading-snug">
-                        {new Date(evt.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                        {formatEventDate(evt.date)}
                       </p>
                     </div>
                     <div className="space-y-1">
@@ -495,7 +291,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
       {/* ════════ 5. LOVE STORY ════════ */}
       {invitation?.loveStories?.length > 0 && (
-        <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
+        <section aria-label="Cerita Cinta" className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
           <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
             <SectionHeading title="Perjalanan Cinta" color={FOREST} />
 
@@ -519,7 +315,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
       {/* ════════ 6. PHOTO GALLERY — masonry 3-kolom di desktop, carousel tetap fokus di HP ════════ */}
       {galleries.length > 0 && (
-        <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+        <section aria-label="Galeri" className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
           <div className="max-w-xl @[1024px]:max-w-4xl mx-auto space-y-8">
             <SectionHeading title="Galeri Momen" subtitle="Setiap foto menyimpan seribu cerita cinta" color={FOREST} />
 
@@ -531,7 +327,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                       <motion.img
                         key={carouselIndex}
                         src={galleries[carouselIndex]?.mediaUrl}
-                        alt={`Slide ${carouselIndex + 1}`}
+                        alt={galleries[carouselIndex]?.caption || `Galeri ${carouselIndex + 1}`}
                         className="w-full h-full object-cover absolute inset-0"
                         initial={{ opacity: 0, scale: carouselIndex % 2 === 0 ? 1.15 : 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -544,13 +340,13 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
                     {galleries.length > 1 && (
                       <>
-                        <button type="button" onClick={() => setCarouselIndex((p) => (p - 1 + galleries.length) % galleries.length)}
+                        <button type="button" onClick={prev} aria-label="Sebelumnya"
                           className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/70 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white transition-all shadow-md">
-                          <ChevronLeft className="w-5 h-5" style={{ color: FOREST }} />
+                          <ChevronLeft className="w-5 h-5" style={{ color: FOREST }} aria-hidden="true" />
                         </button>
-                        <button type="button" onClick={() => setCarouselIndex((p) => (p + 1) % galleries.length)}
+                        <button type="button" onClick={next} aria-label="Berikutnya"
                           className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/70 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white transition-all shadow-md">
-                          <ChevronRight className="w-5 h-5" style={{ color: FOREST }} />
+                          <ChevronRight className="w-5 h-5" style={{ color: FOREST }} aria-hidden="true" />
                         </button>
                       </>
                     )}
@@ -562,7 +358,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
                   <div className="flex justify-center gap-1.5">
                     {galleries.map((_, i) => (
-                      <button key={i} type="button" onClick={() => setCarouselIndex(i)}
+                      <button key={i} type="button" onClick={() => setCarouselIndex(i)} aria-label={`Galeri ${i + 1}`}
                         className={`rounded-full transition-all duration-300 cursor-pointer ${carouselIndex === i ? "w-6 h-2" : "w-2 h-2"}`}
                         style={{ background: carouselIndex === i ? FOREST : `${FOREST}40` }}
                       />
@@ -575,7 +371,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                 {galleries.map((gal, i) => (
                   <Reveal key={gal.id} direction={i % 2 === 0 ? "zoomIn" : "zoomOut"} delay={i * 0.07}>
                     <div className="break-inside-avoid rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: `${FOREST}20` }}>
-                      <img src={gal.mediaUrl} alt="Kolase" className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
+                      <img src={gal.mediaUrl} alt={gal.caption || `Galeri ${i + 1}`} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
                     </div>
                   </Reveal>
                 ))}
@@ -587,7 +383,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
       {/* ════════ 7. DIGITAL GIFTS — grid 2 kolom di desktop ════════ */}
       {invitation?.gifts?.length > 0 && (
-        <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
+        <section aria-label="Kado" className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
           <div className="max-w-xl @[1024px]:max-w-4xl mx-auto space-y-10">
             <SectionHeading title="Amplop Digital" subtitle="Bagi Anda yang berkenan memberikan tanda kasih untuk pengantin baru:" color={FOREST} />
 
@@ -607,7 +403,16 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                       )}
                     </div>
                   ) : (
-                    <BankCard gift={gft} copiedId={copiedId} onCopy={handleCopy} />
+                    <BankCard
+                      gift={gft}
+                      copiedId={copiedId}
+                      onCopy={handleCopy}
+                      gradient={cfg.bankCard.gradient}
+                      overlay={cfg.bankCard.overlay}
+                      chipClass={cfg.bankCard.chipClass}
+                      accent={FOREST}
+                      providerFont={cfg.bankCard.providerFont}
+                    />
                   )}
                 </Reveal>
               ))}
@@ -617,14 +422,22 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       )}
 
       {/* ════════ 8. RSVP & UCAPAN — 2 kolom di desktop (form kiri, ucapan kanan) ════════ */}
-      <section className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
+      <section aria-label="RSVP" className="py-20 @[768px]:py-24 px-6 @[768px]:px-10 @[1024px]:px-16">
         <div className="max-w-xl @[1024px]:max-w-5xl mx-auto space-y-10">
           <SectionHeading title="RSVP & Buku Ucapan" subtitle="Berikan konfirmasi kehadiran Anda beserta doa terbaik:" color={FOREST} />
 
           <div className="grid grid-cols-1 @[1024px]:grid-cols-2 gap-8 @[1024px]:gap-10 @[1024px]:items-start">
             <Reveal direction="up">
               <div className="p-6 rounded-3xl bg-white border shadow-sm" style={{ borderColor: `${FOREST}25` }}>
-                <RsvpForm invitationId={invitation.id} defaultGuestName={guestName} onRsvpSuccess={onRsvpSuccess} guest={guest} />
+                <RsvpForm
+                  invitationId={invitation.id}
+                  defaultGuestName={guestName}
+                  onRsvpSuccess={onRsvpSuccess}
+                  guest={guest}
+                  accent={FOREST}
+                  accentDark={cfg.accentDark}
+                  accentDarker={cfg.accentDarker}
+                />
               </div>
             </Reveal>
 
@@ -633,7 +446,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                 <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">
                   Doa &amp; Restu Tamu ({rsvps?.length || 0})
                 </h3>
-                <GuestWishes rsvps={rsvps} />
+                <GuestWishes rsvps={rsvps} accent={FOREST} />
               </div>
             </Reveal>
           </div>
@@ -659,6 +472,6 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
           </div>
         </Reveal>
       </footer>
-    </div>
+    </main>
   );
 }

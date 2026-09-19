@@ -1,28 +1,34 @@
-import { Settings, User, Key, Bell } from "lucide-react";
+import { User } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Surface } from "@/components/ui/Surface";
+
+export const metadata = {
+  title: "Pengaturan Akun — IKARA Dashboard",
+  description: "Kelola profil pengguna, kata sandi, dan preferensi notifikasi Anda.",
+  robots: { index: false, follow: false },
+};
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-8 max-w-3xl">
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl font-bold text-foreground">
-          Pengaturan Akun
-        </h1>
-        <p className="text-sm text-muted-foreground font-light">
-          Kelola profil pengguna, kata sandi, dan preferensi notifikasi Anda
-        </p>
-      </div>
+    <div className="max-w-3xl space-y-8">
+      <PageHeader
+        title="Pengaturan Akun"
+        description="Kelola profil pengguna, kata sandi, dan preferensi notifikasi Anda."
+      />
 
-      <div className="p-8 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-border/40">
-          <div className="w-10 h-10 rounded-xl bg-[#C8A96A]/15 text-[#C8A96A] flex items-center justify-center">
-            <User className="w-5 h-5" />
+      <Surface as="section" padding="lg" className="space-y-6">
+        <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-400/15 text-gold-500">
+            <User className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground text-sm">Profil Akun</h3>
-            <p className="text-xs text-muted-foreground">Informasi identitas pribadi Anda</p>
+            <h2 className="text-sm font-semibold text-foreground">Profil Akun</h2>
+            <p className="text-xs text-muted-foreground">
+              Informasi identitas pribadi Anda
+            </p>
           </div>
         </div>
-      </div>
+      </Surface>
     </div>
   );
 }

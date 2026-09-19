@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export function CountdownTimer({ targetDate }) {
+export function CountdownTimer({ targetDate, accent = "#C8A96A" }) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -42,7 +42,7 @@ export function CountdownTimer({ targetDate }) {
   if (timeLeft.isCompleted) {
     return (
       <div className="py-4 text-center">
-        <span className="font-heading text-lg font-bold text-[#C8A96A] animate-pulse">
+        <span className="font-heading text-lg font-bold animate-pulse" style={{ color: accent }}>
           ✨ Hari Bahagia Telah Tiba! ✨
         </span>
       </div>
@@ -59,8 +59,8 @@ export function CountdownTimer({ targetDate }) {
   return (
     <div className="grid grid-cols-4 gap-2 max-w-sm mx-auto text-center pt-2">
       {items.map((item, idx) => (
-        <div key={idx} className="p-2 sm:p-3 rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-[#C8A96A]/20 shadow-sm space-y-0.5">
-          <p className="font-heading text-xl sm:text-2xl font-black text-[#C8A96A] tracking-tight">
+        <div key={idx} className="p-2 sm:p-3 rounded-2xl bg-white/60 dark:bg-zinc-800/60 border shadow-sm space-y-0.5" style={{ borderColor: `${accent}33` }}>
+          <p className="font-heading text-xl sm:text-2xl font-black tracking-tight" style={{ color: accent }}>
             {String(item.value).padStart(2, "0")}
           </p>
           <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">

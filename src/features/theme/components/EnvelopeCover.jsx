@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail } from "lucide-react";
+import { Mail, Leaf } from "lucide-react";
+import { getThemeConfig } from "@/features/theme/theme-config";
 
 const ROSE_PETALS = [
   { left: "12%", xEnd: 30,  dur: 9,   del: 0   },
@@ -27,54 +28,19 @@ const BLUE_BUBBLES = [
   { left: "92%", w: "6px",  h: "6px",  dur: 10, del: 5 },
 ];
 
-const THEME_CONFIG = {
-  "classic-elegance": {
-    bg: "bg-[#F8F6F2]/90 dark:bg-zinc-950/90",
-    textPrimary: "text-[#C8A96A]",
-    textSecondary: "text-zinc-500 dark:text-zinc-400",
-    fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
-    cardBg: "bg-white/80 dark:bg-zinc-900/80 border-[#C8A96A]/20 shadow-xl",
-    btnColor: "bg-[#C8A96A] text-white hover:bg-[#b39150] hover:shadow-[#C8A96A]/35",
-    btnText: "text-[#C8A96A]",
-    ornamentsColor: "#C8A96A",
-  },
-  "floral-blossom": {
-    bg: "bg-[#F8F6F2]/90 dark:bg-zinc-950/90",
-    textPrimary: "text-[#B76E79]",
-    textSecondary: "text-zinc-500 dark:text-zinc-400",
-    fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
-    cardBg: "bg-white/85 dark:bg-zinc-900/80 border-[#B76E79]/20 shadow-xl",
-    btnColor: "bg-[#B76E79] text-white hover:bg-[#a65f6a] hover:shadow-[#B76E79]/35",
-    btnText: "text-[#B76E79]",
-    ornamentsColor: "#B76E79",
-  },
-  "modern-minimalist": {
-    bg: "bg-[#0F172A]/90 dark:bg-[#090d16]/95",
-    textPrimary: "text-zinc-100",
-    textSecondary: "text-zinc-400",
-    fontName: "font-sans font-black text-xl sm:text-2xl tracking-widest uppercase",
-    cardBg: "bg-slate-900/90 dark:bg-zinc-900/90 border-slate-700/60 shadow-2xl",
-    btnColor: "bg-zinc-100 text-slate-950 hover:bg-white hover:shadow-white/20",
-    btnText: "text-zinc-200",
-    ornamentsColor: "#FFFFFF",
-  },
-  "floral-blue": {
-    bg: "bg-[#E8F4FD]/90 dark:bg-[#0b1420]/90",
-    textPrimary: "text-[#1A365D]",
-    textSecondary: "text-zinc-500 dark:text-zinc-400",
-    fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
-    cardBg: "bg-white/80 dark:bg-zinc-900/80 border-[#1A365D]/20 shadow-xl",
-    btnColor: "bg-[#1A365D] text-white hover:bg-[#122744] hover:shadow-[#1A365D]/35",
-    btnText: "text-[#1A365D]",
-    ornamentsColor: "#1A365D",
-  },
-};
+const GREEN_LEAVES = [
+  { left: "14%", xEnd: 24,  dur: 10, del: 0,   fontSize: "16px" },
+  { left: "34%", xEnd: -20, dur: 14, del: 2,   fontSize: "20px" },
+  { left: "54%", xEnd: 18,  dur: 12, del: 4,   fontSize: "14px" },
+  { left: "74%", xEnd: -26, dur: 16, del: 1,   fontSize: "18px" },
+  { left: "90%", xEnd: 20,  dur: 11, del: 5.5, fontSize: "15px" },
+];
 
-function PhotoFrame({ theme, coverUrl, title }) {
+function PhotoFrame({ frameKind, coverUrl, title }) {
   const defaultPlaceholder = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600";
   const imgUrl = coverUrl || defaultPlaceholder;
 
-  switch (theme) {
+  switch (frameKind) {
     case "floral-blossom":
       return (
         <div className="relative w-[150px] h-[200px] flex items-center justify-center p-2.5 select-none filter drop-shadow-md">
@@ -104,7 +70,7 @@ function PhotoFrame({ theme, coverUrl, title }) {
         </div>
       );
 
-    case "classic-elegance":
+    case "classic":
       return (
         <div className="relative w-[150px] h-[200px] p-1 bg-white dark:bg-zinc-800 shadow-xl border border-[#C8A96A]/60 rounded-md">
           <div className="absolute inset-0.5 border border-dashed border-[#C8A96A]/40" />
@@ -114,7 +80,7 @@ function PhotoFrame({ theme, coverUrl, title }) {
         </div>
       );
 
-    case "modern-minimalist":
+    case "modern":
       return (
         <div className="relative w-[150px] h-[200px] bg-slate-900 border border-slate-700/60 p-1 shadow-2xl">
           <div className="absolute -inset-1 border border-slate-700/20 pointer-events-none -z-10" />
@@ -134,6 +100,19 @@ function PhotoFrame({ theme, coverUrl, title }) {
         </div>
       );
 
+    case "blob":
+      return (
+        <div className="relative w-[150px] h-[200px] flex items-center justify-center select-none">
+          <div
+            className="w-[140px] h-[184px] overflow-hidden border-[5px] border-white shadow-xl bg-zinc-100"
+            style={{ borderRadius: "63% 37% 54% 46% / 55% 45% 55% 45%" }}
+          >
+            <img src={imgUrl} alt={title} className="w-full h-full object-cover" />
+          </div>
+          <Leaf className="absolute bottom-2 right-2 w-7 h-7 rotate-[15deg] drop-shadow" style={{ color: "#4A6B3D", opacity: 0.55 }} />
+        </div>
+      );
+
     default:
       return (
         <div className="w-[150px] h-[200px] overflow-hidden rounded-2xl shadow-md border border-zinc-200/50 bg-zinc-100">
@@ -145,15 +124,15 @@ function PhotoFrame({ theme, coverUrl, title }) {
 
 export function EnvelopeCover({ invitation, guestName, onOpen }) {
   const theme = invitation?.theme?.slug || "classic-elegance";
-  const config = THEME_CONFIG[theme] || THEME_CONFIG["classic-elegance"];
+  const config = getThemeConfig(theme).cover;
 
   const groom = invitation?.groomNickname || "Pria";
   const bride = invitation?.brideNickname || "Wanita";
   const title = invitation?.title || `Pernikahan ${groom} & ${bride}`;
 
-  const guestCardClass = theme === "modern-minimalist" ? "rounded-none" : "rounded-2xl";
+  const guestCardClass = config.guestCardShape;
 
-  if (theme === "classic-elegance") {
+  if (config.layout === "fullbleed") {
     return (
       <motion.div
         initial={{ y: 0 }}
@@ -169,13 +148,13 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
             alt={title}
           />
         )}
-        
+
         {/* Dark Gradient Overlays for Readability */}
         <div className="absolute inset-0 bg-black/20 z-0" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/40 z-0" />
 
         {/* Ambient Gold Particles (Optional subtle effect) */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
           {GOLD_PARTICLES.map((part, i) => (
             <motion.div
               key={`gold-${i}`}
@@ -189,7 +168,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
 
         {/* Foreground Content */}
         <div className="relative z-20 flex flex-col h-full w-full items-center justify-between">
-          
+
           {/* Top Section: Couple Names */}
           <div className="text-center mt-6 sm:mt-12 space-y-2">
             <h1 className="font-heading text-5xl sm:text-6xl text-[#FEFCF8] font-semibold leading-tight drop-shadow-md">
@@ -242,8 +221,8 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
       <div className={`absolute inset-0 ${config.bg} z-0 transition-colors duration-500`} />
 
       {/* 3. Theme-Specific Particle Systems */}
-      {theme === "floral-blossom" && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+      {config.particleType === "petals" && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
           {ROSE_PETALS.map((petal, i) => (
             <motion.div
               key={`petal-${i}`}
@@ -274,8 +253,8 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
         </div>
       )}
 
-      {theme === "classic-elegance" && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+      {config.particleType === "gold" && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
           {GOLD_PARTICLES.map((part, i) => (
             <motion.div
               key={`gold-${i}`}
@@ -299,8 +278,8 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
         </div>
       )}
 
-      {theme === "floral-blue" && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+      {config.particleType === "bubbles" && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
           {BLUE_BUBBLES.map((bubble, i) => (
             <motion.div
               key={`bubble-${i}`}
@@ -327,12 +306,38 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
         </div>
       )}
 
-      {theme === "modern-minimalist" && (
-        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,.15)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.15)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-10" />
+      {config.particleType === "leaves" && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
+          {GREEN_LEAVES.map((leaf, i) => (
+            <motion.div
+              key={`leaf-${i}`}
+              className="absolute pointer-events-none select-none"
+              style={{ top: "-5%", left: leaf.left, fontSize: leaf.fontSize }}
+              animate={{
+                y: ["0vh", "110vh"],
+                x: [0, leaf.xEnd],
+                rotate: [0, 300],
+                opacity: [0, 0.5, 0],
+              }}
+              transition={{
+                duration: leaf.dur,
+                repeat: Infinity,
+                delay: leaf.del,
+                ease: "linear",
+              }}
+            >
+              🍃
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {config.particleType === "grid" && (
+        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,.15)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.15)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-10" aria-hidden="true" />
       )}
 
       {/* Decorative Wreath / SVG frame behind the content */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.04] z-10">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.04] z-10" aria-hidden="true">
         <svg width="400" height="400" viewBox="0 0 100 100" fill="none">
           <circle cx="50" cy="50" r="45" stroke={config.ornamentsColor} strokeWidth="1" strokeDasharray="3 3" />
         </svg>
@@ -343,7 +348,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
         <span className="text-[8px] tracking-[0.35em] uppercase font-bold text-muted-foreground opacity-70">
           THE WEDDING OF
         </span>
-        
+
         {theme === "modern-minimalist" ? (
           <h1 className={`${config.fontName} ${config.textPrimary} tracking-widest leading-none pt-1`}>
             <div>{groom}</div>
@@ -361,7 +366,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
 
       {/* 5. Center Photo Frame (Dynamically styled per theme) */}
       <div className="z-20 my-1 flex items-center justify-center">
-        <PhotoFrame theme={theme} coverUrl={invitation?.coverUrl} title={title} />
+        <PhotoFrame frameKind={config.frameKind} coverUrl={invitation?.coverUrl} title={title} />
       </div>
 
       {/* 6. Guest Invitation Card & CTA Button (Bottom Section) */}
@@ -387,6 +392,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
           <button
             type="button"
             onClick={onOpen}
+            aria-label="Buka undangan"
             className="group flex flex-col items-center gap-1 cursor-pointer focus:outline-none"
           >
             <motion.div
@@ -394,7 +400,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
               whileTap={{ scale: 0.95 }}
               className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md border border-white/20 transition-all duration-300 ${config.btnColor}`}
             >
-              <Mail className="w-3.5 h-3.5 group-hover:scale-110 transition-transform duration-300" />
+              <Mail className="w-3.5 h-3.5 group-hover:scale-110 transition-transform duration-300" aria-hidden="true" />
             </motion.div>
             <span className={`text-[8px] tracking-[0.35em] font-bold uppercase ${config.btnText} mt-0.5`}>
               Buka

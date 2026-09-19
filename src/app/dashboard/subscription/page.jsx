@@ -9,6 +9,13 @@ import { SubscriptionClient } from "@/features/subscription/components/Subscript
 import { ROUTES } from "@/constants/routes";
 import { serialize } from "@/lib/utils";
 
+export const metadata = {
+  title: "Langganan & Pembayaran — IKARA Dashboard",
+  description:
+    "Kelola paket langganan premium, riwayat transaksi, dan status pembayaran undangan Anda.",
+  robots: { index: false, follow: false },
+};
+
 export default async function SubscriptionPage() {
   const session = await auth();
 

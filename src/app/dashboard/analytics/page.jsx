@@ -9,13 +9,16 @@ import {
 import { AnalyticsClient } from "@/features/analytics/components/AnalyticsClient";
 import { serialize } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
-import { Mail, Plus, Sparkles } from "lucide-react";
+import { Mail, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const metadata = {
-  title: "Analitik Undangan — IKARA",
-  description: "Pantau performa statistik kunjungan, kehadiran tamu, dan ucapan doa.",
+  title: "Analitik Undangan — IKARA Dashboard",
+  description:
+    "Pantau performa statistik kunjungan, kehadiran tamu, dan ucapan doa.",
+  robots: { index: false, follow: false },
 };
 
 export default async function AnalyticsPage({ searchParams }) {
@@ -32,30 +35,19 @@ export default async function AnalyticsPage({ searchParams }) {
   // Jika belum memiliki undangan -> Tampilkan Empty State
   if (invitations.length === 0) {
     return (
-      <div className="min-h-[420px] rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm p-8 sm:p-12 flex flex-col items-center justify-center text-center space-y-6">
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#C8A96A]/20 to-amber-100 dark:from-[#C8A96A]/20 dark:to-zinc-800 border border-[#C8A96A]/30 flex items-center justify-center text-[#C8A96A] shadow-inner">
-          <Mail className="w-10 h-10 stroke-[1.5]" />
-        </div>
-        <div className="space-y-2 max-w-md">
-          <h2 className="font-heading text-2xl font-bold text-[#1F1F1F] dark:text-zinc-100">
-            Belum Ada Undangan
-          </h2>
-          <p className="text-sm text-muted-foreground font-light leading-relaxed">
-            Anda belum memiliki undangan pernikahan digital yang aktif. Buat undangan terlebih dahulu untuk mengaktifkan grafik pemantauan analitik.
-          </p>
-        </div>
-        <div className="pt-2">
+      <EmptyState
+        icon={Mail}
+        title="Belum Ada Undangan"
+        description="Anda belum memiliki undangan pernikahan digital yang aktif. Buat undangan terlebih dahulu untuk mengaktifkan grafik pemantauan analitik."
+        action={
           <Link href={ROUTES.INVITATION_NEW}>
-            <Button
-              size="lg"
-              className="h-12 px-7 rounded-2xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-medium text-sm shadow-lg shadow-[#C8A96A]/25 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
-            >
-              <Plus className="w-4 h-4" />
+            <Button size="lg">
+              <Plus className="h-4 w-4" aria-hidden="true" />
               Buat Undangan Pertama
             </Button>
           </Link>
-        </div>
-      </div>
+        }
+      />
     );
   }
 

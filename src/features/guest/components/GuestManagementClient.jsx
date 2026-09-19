@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Users,
@@ -21,6 +21,10 @@ import {
   Printer
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/Badge";
+import { Surface } from "@/components/ui/Surface";
 import {
   createGuestAction,
   createGuestsBulkAction,
@@ -33,13 +37,13 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const [baseUrl, setBaseUrl] = useState("https://ikara.id");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setBaseUrl(window.location.origin);
-    }
-  }, []);
+  // Origin dibaca via useSyncExternalStore: snapshot server = fallback (tidak ada
+  // hydration mismatch), lalu otomatis memakai origin asli di klien setelah hydrate.
+  const baseUrl = useSyncExternalStore(
+    () => () => {},
+    () => window.location.origin,
+    () => "https://ikara.id"
+  );
 
   // Search & Filter state
   const [search, setSearch] = useState("");
@@ -429,60 +433,61 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
   return (
     <div className="space-y-8 pb-12">
       {/* Top Header Block */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="font-heading text-3xl font-bold text-[#1F1F1F] dark:text-zinc-50 tracking-tight flex items-center gap-2">
-            <Users className="w-8 h-8 text-[#C8A96A]" />
-            <span>Manajemen Tamu & RSVP</span>
-          </h1>
-          <p className="text-sm text-muted-foreground font-light">
-            Buat tautan undangan personal, pantau tamu yang membuka, dan kumpulkan konfirmasi kehadiran.
-          </p>
-        </div>
-
-        {/* Select Active Invitation Dropdown */}
-        {invitations.length > 1 && (
-          <div className="flex items-center gap-2 bg-white dark:bg-[#1A1A1A] border border-border/60 rounded-xl px-3 py-1.5 shadow-sm">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground">Undangan:</span>
-            <select
-              value={selectedInvitation.id}
-              onChange={handleInvitationChange}
-              className="text-xs font-semibold bg-transparent text-foreground border-none focus:outline-none cursor-pointer"
-            >
-              {invitations.map((inv) => (
-                <option key={inv.id} value={inv.id} className="bg-white dark:bg-[#1A1A1A]">
-                  {inv.title} ({inv.slug})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
+      <PageHeader
+        title={
+          <span className="inline-flex items-center gap-2">
+            <Users className="h-8 w-8 text-gold-400" aria-hidden="true" />
+            <span>Manajemen Tamu &amp; RSVP</span>
+          </span>
+        }
+        description="Buat tautan undangan personal, pantau tamu yang membuka, dan kumpulkan konfirmasi kehadiran."
+        action={
+          invitations.length > 1 ? (
+            <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-card px-3 py-1.5 shadow-(--shadow-gold-sm)">
+              <label htmlFor="active-invitation" className="text-[10px] uppercase font-bold text-muted-foreground">
+                Undangan:
+              </label>
+              <select
+                id="active-invitation"
+                value={selectedInvitation.id}
+                onChange={handleInvitationChange}
+                className="cursor-pointer border-none bg-transparent text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 rounded-md"
+              >
+                {invitations.map((inv) => (
+                  <option key={inv.id} value={inv.id} className="bg-card">
+                    {inv.title} ({inv.slug})
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null
+        }
+      />
 
       {/* Grid 4 Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <section aria-label="Ringkasan statistik tamu" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Total Guests */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm flex flex-col justify-between space-y-3">
+        <Surface as="article" padding="none" className="flex flex-col justify-between space-y-3 p-5">
           <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Total Tamu</span>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-foreground">{stats.total}</span>
             <span className="text-xs text-muted-foreground">Orang</span>
           </div>
-        </div>
+        </Surface>
 
         {/* Card 2: Invitation Opened */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm flex flex-col justify-between space-y-3">
+        <Surface as="article" padding="none" className="flex flex-col justify-between space-y-3 p-5">
           <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Telah Dibuka</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-[#C8A96A]">{stats.opened}</span>
+            <span className="text-3xl font-black text-gold-400">{stats.opened}</span>
             <span className="text-xs text-muted-foreground">
               ({stats.total > 0 ? Math.round((stats.opened / stats.total) * 100) : 0}%)
             </span>
           </div>
-        </div>
+        </Surface>
 
         {/* Card 3: Confirmed Attending */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm flex flex-col justify-between space-y-3">
+        <Surface as="article" padding="none" className="flex flex-col justify-between space-y-3 p-5">
           <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Konfirmasi Hadir</span>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-emerald-600 dark:text-emerald-500">{stats.attending}</span>
@@ -490,37 +495,41 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
               ({stats.total > 0 ? Math.round((stats.attending / stats.total) * 100) : 0}%)
             </span>
           </div>
-        </div>
+        </Surface>
 
         {/* Card 4: RSVP Responded Rate */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm flex flex-col justify-between space-y-3">
+        <Surface as="article" padding="none" className="flex flex-col justify-between space-y-3 p-5">
           <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">Belum Respon</span>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-amber-500">{stats.noResponse}</span>
             <span className="text-xs text-muted-foreground">Tamu</span>
           </div>
-        </div>
-      </div>
+        </Surface>
+      </section>
 
       {/* Toolbar Controls Section */}
-      <div className="p-4 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <Surface as="section" padding="none" className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4">
         {/* Search & Filters */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-grow max-w-2xl">
           <div className="relative flex-grow">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            <label htmlFor="guest-search" className="sr-only">Cari tamu undangan</label>
             <input
+              id="guest-search"
               type="text"
               placeholder="Cari Tamu Undangan atau nomor WhatsApp..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 rounded-xl border border-border/60 bg-zinc-50 dark:bg-zinc-900 text-xs focus:ring-1 focus:ring-[#C8A96A] focus:outline-none"
+              className="w-full h-10 pl-10 pr-4 rounded-xl border border-border/60 bg-background text-xs focus:outline-none focus:ring-2 focus:ring-gold-400/60"
             />
           </div>
 
+          <label htmlFor="guest-filter" className="sr-only">Filter tamu</label>
           <select
+            id="guest-filter"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-border/60 bg-zinc-50 dark:bg-zinc-900 text-xs text-foreground focus:outline-none cursor-pointer"
+            className="h-10 px-3 rounded-xl border border-border/60 bg-background text-xs text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold-400/60"
           >
             <option value="ALL">Semua Tamu</option>
             <option value="OPENED">Sudah Dibuka</option>
@@ -534,21 +543,13 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            onClick={handlePrintPDF}
-            variant="outline"
-            className="h-10 px-4 rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A] hover:bg-[#C8A96A]/10 cursor-pointer font-semibold"
-          >
-            <Printer className="w-4 h-4" />
+          <Button onClick={handlePrintPDF} variant="outline" size="sm">
+            <Printer className="w-4 h-4" aria-hidden="true" />
             <span>Cetak Daftar Hadir Tamu</span>
           </Button>
 
-          <Button
-            onClick={() => setShowBulkModal(true)}
-            variant="outline"
-            className="h-10 px-4 rounded-xl text-xs flex items-center gap-1.5 border-border/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
-          >
-            <UserPlus className="w-4 h-4" />
+          <Button onClick={() => setShowBulkModal(true)} variant="outline" size="sm">
+            <UserPlus className="w-4 h-4" aria-hidden="true" />
             <span>Tambah Massal</span>
           </Button>
 
@@ -557,36 +558,42 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
               resetSingleForm();
               setShowSingleModal(true);
             }}
-            className="h-10 px-4 rounded-xl text-xs flex items-center gap-1.5 bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white shadow-md shadow-[#C8A96A]/20 cursor-pointer font-semibold border-none"
+            size="sm"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" aria-hidden="true" />
             <span>Tambah Tamu</span>
           </Button>
         </div>
-      </div>
+      </Surface>
 
       {/* Guest List Table */}
-      <div className="rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm overflow-hidden">
+      <Surface as="section" padding="none" aria-label="Daftar tamu undangan" className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-border/40 text-[10px] uppercase font-bold text-muted-foreground">
-                <th className="py-4 px-6">Tamu Undangan</th>
-                <th className="py-4 px-4">WhatsApp</th>
-                <th className="py-4 px-4">Status Dibuka</th>
-                <th className="py-4 px-4">Kehadiran</th>
-                <th className="py-4 px-4">Doa & Ucapan</th>
-                <th className="py-4 px-4">Tautan Undangan</th>
-                <th className="py-4 px-6 text-right">Aksi</th>
+              <tr className="bg-background border-b border-border/40 text-[10px] uppercase font-bold text-muted-foreground">
+                <th scope="col" className="py-4 px-6">Tamu Undangan</th>
+                <th scope="col" className="py-4 px-4">WhatsApp</th>
+                <th scope="col" className="py-4 px-4">Status Dibuka</th>
+                <th scope="col" className="py-4 px-4">Kehadiran</th>
+                <th scope="col" className="py-4 px-4">Doa &amp; Ucapan</th>
+                <th scope="col" className="py-4 px-4">Tautan Undangan</th>
+                <th scope="col" className="py-4 px-6 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40 text-xs">
               {filteredGuests.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="py-12 text-center text-muted-foreground font-light">
-                    {search || filter !== "ALL"
-                      ? "Tidak ditemukan tamu yang cocok dengan filter pencarian."
-                      : "Belum ada tamu undangan. Silakan tambahkan tamu baru."}
+                  <td colSpan="7" className="p-6">
+                    <EmptyState
+                      icon={Users}
+                      title={search || filter !== "ALL" ? "Tidak Ada Hasil" : "Belum Ada Tamu"}
+                      description={
+                        search || filter !== "ALL"
+                          ? "Tidak ditemukan tamu yang cocok dengan filter pencarian."
+                          : "Belum ada tamu undangan. Silakan tambahkan tamu baru."
+                      }
+                    />
                   </td>
                 </tr>
               ) : (
@@ -594,11 +601,11 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                   const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
                   
                   return (
-                    <tr key={guest.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
+                    <tr key={guest.id} className="hover:bg-gold-400/5 transition-colors">
                       {/* Name */}
-                      <td className="py-4 px-6 font-bold text-foreground truncate max-w-[150px]">
+                      <th scope="row" className="py-4 px-6 text-left font-bold text-foreground truncate max-w-37.5">
                         {guest.name}
-                      </td>
+                      </th>
 
                       {/* WhatsApp */}
                       <td className="py-4 px-4 text-muted-foreground font-mono">
@@ -609,10 +616,10 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                       <td className="py-4 px-4">
                         {guest.isOpened ? (
                           <div className="space-y-0.5">
-                            <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
-                              <Eye className="w-2.5 h-2.5" />
+                            <Badge variant="success">
+                              <Eye className="w-2.5 h-2.5" aria-hidden="true" />
                               <span>Dibuka</span>
-                            </span>
+                            </Badge>
                             {guest.openedAt && (
                               <span className="block text-[8px] text-muted-foreground font-light pl-1">
                                 {new Date(guest.openedAt).toLocaleDateString("id-ID", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
@@ -620,10 +627,10 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                             )}
                           </div>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500">
-                            <Clock className="w-2.5 h-2.5" />
+                          <Badge variant="neutral">
+                            <Clock className="w-2.5 h-2.5" aria-hidden="true" />
                             <span>Belum</span>
-                          </span>
+                          </Badge>
                         )}
                       </td>
 
@@ -632,17 +639,13 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                         {guest.rsvp ? (
                           <div className="space-y-0.5">
                             {guest.rsvp.attendance === "YES" && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
-                                HADIR
-                              </span>
+                              <Badge variant="success">HADIR</Badge>
                             )}
                             {guest.rsvp.attendance === "NO" && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">
-                                TIDAK
-                              </span>
+                              <Badge variant="danger">TIDAK</Badge>
                             )}
                             {guest.rsvp.attendance === "MAYBE" && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide leading-none text-amber-700 dark:text-amber-300">
                                 RAGU
                               </span>
                             )}
@@ -653,66 +656,72 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                             )}
                           </div>
                         ) : (
-                          <span className="text-[10px] font-medium text-zinc-400">Belum Respon</span>
+                          <span className="text-[10px] font-medium text-muted-foreground">Belum Respon</span>
                         )}
                       </td>
 
                       {/* Message Wishes */}
-                      <td className="py-4 px-4 text-muted-foreground font-light italic max-w-[200px] truncate" title={guest.rsvp?.message || ""}>
+                      <td className="py-4 px-4 text-muted-foreground font-light italic max-w-50 truncate" title={guest.rsvp?.message || ""}>
                         {guest.rsvp?.message || "-"}
                       </td>
 
                       {/* Personalized Link */}
                       <td className="py-4 px-4">
-                        <div className="flex items-center gap-1.5 max-w-[240px]">
+                        <div className="flex items-center gap-1.5 max-w-60">
+                          <label htmlFor={`link-${guest.id}`} className="sr-only">Tautan undangan untuk {guest.name}</label>
                           <input
+                            id={`link-${guest.id}`}
                             type="text"
                             readOnly
                             value={link}
-                            className="bg-zinc-50 dark:bg-zinc-900 border border-border/50 rounded-lg px-2 py-1 text-[9px] font-mono text-zinc-500 w-full focus:outline-none"
+                            className="bg-background border border-border/50 rounded-lg px-2 py-1 text-[9px] font-mono text-muted-foreground w-full focus:outline-none focus:ring-2 focus:ring-gold-400/60"
                           />
                           <button
                             onClick={() => handleCopyLink(guest)}
-                            className="p-1.5 rounded-lg border border-border/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground shrink-0 cursor-pointer"
-                            title="Salin Tautan"
+                            className="p-1.5 rounded-lg border border-border/60 text-muted-foreground hover:bg-gold-400/10 hover:text-gold-600 shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60"
+                            aria-label={`Salin tautan undangan untuk ${guest.name}`}
                           >
                             {copiedId === guest.id ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <Check className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
                             ) : (
-                              <Copy className="w-3.5 h-3.5" />
+                              <Copy className="w-3.5 h-3.5" aria-hidden="true" />
                             )}
                           </button>
-                          
+
                           {guest.whatsapp && (
                             <a
                               href={getWaShareUrl(guest)}
                               target="_blank"
                               rel="noreferrer"
-                              className="p-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 shrink-0 cursor-pointer flex items-center justify-center"
-                              title="Kirim ke WhatsApp"
+                              className="p-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 shrink-0 cursor-pointer flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
+                              aria-label={`Kirim undangan ke WhatsApp ${guest.name}`}
                             >
-                              <Send className="w-3.5 h-3.5" />
+                              <Send className="w-3.5 h-3.5" aria-hidden="true" />
                             </a>
                           )}
                         </div>
                       </td>
 
                       {/* Operations */}
-                      <td className="py-4 px-6 text-right space-x-1 shrink-0">
-                        <button
-                          onClick={() => openEditModal(guest)}
-                          className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-[#C8A96A] cursor-pointer"
-                          title="Edit Tamu"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(guest.id)}
-                          className="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 text-zinc-500 hover:text-rose-600 cursor-pointer"
-                          title="Hapus Tamu"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                      <td className="py-4 px-6 text-right shrink-0">
+                        <div className="inline-flex items-center gap-1">
+                          <Button
+                            onClick={() => openEditModal(guest)}
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Edit tamu ${guest.name}`}
+                          >
+                            <Edit2 className="size-3.5" aria-hidden="true" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDelete(guest.id)}
+                            variant="destructive"
+                            size="icon-sm"
+                            aria-label={`Hapus tamu ${guest.name}`}
+                          >
+                            <Trash2 className="size-3.5" aria-hidden="true" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -721,55 +730,63 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
             </tbody>
           </table>
         </div>
-      </div>
+      </Surface>
 
       {/* modal A: Single Guest (Create / Edit) */}
       {showSingleModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-md rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="single-guest-title"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+          <div className="bg-card w-full max-w-md rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
-              <h3 className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-[#C8A96A]" />
+              <h2 id="single-guest-title" className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-gold-400" aria-hidden="true" />
                 <span>{editingGuest ? "Edit Data Tamu" : "Tambah Tamu Baru"}</span>
-              </h3>
+              </h2>
               <button
                 onClick={() => setShowSingleModal(false)}
-                className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 text-muted-foreground flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 rounded-full bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:text-gold-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60"
+                aria-label="Tutup dialog"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
             <form onSubmit={handleSingleSubmit} className="space-y-4 text-left">
               {errorMsg && (
-                <div className="p-3 text-xs bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-500/20 font-medium">
+                <div role="alert" className="p-3 text-xs bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-500/20 font-medium">
                   {errorMsg}
                 </div>
               )}
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-muted-foreground">Nama Lengkap Tamu *</label>
+                <label htmlFor="guest-name" className="text-[10px] uppercase font-bold text-muted-foreground">Nama Lengkap Tamu *</label>
                 <input
+                  id="guest-name"
                   type="text"
                   required
                   placeholder="Contoh: Bapak Ahmad Basuri & Istri"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-border/60 bg-zinc-50 dark:bg-zinc-900 text-xs focus:ring-1 focus:ring-[#C8A96A] focus:outline-none"
+                  className="w-full h-10 px-3 rounded-xl border border-border/60 bg-background text-xs focus:outline-none focus:ring-2 focus:ring-gold-400/60"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-muted-foreground flex justify-between">
+                <label htmlFor="guest-whatsapp" className="text-[10px] uppercase font-bold text-muted-foreground flex justify-between">
                   <span>Nomor WhatsApp (Opsional)</span>
-                  <span className="text-[8px] text-zinc-400 font-light font-sans lowercase">Dengan kode negara, misal: 081234xxx / 628123xxx</span>
+                  <span className="text-[8px] text-muted-foreground font-light font-sans lowercase">Dengan kode negara, misal: 081234xxx / 628123xxx</span>
                 </label>
                 <input
+                  id="guest-whatsapp"
                   type="text"
                   placeholder="Contoh: 08123456789"
                   value={guestWhatsapp}
                   onChange={(e) => setGuestWhatsapp(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-border/60 bg-zinc-50 dark:bg-zinc-900 text-xs font-mono focus:ring-1 focus:ring-[#C8A96A] focus:outline-none"
+                  className="w-full h-10 px-3 rounded-xl border border-border/60 bg-background text-xs font-mono focus:outline-none focus:ring-2 focus:ring-gold-400/60"
                 />
               </div>
 
@@ -778,15 +795,10 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                   type="button"
                   onClick={() => setShowSingleModal(false)}
                   variant="outline"
-                  className="h-10 px-4 rounded-xl text-xs cursor-pointer"
                 >
                   Batal
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  className="h-10 px-5 rounded-xl text-xs bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-semibold shadow-md shadow-[#C8A96A]/20 cursor-pointer border-none"
-                >
+                <Button type="submit" disabled={isPending}>
                   {isPending ? "Menyimpan..." : editingGuest ? "Simpan Perubahan" : "Tambah Tamu"}
                 </Button>
               </div>
@@ -797,40 +809,47 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
       {/* modal B: Bulk Guests (Textarea generator) */}
       {showBulkModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-lg rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="bulk-guest-title"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+          <div className="bg-card w-full max-w-lg rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
-              <h3 className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
-                <UserPlus className="w-4 h-4 text-[#C8A96A]" />
+              <h2 id="bulk-guest-title" className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
+                <UserPlus className="w-4 h-4 text-gold-400" aria-hidden="true" />
                 <span>Tambah Tamu secara Massal</span>
-              </h3>
+              </h2>
               <button
                 onClick={() => setShowBulkModal(false)}
-                className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 text-muted-foreground flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 rounded-full bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:text-gold-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60"
+                aria-label="Tutup dialog"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
             <form onSubmit={handleBulkSubmit} className="space-y-4 text-left">
               {errorMsg && (
-                <div className="p-3 text-xs bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-500/20 font-medium">
+                <div role="alert" className="p-3 text-xs bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-500/20 font-medium">
                   {errorMsg}
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase font-bold text-muted-foreground">Daftar Tamu Undangan (Satu Nama Per Baris)</label>
+                <label htmlFor="bulk-names" className="text-[10px] uppercase font-bold text-muted-foreground">Daftar Tamu Undangan (Satu Nama Per Baris)</label>
                 <p className="text-[9px] text-muted-foreground font-light leading-relaxed">
                   Tuliskan satu nama per baris. Anda juga bisa menyertakan nomor WhatsApp dipisah tanda koma (koma).
                 </p>
                 <textarea
+                  id="bulk-names"
                   rows="10"
                   required
                   placeholder={`Contoh:\nAhmad Basuri\nDewi Sartika, 0812345678\nKeluarga Besar Hartono, 0819876543\nSiti Rahma`}
                   value={rawBulkNames}
                   onChange={(e) => setRawBulkNames(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-border/60 bg-zinc-50 dark:bg-zinc-900 text-xs focus:ring-1 focus:ring-[#C8A96A] focus:outline-none font-mono"
+                  className="w-full p-3 rounded-xl border border-border/60 bg-background text-xs focus:outline-none focus:ring-2 focus:ring-gold-400/60 font-mono"
                 />
               </div>
 
@@ -839,15 +858,10 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                   type="button"
                   onClick={() => setShowBulkModal(false)}
                   variant="outline"
-                  className="h-10 px-4 rounded-xl text-xs cursor-pointer"
                 >
                   Batal
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  className="h-10 px-5 rounded-xl text-xs bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-semibold shadow-md shadow-[#C8A96A]/20 cursor-pointer border-none"
-                >
+                <Button type="submit" disabled={isPending}>
                   {isPending ? "Mengeksekusi..." : "Generate Daftar Tamu"}
                 </Button>
               </div>

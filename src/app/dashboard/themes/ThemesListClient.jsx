@@ -5,6 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Eye, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Badge } from "@/components/ui/Badge";
+import { Surface } from "@/components/ui/Surface";
 
 const DEFAULT_THUMBNAILS = {
   "classic-elegance": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600",
@@ -18,7 +21,7 @@ const CATEGORY_MAP = {
   "classic-elegance": {
     category: "Elegant",
     tag: "Populer",
-    badgeColor: "bg-amber-100 text-[#C8A96A] dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50",
+    badgeColor: "bg-amber-100 text-gold-400 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50",
     gradient: "from-amber-100 to-amber-50 dark:from-zinc-800 dark:to-zinc-900",
   },
   "floral-blossom": {
@@ -79,23 +82,23 @@ export function ThemesListClient({ initialThemes = [] }) {
   return (
     <div className="space-y-8">
       {/* Header Halaman */}
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl font-bold text-[#1F1F1F] dark:text-zinc-50 tracking-tight font-cormorant">
-          Koleksi Tema Undangan
-        </h1>
-      </div>
+      <PageHeader title="Koleksi Tema Undangan" />
 
       {/* Filter Bar & Search Input */}
-      <div className="p-6 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm space-y-4">
+      <Surface padding="md" className="space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-light" />
+          <Search
+            className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-light"
+            aria-hidden="true"
+          />
           <input
             type="text"
             placeholder="Cari tema..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all font-light"
+            aria-label="Cari tema"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs transition-all font-light focus-visible:ring-2 focus-visible:ring-gold-400/60 focus-visible:outline-none"
           />
         </div>
 
@@ -107,9 +110,10 @@ export function ThemesListClient({ initialThemes = [] }) {
                 key={cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                aria-pressed={selectedCategory === cat}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-gold-400/60 focus-visible:outline-none ${
                   selectedCategory === cat
-                    ? "bg-[#C8A96A] text-white shadow-md shadow-[#C8A96A]/20"
+                    ? "bg-gold-400 text-white shadow-md shadow-gold-400/20"
                     : "bg-zinc-100 dark:bg-zinc-800 text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -121,30 +125,33 @@ export function ThemesListClient({ initialThemes = [] }) {
             Menampilkan {filteredThemes.length} dari {themes.length} tema
           </span>
         </div>
-      </div>
+      </Surface>
 
       {/* Theme Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredThemes.map((theme) => (
-          <div
+          <Surface
             key={theme.id}
-            className="rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-xl transition-all"
+            as="article"
+            padding="none"
+            hover
+            className="overflow-hidden flex flex-col justify-between group"
           >
             {/* Phone Mockup Frame */}
-            <div className={`p-6 bg-gradient-to-b ${theme.gradient} flex justify-center relative`}>
-              <div className="relative w-[210px] h-[430px] bg-[#1C1C1E] dark:bg-[#1C1C1E] rounded-[36px] border-[8px] border-[#1C1C1E] shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden group-hover:scale-105 transition-transform duration-300">
+            <div className={`p-6 bg-linear-to-b ${theme.gradient} flex justify-center relative`}>
+              <div className="relative w-[210px] h-[430px] bg-[#1C1C1E] rounded-[36px] border-8 border-[#1C1C1E] shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden group-hover:scale-105 transition-transform duration-300">
                 {theme.previewUrl ? (
                   <Image
                     src={theme.previewUrl}
                     fill
                     sizes="(max-width: 768px) 100vw, 300px"
                     className="object-cover"
-                    alt={`Preview tema ${theme.name}`}
+                    alt={`Pratinjau tampilan tema undangan ${theme.name}`}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center p-6 space-y-4">
                     <div className="w-14 h-14 rounded-full bg-white/10 shadow-md flex items-center justify-center">
-                      <Sparkles className="w-6 h-6 text-[#C8A96A]" />
+                      <Sparkles className="w-6 h-6 text-gold-400" aria-hidden="true" />
                     </div>
                     <h3 className="font-heading text-xl font-bold text-white">
                       {theme.name}
@@ -163,36 +170,27 @@ export function ThemesListClient({ initialThemes = [] }) {
                 <span className="font-heading text-sm font-bold text-foreground">
                   {theme.name}
                 </span>
-                <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-md ${theme.badgeColor}`}>
-                  {theme.tag}
-                </span>
+                <Badge className={theme.badgeColor}>{theme.tag}</Badge>
               </div>
 
               {/* Actions: Lihat & Pakai */}
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <Link href={`/theme/preview/${theme.slug}`} target="_blank">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Eye aria-hidden="true" />
                     Lihat
                   </Button>
                 </Link>
 
                 <Link href={`/dashboard/invitations/new?themeId=${theme.id}`}>
-                  <Button
-                    size="sm"
-                    className="w-full rounded-xl bg-[#C8A96A] hover:bg-[#b39150] text-white text-xs flex items-center justify-center gap-1.5 cursor-pointer font-semibold"
-                  >
-                    <Check className="w-3.5 h-3.5" />
+                  <Button size="sm" className="w-full">
+                    <Check aria-hidden="true" />
                     Pakai
                   </Button>
                 </Link>
               </div>
             </div>
-          </div>
+          </Surface>
         ))}
       </div>
     </div>

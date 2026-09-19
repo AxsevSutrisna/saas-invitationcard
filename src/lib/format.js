@@ -16,6 +16,14 @@ export function formatRupiah(amount) {
 }
 
 /**
+ * Format nomor rekening dengan spasi tiap 4 digit, mis. "1234567890" -> "1234 5678 90".
+ * @param {string} accountNumber
+ */
+export function formatAccountNumber(accountNumber) {
+  return (accountNumber || "").replace(/(\d{4})(?=\d)/g, "$1 ");
+}
+
+/**
  * Format tanggal panjang Indonesia, mis. "Sabtu, 12 Oktober 2025".
  * @param {string|number|Date} date
  */

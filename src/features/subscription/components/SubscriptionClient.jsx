@@ -15,6 +15,9 @@ import {
   TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Badge } from "@/components/ui/Badge";
+import { Surface } from "@/components/ui/Surface";
 import { formatRupiah } from "@/lib/format";
 import { createCheckoutAction } from "@/features/payment/actions";
 
@@ -94,54 +97,60 @@ export function SubscriptionClient({
       />
 
       {/* Header */}
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl font-bold text-[#1F1F1F] dark:text-zinc-50 tracking-tight flex items-center gap-2">
-          <CreditCard className="w-8 h-8 text-[#C8A96A]" />
-          <span>Paket & Langganan</span>
-        </h1>
-        <p className="text-sm text-muted-foreground font-light">
-          Upgrade paket Anda untuk membuka seluruh fitur premium, menghilangkan watermark, dan mengaktifkan tema eksklusif.
-        </p>
-      </div>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <CreditCard className="h-8 w-8 text-gold-400" aria-hidden="true" />
+            <span>Paket &amp; Langganan</span>
+          </span>
+        }
+        description="Upgrade paket Anda untuk membuka seluruh fitur premium, menghilangkan watermark, dan mengaktifkan tema eksklusif."
+      />
 
       {errorMessage && (
-        <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm rounded-xl flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+        <div
+          role="alert"
+          className="flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-950/20 dark:text-rose-300"
+        >
+          <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {/* Grid Utama: Status Aktif & Daftar Paket */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+
         {/* Kolom Kiri: Status Paket Aktif Saat Ini */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white dark:bg-[#1A1A1A] border border-border/80 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+        <div className="space-y-6 lg:col-span-1">
+          <Surface as="section" className="relative overflow-hidden">
             {isPremiumActive && (
-              <div className="absolute top-0 right-0 bg-[#C8A96A] text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-bl-xl flex items-center gap-1">
-                <Sparkles className="w-3 h-3" />
+              <Badge
+                variant="gold"
+                className="absolute right-0 top-0 rounded-none rounded-bl-xl px-3 py-1 tracking-widest"
+              >
+                <Sparkles className="h-3 w-3" aria-hidden="true" />
                 <span>PREMIUM</span>
-              </div>
+              </Badge>
             )}
-            
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border/60 pb-3">
-              <Layers className="w-5 h-5 text-[#C8A96A]" />
+
+            <h2 className="flex items-center gap-2 border-b border-border/60 pb-3 font-heading text-lg font-bold text-foreground">
+              <Layers className="h-5 w-5 text-gold-400" aria-hidden="true" />
               <span>Paket Saat Ini</span>
             </h2>
 
             <div className="mt-4 space-y-4">
               <div>
-                <span className="text-xs text-muted-foreground block">Nama Paket</span>
-                <span className="text-xl font-bold font-heading text-foreground mt-0.5 block">
+                <span className="block text-xs text-muted-foreground">Nama Paket</span>
+                <span className="mt-0.5 block font-heading text-xl font-bold text-foreground">
                   {isPremiumActive ? activePackage.name : "Free Trial"}
                 </span>
               </div>
 
               <div>
-                <span className="text-xs text-muted-foreground block">Masa Aktif</span>
+                <span className="block text-xs text-muted-foreground">Masa Aktif</span>
                 {isPremiumActive ? (
-                  <div className="flex items-center gap-2 mt-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                    <Calendar className="w-4 h-4" />
+                  <div className="mt-1 flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                    <Calendar className="h-4 w-4" aria-hidden="true" />
                     <span>
                       s.d. {new Date(activeSubscription.validUntil).toLocaleDateString("id-ID", {
                         year: "numeric",
@@ -151,30 +160,30 @@ export function SubscriptionClient({
                     </span>
                   </div>
                 ) : (
-                  <span className="text-sm font-medium text-zinc-500 mt-1 block">
-                    Selamanya (Fitur Terbatas & Watermark Aktif)
+                  <span className="mt-1 block text-sm font-medium text-muted-foreground">
+                    Selamanya (Fitur Terbatas &amp; Watermark Aktif)
                   </span>
                 )}
               </div>
 
               <div>
-                <span className="text-xs text-muted-foreground block">Kuota Pembuatan Undangan</span>
-                <div className="flex items-end gap-1.5 mt-1">
+                <span className="block text-xs text-muted-foreground">Kuota Pembuatan Undangan</span>
+                <div className="mt-1 flex items-end gap-1.5">
                   <span className="text-2xl font-bold text-foreground">
                     {activeSubscription ? activeSubscription.quotaUsed : 0}
                   </span>
-                  <span className="text-muted-foreground text-sm mb-1">
+                  <span className="mb-1 text-sm text-muted-foreground">
                     / {isPremiumActive ? activePackage.maxInvitations : 1} Undangan Terpakai
                   </span>
                 </div>
               </div>
             </div>
-          </div>
+          </Surface>
         </div>
 
         {/* Kolom Kanan: Pilihan Paket Upgrade */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-6 lg:col-span-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {packages.map((pkg) => {
               const isCurrent =
                 (isPremiumActive && activePackage.id === pkg.id) ||
@@ -185,26 +194,31 @@ export function SubscriptionClient({
                 : JSON.parse(pkg.features || "[]");
 
               return (
-                <div
+                <Surface
+                  as="article"
                   key={pkg.id}
-                  className={`bg-white dark:bg-[#1A1A1A] border rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden transition-all duration-300 ${
+                  hover={!isCurrent}
+                  className={`relative flex flex-col justify-between overflow-hidden ${
                     isCurrent
-                      ? "border-[#C8A96A] ring-1 ring-[#C8A96A]/30"
-                      : "border-border/80 hover:border-[#C8A96A]/50"
+                      ? "border-gold-400 ring-1 ring-gold-400/30"
+                      : "hover:border-gold-400/50"
                   }`}
                 >
                   <div>
                     {pkg.price > 0 && !isCurrent && (
-                      <div className="absolute top-0 right-0 bg-[#C8A96A]/10 text-[#C8A96A] text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-bl-lg">
+                      <Badge
+                        variant="goldSoft"
+                        className="absolute right-0 top-0 rounded-none rounded-bl-lg"
+                      >
                         Populer
-                      </div>
+                      </Badge>
                     )}
 
-                    <h3 className="text-md font-bold text-foreground uppercase tracking-wider">
+                    <h3 className="font-heading text-base font-bold uppercase tracking-wider text-foreground">
                       {pkg.name}
                     </h3>
                     <div className="mt-2 flex items-baseline gap-1">
-                      <span className="text-2xl font-extrabold text-foreground font-heading">
+                      <span className="font-heading text-2xl font-extrabold text-foreground">
                         {pkg.price === 0 ? "Gratis" : formatRupiah(pkg.price)}
                       </span>
                       {pkg.price > 0 && (
@@ -216,8 +230,8 @@ export function SubscriptionClient({
 
                     <ul className="mt-6 space-y-3">
                       {features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-400">
-                          <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <li key={i} className="flex items-start gap-2.5 text-xs text-muted-foreground">
+                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -226,42 +240,35 @@ export function SubscriptionClient({
 
                   <div className="mt-8">
                     {isCurrent ? (
-                      <Button
-                        variant="outline"
-                        className="w-full border-emerald-500/20 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/5 cursor-default font-medium text-xs rounded-xl"
-                        disabled
-                      >
+                      <Button variant="outline" size="sm" className="w-full" disabled>
                         Paket Aktif Anda
                       </Button>
                     ) : pkg.price === 0 ? (
-                      <Button
-                        variant="outline"
-                        className="w-full font-medium text-xs rounded-xl"
-                        disabled
-                      >
+                      <Button variant="outline" size="sm" className="w-full" disabled>
                         Default Free Trial
                       </Button>
                     ) : (
                       <Button
+                        size="sm"
                         onClick={() => handleUpgrade(pkg.id)}
                         disabled={loadingPackageId !== null}
-                        className="w-full bg-[#1F1F1F] dark:bg-zinc-50 text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors font-medium text-xs rounded-xl"
+                        className="w-full"
                       >
                         {loadingPackageId === pkg.id ? (
-                          <span className="flex items-center gap-2">
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
                             <span>Memproses...</span>
-                          </span>
+                          </>
                         ) : (
-                          <span className="flex items-center gap-1.5 justify-center">
-                            <TrendingUp className="w-4 h-4" />
+                          <>
+                            <TrendingUp className="h-4 w-4" aria-hidden="true" />
                             <span>Upgrade Sekarang</span>
-                          </span>
+                          </>
                         )}
                       </Button>
                     )}
                   </div>
-                </div>
+                </Surface>
               );
             })}
           </div>
@@ -269,9 +276,9 @@ export function SubscriptionClient({
       </div>
 
       {/* Riwayat Tagihan / Pembayaran */}
-      <div className="bg-white dark:bg-[#1A1A1A] border border-border/80 rounded-2xl p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-foreground flex items-center gap-2 border-b border-border/60 pb-3 mb-4">
-          <History className="w-5 h-5 text-[#C8A96A]" />
+      <Surface as="section">
+        <h2 className="mb-4 flex items-center gap-2 border-b border-border/60 pb-3 font-heading text-lg font-bold text-foreground">
+          <History className="h-5 w-5 text-gold-400" aria-hidden="true" />
           <span>Riwayat Pembayaran</span>
         </h2>
 
@@ -281,23 +288,23 @@ export function SubscriptionClient({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-border/60 text-muted-foreground">
-                  <th className="py-3 px-4 font-semibold">Order ID</th>
-                  <th className="py-3 px-4 font-semibold">Paket</th>
-                  <th className="py-3 px-4 font-semibold">Nominal</th>
-                  <th className="py-3 px-4 font-semibold">Tanggal Transaksi</th>
-                  <th className="py-3 px-4 font-semibold">Status</th>
+                  <th className="px-4 py-3 font-semibold">Order ID</th>
+                  <th className="px-4 py-3 font-semibold">Paket</th>
+                  <th className="px-4 py-3 font-semibold">Nominal</th>
+                  <th className="px-4 py-3 font-semibold">Tanggal Transaksi</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.map((trx) => (
-                  <tr key={trx.id} className="border-b border-border/40 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10">
-                    <td className="py-3.5 px-4 font-mono font-medium text-foreground">{trx.midtransOrderId}</td>
-                    <td className="py-3.5 px-4 text-foreground">{trx.package.name}</td>
-                    <td className="py-3.5 px-4 font-medium text-foreground">{formatRupiah(trx.amount)}</td>
-                    <td className="py-3.5 px-4 text-muted-foreground">
+                  <tr key={trx.id} className="border-b border-border/40 hover:bg-gold-400/5">
+                    <td className="px-4 py-3.5 font-mono font-medium text-foreground">{trx.midtransOrderId}</td>
+                    <td className="px-4 py-3.5 text-foreground">{trx.package.name}</td>
+                    <td className="px-4 py-3.5 font-medium text-foreground">{formatRupiah(trx.amount)}</td>
+                    <td className="px-4 py-3.5 text-muted-foreground">
                       {new Date(trx.createdAt).toLocaleString("id-ID", {
                         year: "numeric",
                         month: "long",
@@ -306,19 +313,13 @@ export function SubscriptionClient({
                         minute: "2-digit",
                       })}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="px-4 py-3.5">
                       {trx.status === "SUCCESS" ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400">
-                          Sukses
-                        </span>
+                        <Badge variant="success">Sukses</Badge>
                       ) : trx.status === "PENDING" ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400 animate-pulse">
-                          Pending
-                        </span>
+                        <Badge variant="neutral">Pending</Badge>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-800 dark:bg-red-950/20 dark:text-red-400">
-                          Gagal
-                        </span>
+                        <Badge variant="danger">Gagal</Badge>
                       )}
                     </td>
                   </tr>
@@ -327,7 +328,7 @@ export function SubscriptionClient({
             </table>
           </div>
         )}
-      </div>
+      </Surface>
     </div>
   );
 }

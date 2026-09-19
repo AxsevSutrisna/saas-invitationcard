@@ -5,12 +5,16 @@ import { getInvitationsByUserId } from "@/features/invitation/repository";
 import { getGuestsByInvitationId } from "@/features/guest/repository";
 import { GuestManagementClient } from "@/features/guest/components/GuestManagementClient";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Mail, Plus } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 
 export const metadata = {
-  title: "Kelola Tamu & RSVP | IKARA Dashboard",
-  description: "Manajemen daftar tamu, kirim link personal, lacak status dibuka, serta rekap data RSVP kehadiran pernikahan.",
+  title: "Kelola Tamu & RSVP — IKARA Dashboard",
+  description:
+    "Manajemen daftar tamu, kirim link personal, lacak status dibuka, serta rekap data RSVP kehadiran pernikahan.",
+  robots: { index: false, follow: false },
 };
 
 export default async function GuestsPage({ searchParams }) {
@@ -26,41 +30,23 @@ export default async function GuestsPage({ searchParams }) {
   if (invitations.length === 0) {
     return (
       <div className="space-y-8">
-        <div className="space-y-1">
-          <h1 className="font-heading text-3xl font-bold text-[#1F1F1F] dark:text-zinc-50 tracking-tight">
-            Manajemen Tamu & RSVP
-          </h1>
-          <p className="text-sm text-muted-foreground font-light">
-            Kelola daftar tamu, salin link personal, dan pantau status kehadiran real-time.
-          </p>
-        </div>
-
-        <div className="min-h-[400px] rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm p-8 sm:p-12 flex flex-col items-center justify-center text-center space-y-6">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#C8A96A]/20 to-amber-100 dark:from-[#C8A96A]/20 dark:to-zinc-800 border border-[#C8A96A]/30 flex items-center justify-center text-[#C8A96A] shadow-inner">
-            <Mail className="w-10 h-10 stroke-[1.5]" />
-          </div>
-
-          <div className="space-y-2 max-w-md">
-            <h2 className="font-heading text-2xl font-bold text-[#1F1F1F] dark:text-zinc-100">
-              Belum Ada Undangan
-            </h2>
-            <p className="text-sm text-muted-foreground font-light leading-relaxed">
-              Anda harus membuat undangan pernikahan terlebih dahulu sebelum dapat mengelola daftar tamu dan memantau RSVP.
-            </p>
-          </div>
-
-          <div className="pt-2">
+        <PageHeader
+          title="Manajemen Tamu & RSVP"
+          description="Kelola daftar tamu, salin link personal, dan pantau status kehadiran real-time."
+        />
+        <EmptyState
+          icon={Mail}
+          title="Belum Ada Undangan"
+          description="Anda harus membuat undangan pernikahan terlebih dahulu sebelum dapat mengelola daftar tamu dan memantau RSVP."
+          action={
             <Link href={ROUTES.INVITATION_NEW}>
-              <Button
-                size="lg"
-                className="h-12 px-7 rounded-2xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-medium text-sm shadow-lg shadow-[#C8A96A]/25 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
-              >
-                <Plus className="w-4 h-4" />
+              <Button size="lg">
+                <Plus className="h-4 w-4" aria-hidden="true" />
                 Buat Undangan Pertama
               </Button>
             </Link>
-          </div>
-        </div>
+          }
+        />
       </div>
     );
   }

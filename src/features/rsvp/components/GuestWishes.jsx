@@ -1,15 +1,19 @@
 "use client";
 
-import { MessageSquare, Calendar } from "lucide-react";
+import { MessageSquare } from "lucide-react";
+import { formatShortDate } from "@/lib/format";
 
-export function GuestWishes({ rsvps = [] }) {
+export function GuestWishes({ rsvps = [], accent = "#C8A96A" }) {
   // Hanya ambil rsvps yang menyertakan ucapan/pesan
   const wishes = rsvps.filter((r) => r.message && r.message.trim() !== "");
 
   if (wishes.length === 0) {
     return (
-      <div className="py-8 text-center space-y-2 border border-dashed border-[#C8A96A]/20 rounded-2xl bg-white/40 dark:bg-zinc-800/40">
-        <MessageSquare className="w-8 h-8 text-[#C8A96A]/40 mx-auto stroke-[1.5]" />
+      <div
+        className="py-8 text-center space-y-2 border border-dashed border-[var(--accent)]/20 rounded-2xl bg-white/40 dark:bg-zinc-800/40"
+        style={{ "--accent": accent }}
+      >
+        <MessageSquare className="w-8 h-8 text-[var(--accent)]/40 mx-auto stroke-[1.5]" />
         <p className="text-xs text-muted-foreground font-light px-4">
           Belum ada ucapan tertulis. Jadilah yang pertama memberikan doa restu di atas!
         </p>
@@ -18,7 +22,10 @@ export function GuestWishes({ rsvps = [] }) {
   }
 
   return (
-    <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#C8A96A]/20">
+    <div
+      className="space-y-3 max-h-[350px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--accent)]/20"
+      style={{ "--accent": accent }}
+    >
       {wishes.map((wish) => {
         // Format status kehadiran badge
         let statusText = "Insya Allah Hadir";
@@ -31,13 +38,7 @@ export function GuestWishes({ rsvps = [] }) {
           statusColor = "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200 dark:border-amber-800/50";
         }
 
-        const dateStr = wish.createdAt
-          ? new Date(wish.createdAt).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })
-          : "Baru saja";
+        const dateStr = wish.createdAt ? formatShortDate(wish.createdAt) : "Baru saja";
 
         return (
           <div

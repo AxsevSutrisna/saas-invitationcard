@@ -7,6 +7,7 @@ import { AdminClient } from "@/features/admin/components/AdminClient";
 export const metadata = {
   title: "Super Admin Command Center — IKARA",
   description: "Manajemen data platform IKARA secara terpadu.",
+  robots: { index: false, follow: false },
 };
 
 export default async function AdminPage() {
