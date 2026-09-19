@@ -89,8 +89,6 @@ export async function createInvitation(userId, data) {
       brideFather: brideFather || null,
       brideMother: brideMother || null,
       bridePhotoUrl: bridePhotoUrl || null,
-      groomName: finalGroomNickname,
-      brideName: finalBrideNickname,
       coverUrl: coverUrl || null,
       galleryLayout: galleryLayout || "CAROUSEL",
       quotes: quotes || null,

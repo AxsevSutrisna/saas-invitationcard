@@ -53,6 +53,8 @@ export async function POST(request) {
       signature_key: signatureKey,
       transaction_status: transactionStatus,
       fraud_status: fraudStatus,
+      transaction_id: transactionId,
+      payment_type: paymentType,
     } = payload;
 
     // 1. Validasi Keberadaan Payload Utama
@@ -104,6 +106,8 @@ export async function POST(request) {
     let authFraud = fraudStatus;
     let authStatusCode = statusCode;
     let authGrossAmount = grossAmount;
+    let authTransactionId = transactionId;
+    let authPaymentType = paymentType;
     try {
       const verified = await getTransactionStatus(orderId);
       if (verified && verified.transaction_status) {
@@ -111,6 +115,8 @@ export async function POST(request) {
         authFraud = verified.fraud_status ?? authFraud;
         authStatusCode = verified.status_code ?? authStatusCode;
         authGrossAmount = verified.gross_amount ?? authGrossAmount;
+        authTransactionId = verified.transaction_id ?? authTransactionId;
+        authPaymentType = verified.payment_type ?? authPaymentType;
       }
     } catch (verifyError) {
       console.warn(`[WARNING] Get Status gagal untuk ${orderId}, fallback ke body notifikasi:`, verifyError.message);
@@ -139,9 +145,13 @@ export async function POST(request) {
       });
     }
 
-    // 7. Update Status Transaksi di Database
+    // 7. Update Status Transaksi di Database (+ metadata pembayaran)
     const paidAt = finalStatus === "SUCCESS" ? new Date() : null;
-    await updateTransactionStatus(orderId, finalStatus, paidAt);
+    await updateTransactionStatus(orderId, finalStatus, {
+      paidAt,
+      midtransTransactionId: authTransactionId,
+      paymentType: authPaymentType,
+    });
 
     // 8. Efek samping pada langganan sesuai status akhir
     if (finalStatus === "SUCCESS") {

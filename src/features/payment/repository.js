@@ -40,14 +40,21 @@ export async function findTransactionByOrderId(midtransOrderId) {
 }
 
 /**
- * Memperbarui status transaksi
+ * Memperbarui status transaksi beserta metadata pembayaran opsional.
+ * @param {string} midtransOrderId
+ * @param {string} status - PENDING | SUCCESS | FAILED | REFUNDED
+ * @param {{ paidAt?: Date|null, midtransTransactionId?: string, paymentType?: string }} [meta]
  */
-export async function updateTransactionStatus(midtransOrderId, status, paidAt = null) {
+export async function updateTransactionStatus(midtransOrderId, status, meta = {}) {
+  const { paidAt = null, midtransTransactionId, paymentType } = meta;
   return db.transaction.update({
     where: { midtransOrderId },
     data: {
       status,
       paidAt,
+      // Hanya set bila tersedia (hindari menimpa nilai lama dengan undefined/null)
+      ...(midtransTransactionId ? { midtransTransactionId } : {}),
+      ...(paymentType ? { paymentType } : {}),
     },
   });
 }

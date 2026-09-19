@@ -103,7 +103,7 @@ export default async function DashboardPage() {
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Heart className="w-3 h-3 text-rose-500 fill-current" />
                     <span>
-                      {invitation.groomName} & {invitation.brideName}
+                      {invitation.groomNickname} & {invitation.brideNickname}
                     </span>
                   </p>
                 </div>

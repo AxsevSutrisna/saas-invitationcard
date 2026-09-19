@@ -16,19 +16,19 @@ datasource db {
 // =============================================================================
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid(7))
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String    @default("USER") // USER | AGENCY | ADMIN | SUPER_ADMIN
+  role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   // Auth.js relations
-  accounts    Account[]
-  sessions    Session[]
+  accounts Account[]
+  sessions Session[]
 
   // Business relations
   invitations   Invitation[]
@@ -38,7 +38,7 @@ model User {
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id @default(uuid(7))
   userId            String
   type              String
   provider          String
@@ -57,7 +57,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid(7))
   sessionToken String   @unique
   userId       String
   expires      DateTime
@@ -78,12 +78,12 @@ model VerificationToken {
 
 /// Paket langganan yang tersedia di platform
 model Package {
-  id             String      @id @default(cuid())
+  id             String      @id @default(uuid(7))
   name           String
   slug           String      @unique
   type           PackageType @default(ONE_TIME)
-  price          Int         // Dalam satuan Rupiah
-  features       Json        // Array of feature string
+  price          Int // Dalam satuan Rupiah
+  features       Json // Array of feature string
   maxInvitations Int         @default(1)
   durationDays   Int         @default(180) // Masa aktif dalam hari
   isActive       Boolean     @default(true)
@@ -96,7 +96,7 @@ model Package {
 
 /// Status langganan aktif user
 model Subscription {
-  id         String             @id @default(cuid())
+  id         String             @id @default(uuid(7))
   userId     String
   packageId  String
   status     SubscriptionStatus @default(ACTIVE)
@@ -109,29 +109,38 @@ model Subscription {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   package Package @relation(fields: [packageId], references: [id])
 
-  @@index([userId])
+  // Query "langganan aktif" (userId + status + validUntil) sangat sering dipakai
+  @@index([userId, status, validUntil])
+  @@index([packageId])
 }
 
 /// Riwayat transaksi pembayaran
 model Transaction {
-  id               String            @id @default(cuid())
-  userId           String
-  packageId        String
-  amount           Int               // Dalam satuan Rupiah
-  currency         String            @default("IDR")
-  midtransOrderId  String            @unique
-  midtransToken    String?
-  status           TransactionStatus @default(PENDING)
-  paymentUrl       String?
-  paidAt           DateTime?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id        String @id @default(uuid(7))
+  userId    String
+  packageId String
+  amount    Int // Dalam satuan Rupiah
+  currency  String @default("IDR")
+
+  // Identitas pembayaran
+  midtransOrderId       String  @unique // Order ID sisi merchant (ref utama)
+  midtransToken         String? // Snap token
+  midtransTransactionId String? @unique // transaction_id dari Midtrans (untuk rekonsiliasi)
+  paymentType           String? // gopay | bank_transfer | qris | credit_card | ...
+  paymentUrl            String?
+
+  status    TransactionStatus @default(PENDING)
+  paidAt    DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   package Package @relation(fields: [packageId], references: [id])
 
-  @@index([userId])
-  @@index([midtransOrderId])
+  // midtransOrderId & midtransTransactionId sudah otomatis ter-index oleh @unique
+  @@index([userId, createdAt]) // riwayat transaksi user terurut terbaru
+  @@index([packageId])
+  @@index([status])
 }
 
 // =============================================================================
@@ -140,12 +149,12 @@ model Transaction {
 
 /// Master tema desain undangan
 model Theme {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid(7))
   name          String
   slug          String   @unique
   description   String?
   thumbnailUrl  String?
-  previewImages Json?    // Array of preview image URLs
+  previewImages Json? // Array of preview image URLs
   isPremium     Boolean  @default(false)
   isActive      Boolean  @default(true)
   sortOrder     Int      @default(0)
@@ -157,49 +166,47 @@ model Theme {
 
 /// Undangan digital milik user
 model Invitation {
-  id          String   @id @default(cuid())
-  slug        String   @unique // URL publik undangan
-  userId      String
-  themeId     String
+  id      String @id @default(uuid(7))
+  slug    String @unique // URL publik undangan
+  userId  String
+  themeId String
 
   // Info Pasangan Pria & Wanita
-  title                 String   // Contoh: "Pernikahan William & Eleanor"
-  brideName             String   // Deprecated fallback / Display name
-  groomName             String   // Deprecated fallback / Display name
+  title String // Contoh: "Pernikahan William & Eleanor"
 
-  groomNickname         String   @default("")
-  groomFullName         String   @default("")
-  groomFather           String?
-  groomMother           String?
-  groomPhotoUrl         String?
+  groomNickname String  @default("")
+  groomFullName String  @default("")
+  groomFather   String?
+  groomMother   String?
+  groomPhotoUrl String?
 
-  brideNickname         String   @default("")
-  brideFullName         String   @default("")
-  brideFather           String?
-  brideMother           String?
-  bridePhotoUrl         String?
+  brideNickname String  @default("")
+  brideFullName String  @default("")
+  brideFather   String?
+  brideMother   String?
+  bridePhotoUrl String?
 
   // Media, Galeri & Konten
-  coverUrl              String?  // Foto Cover Utama / Prewedding
-  galleryLayout         String   @default("CAROUSEL") // "CAROUSEL" | "MASONRY"
-  quotes                String?  @db.Text
-  openingText           String?  @db.Text
+  coverUrl      String? // Foto Cover Utama / Prewedding
+  galleryLayout GalleryLayout @default(CAROUSEL)
+  quotes        String?       @db.Text
+  openingText   String?       @db.Text
 
   // Kado Fisik
-  physicalGiftAddress   String?  @db.Text
-  physicalGiftReceiver  String?
-  physicalGiftPhone     String?
+  physicalGiftAddress  String? @db.Text
+  physicalGiftReceiver String?
+  physicalGiftPhone    String?
 
   // Musik Latar
-  musicUrl              String?  // URL file MP3
-  musicTitle            String?  // Judul Musik
-  isMusicEnabled        Boolean  @default(true)
+  musicUrl       String? // URL file MP3
+  musicTitle     String? // Judul Musik
+  isMusicEnabled Boolean @default(true)
 
   // Status
-  isPublished           Boolean  @default(false)
-  publishedAt           DateTime?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -212,21 +219,22 @@ model Invitation {
   rsvps       RSVP[]
   visitorLogs VisitorLog[]
 
-  @@index([userId])
-  @@index([slug])
+  // slug sudah ter-index oleh @unique
+  @@index([userId, createdAt]) // daftar undangan user terurut terbaru
+  @@index([themeId])
 }
 
 /// Acara dalam undangan (Akad, Resepsi, dll)
 model Event {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid(7))
   invitationId String
-  name         String   // Contoh: "Akad Nikah" | "Resepsi"
+  name         String // Contoh: "Akad Nikah" | "Resepsi"
   date         DateTime
-  startTime    String   // Format "HH:MM" (lebih fleksibel dari Time)
+  startTime    String // Format "HH:MM" (lebih fleksibel dari Time)
   endTime      String?
   locationName String
   address      String   @db.Text
-  mapUrl       String?  // Google Maps embed URL
+  mapUrl       String? // Google Maps embed URL
   mapLat       Float?
   mapLng       Float?
   sortOrder    Int      @default(0)
@@ -234,50 +242,61 @@ model Event {
   updatedAt    DateTime @updatedAt
 
   invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@index([invitationId, sortOrder])
 }
 
 /// Cerita perjalanan cinta pasangan
 model LoveStory {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid(7))
   invitationId String
   title        String
-  date         String?  // Format bebas: "Januari 2020"
+  date         String? // Format bebas: "Januari 2020"
   description  String   @db.Text
   imageUrl     String?
   sortOrder    Int      @default(0)
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
   invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@index([invitationId, sortOrder])
 }
 
 /// Galeri foto/video undangan
 model Gallery {
-  id           String      @id @default(cuid())
+  id           String    @id @default(uuid(7))
   invitationId String
   mediaUrl     String
   thumbnailUrl String?
-  type         MediaType   @default(PHOTO)
+  type         MediaType @default(PHOTO)
   caption      String?
-  sortOrder    Int         @default(0)
-  createdAt    DateTime    @default(now())
+  sortOrder    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
 
   invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@index([invitationId, sortOrder])
 }
 
 /// Amplop digital / rekening tujuan hadiah
 model Gift {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid(7))
   invitationId  String
   type          GiftType // BANK | EWALLET | PHYSICAL
-  providerName  String   // Contoh: "BCA", "GoPay", "Tokopedia"
+  providerName  String // Contoh: "BCA", "GoPay", "Tokopedia"
   accountName   String
   accountNumber String?
   qrCodeUrl     String?
   note          String?
   sortOrder     Int      @default(0)
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@index([invitationId, sortOrder])
 }
 
 // =============================================================================
@@ -286,38 +305,39 @@ model Gift {
 
 /// Daftar tamu undangan
 model Guest {
-  id           String   @id @default(cuid())
+  id           String    @id @default(uuid(7))
   invitationId String
   name         String
   whatsapp     String?
-  uniqueCode   String   @unique // Digunakan untuk link personal & QR check-in
-  isOpened     Boolean  @default(false)
+  uniqueCode   String    @unique // Digunakan untuk link personal & QR check-in
+  isOpened     Boolean   @default(false)
   openedAt     DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   rsvp       RSVP?
 
+  // uniqueCode sudah ter-index oleh @unique
   @@index([invitationId])
-  @@index([uniqueCode])
 }
 
 /// Konfirmasi kehadiran tamu
 model RSVP {
-  id           String     @id @default(cuid())
+  id           String     @id @default(uuid(7))
   invitationId String
   guestId      String?    @unique // Nullable: tamu anonim bisa RSVP tanpa uniqueCode
-  name         String?    // Jika tamu anonim
+  name         String? // Jika tamu anonim
   attendance   Attendance
   pax          Int        @default(1)
   message      String?    @db.Text
   createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
 
   invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   guest      Guest?     @relation(fields: [guestId], references: [id], onDelete: SetNull)
 
-  @@index([invitationId])
+  @@index([invitationId, createdAt])
 }
 
 // =============================================================================
@@ -326,17 +346,17 @@ model RSVP {
 
 /// Log kunjungan halaman undangan
 model VisitorLog {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid(7))
   invitationId String
-  ipAddress    String?  // Di-hash sebelum disimpan untuk privasi
+  ipAddress    String? // Di-hash sebelum disimpan untuk privasi
   userAgent    String?  @db.Text
   referrer     String?
   visitedAt    DateTime @default(now())
 
   invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
 
-  @@index([invitationId])
-  @@index([visitedAt])
+  // Analitik per-undangan dalam rentang waktu
+  @@index([invitationId, visitedAt])
 }
 
 // =============================================================================
@@ -345,21 +365,22 @@ model VisitorLog {
 
 /// Artikel blog untuk SEO
 model Post {
-  id           String   @id @default(cuid())
-  slug         String   @unique
+  id           String    @id @default(uuid(7))
+  slug         String    @unique
   title        String
-  excerpt      String?  @db.Text
-  content      String   @db.Text
+  excerpt      String?   @db.Text
+  content      String    @db.Text
   thumbnailUrl String?
   authorId     String
-  isPublished  Boolean  @default(false)
+  isPublished  Boolean   @default(false)
   publishedAt  DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   author User @relation(fields: [authorId], references: [id])
 
-  @@index([slug])
+  // slug sudah ter-index oleh @unique
+  @@index([authorId])
   @@index([isPublished])
 }
 
@@ -367,9 +388,21 @@ model Post {
 // ENUMS
 // =============================================================================
 
+enum Role {
+  USER // Calon pengantin / pengguna biasa
+  AGENCY // Wedding Organizer / Studio Foto
+  ADMIN // Admin platform
+  SUPER_ADMIN // Akses penuh ke CMS
+}
+
+enum GalleryLayout {
+  CAROUSEL
+  MASONRY
+}
+
 enum PackageType {
-  ONE_TIME   // Pembayaran sekali untuk akses terbatas waktu
-  RECURRING  // Berlangganan bulanan/tahunan
+  ONE_TIME // Pembayaran sekali untuk akses terbatas waktu
+  RECURRING // Berlangganan bulanan/tahunan
 }
 
 enum SubscriptionStatus {
@@ -408,8 +441,8 @@ enum Attendance {
 
 /// Templat ayat dan kutipan pilihan untuk undangan
 model QuoteTemplate {
-  id        String   @id @default(cuid())
-  title     String   // Contoh: "QS. Ar-Rum Ayat 21 (Islami)"
+  id        String   @id @default(uuid(7))
+  title     String // Contoh: "QS. Ar-Rum Ayat 21 (Islami)"
   content   String   @db.Text
   category  String   @default("General") // "Islami" | "Kristiani" | "Modern" | "Umum"
   createdAt DateTime @default(now())
@@ -418,9 +451,9 @@ model QuoteTemplate {
 
 /// Pustaka lagu latar belakang pernikahan
 model MusicTemplate {
-  id        String   @id @default(cuid())
-  title     String   // Contoh: "Payung Teduh - Akad"
-  url       String   // URL file audio .mp3
+  id        String   @id @default(uuid(7))
+  title     String // Contoh: "Payung Teduh - Akad"
+  url       String // URL file audio .mp3
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -428,8 +461,8 @@ model MusicTemplate {
 
 /// Daftar Tanya Jawab (FAQ) di Landing Page
 model FAQ {
-  id        String   @id @default(cuid())
-  question  String   // Pertanyaan
+  id        String   @id @default(uuid(7))
+  question  String // Pertanyaan
   answer    String   @db.Text // Jawaban
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
@@ -438,10 +471,10 @@ model FAQ {
 
 /// Pengaturan Global Sistem (Key-Value) seperti nomor WhatsApp
 model SystemSetting {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid(7))
   key         String   @unique // Contoh: "CS_WHATSAPP_NUMBER"
-  value       String   // Nilai pengaturan
-  description String?  // Deskripsi kegunaan
+  value       String // Nilai pengaturan
+  description String? // Deskripsi kegunaan
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
