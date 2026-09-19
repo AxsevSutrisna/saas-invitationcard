@@ -30,12 +30,17 @@ export async function createCheckoutAction(packageId) {
     const shortUserId = user.id.substring(0, 6).toUpperCase();
     const orderId = `IKARA-${shortUserId}-${Date.now()}`;
 
+    // URL redirect finish (untuk mode Snap redirect); aman jika env kosong
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+    const finishUrl = appUrl ? `${appUrl}/payment/finish` : undefined;
+
     const snapResult = await createSnapTransaction({
       orderId,
       amount: pkg.price,
       userEmail: user.email,
       userName: user.name,
       packageName: pkg.name,
+      finishUrl,
     });
 
     await createTransaction({

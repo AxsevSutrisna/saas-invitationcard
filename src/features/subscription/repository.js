@@ -71,3 +71,21 @@ export async function upsertActiveSubscription({ userId, packageId, durationDays
     },
   });
 }
+
+/**
+ * Mencabut (membatalkan) langganan aktif milik user untuk paket tertentu.
+ * Dipakai saat transaksi di-refund/chargeback. Aman/no-op bila tidak ada
+ * langganan aktif yang cocok.
+ * @returns {Promise<number>} jumlah langganan yang dibatalkan
+ */
+export async function revokeActiveSubscription({ userId, packageId }) {
+  const result = await db.subscription.updateMany({
+    where: {
+      userId,
+      packageId,
+      status: "ACTIVE",
+    },
+    data: { status: "CANCELLED" },
+  });
+  return result.count;
+}
