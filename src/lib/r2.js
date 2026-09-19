@@ -25,11 +25,16 @@ export const s3Client = new S3Client({
 export const R2_BUCKET_NAME = bucketName || "";
 export const R2_PUBLIC_DOMAIN = process.env.R2_PUBLIC_DOMAIN || "";
 
-/** Domain publik tanpa trailing slash. */
+/**
+ * Domain publik ternormalisasi: tanpa trailing slash & DIJAMIN berskema.
+ * Bila R2_PUBLIC_DOMAIN di-set tanpa "https://" (mis. "pub-xxx.r2.dev"),
+ * URL yang dihasilkan akan dianggap relatif oleh browser sehingga <img> rusak.
+ * Di sini kita otomatis menambahkan "https://" agar URL selalu absolut.
+ */
 function normalizedDomain() {
-  return R2_PUBLIC_DOMAIN.endsWith("/")
-    ? R2_PUBLIC_DOMAIN.slice(0, -1)
-    : R2_PUBLIC_DOMAIN;
+  let d = (R2_PUBLIC_DOMAIN || "").trim().replace(/\/+$/, "");
+  if (d && !/^https?:\/\//i.test(d)) d = `https://${d}`;
+  return d;
 }
 
 /** Susun public URL dari object key. */
