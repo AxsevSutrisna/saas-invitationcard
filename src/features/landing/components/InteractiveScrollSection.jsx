@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import Image from "next/image";
 import {
   CheckCircle2,
@@ -39,11 +39,9 @@ export function InteractiveScrollSection() {
     <section id="fitur" className="py-20 md:py-28 bg-[#F8F6F2]">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column: Descriptions */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <Reveal
+          direction="right"
+          duration={0.6}
           className="lg:col-span-6 space-y-6 order-2 lg:order-1"
         >
           <div className="space-y-2">
@@ -81,14 +79,12 @@ export function InteractiveScrollSection() {
               {scrolling ? "Sedang Menggulung..." : "Coba Scroll Simulasi HP"}
             </Button>
           </div>
-        </motion.div>
+        </Reveal>
 
         {/* Right Column: Interactive Phone Mockup */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <Reveal
+          direction="left"
+          duration={0.6}
           className="lg:col-span-6 flex justify-center order-1 lg:order-2 mb-8 lg:mb-0"
         >
           <div className="relative w-[300px] sm:w-[320px] h-[560px] bg-[#1F1F1F] rounded-[45px] p-3 shadow-2xl border-4 border-zinc-700/60 flex flex-col group">
@@ -131,7 +127,7 @@ export function InteractiveScrollSection() {
                   <div className="relative w-[150px] h-[210px] bg-white p-1 shadow-md rounded-sm">
                      <div className="relative w-full h-full border border-dashed border-[#C8A96A]/50 rounded-sm">
                        <Image
-                          src="/ikara-hero-section-potrait.png"
+                          src="/ikara-hero-section-potrait.webp"
                           alt="Wedding Couple Preview"
                           fill
                           sizes="(max-width: 768px) 100vw, 150px"
@@ -179,7 +175,7 @@ export function InteractiveScrollSection() {
                   <div className="text-center space-y-3">
                      <p className="font-greatvibes text-3xl text-[#C8A96A]">Kisah Cinta</p>
                      <p className="text-[9px] text-zinc-500 italic leading-relaxed px-2">
-                       "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya."
+                       &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya.&rdquo;
                      </p>
                   </div>
 
@@ -351,16 +347,16 @@ export function InteractiveScrollSection() {
                     <h4 className="font-greatvibes text-3xl text-[#C8A96A]">Galeri Momen</h4>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="relative h-24 rounded-xl overflow-hidden bg-zinc-100 border border-[#C8A96A]/20">
-                        <Image src="/ikara-hero-section.png" alt="Gallery 1" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
+                        <Image src="/ikara-hero-section.webp" alt="Gallery 1" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
                       </div>
                       <div className="relative h-24 rounded-xl overflow-hidden bg-zinc-100 border border-[#C8A96A]/20">
-                        <Image src="/ikara-hero-section-potrait.png" alt="Gallery 2" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
+                        <Image src="/ikara-hero-section-potrait.webp" alt="Gallery 2" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
                       </div>
                       <div className="relative h-24 rounded-xl overflow-hidden bg-zinc-100 border border-[#C8A96A]/20">
-                        <Image src="/ikara-hero-section-potrait.png" alt="Gallery 3" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
+                        <Image src="/ikara-hero-section-potrait.webp" alt="Gallery 3" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
                       </div>
                       <div className="relative h-24 rounded-xl overflow-hidden bg-zinc-100 border border-[#C8A96A]/20">
-                        <Image src="/ikara-hero-section.png" alt="Gallery 4" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
+                        <Image src="/ikara-hero-section.webp" alt="Gallery 4" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-90" />
                       </div>
                     </div>
                   </div>
@@ -462,7 +458,7 @@ export function InteractiveScrollSection() {
               </button>
             </div>
           </div>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );

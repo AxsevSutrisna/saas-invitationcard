@@ -8,6 +8,7 @@ import {
   checkSlugAvailability,
 } from "@/features/invitation/repository";
 import { db } from "@/lib/db";
+import { deleteObjectsByUrls } from "@/lib/r2";
 import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
 import { requireSession } from "@/features/auth/guard";
 
@@ -73,7 +74,34 @@ export async function deleteInvitationAction(invitationId) {
   try {
     const user = await requireSession();
 
+    // Kumpulkan seluruh URL media R2 milik undangan SEBELUM dihapus dari DB
+    // (dibatasi ke pemilik agar aman). Relasi lain ikut terhapus via cascade DB.
+    const media = await db.invitation.findFirst({
+      where: { id: invitationId, userId: user.id },
+      select: {
+        coverUrl: true,
+        groomPhotoUrl: true,
+        bridePhotoUrl: true,
+        musicUrl: true,
+        galleries: { select: { mediaUrl: true, thumbnailUrl: true } },
+        loveStories: { select: { imageUrl: true } },
+      },
+    });
+
     await deleteInvitation(invitationId, user.id);
+
+    // Bersihkan objek R2 setelah DB sukses — best-effort (tak menggagalkan operasi).
+    if (media) {
+      const urls = [
+        media.coverUrl,
+        media.groomPhotoUrl,
+        media.bridePhotoUrl,
+        media.musicUrl,
+        ...media.galleries.flatMap((g) => [g.mediaUrl, g.thumbnailUrl]),
+        ...media.loveStories.map((s) => s.imageUrl),
+      ];
+      await deleteObjectsByUrls(urls, { userId: user.id });
+    }
 
     revalidatePath("/dashboard");
 

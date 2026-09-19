@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="IKARA">
+  <defs>
+    <linearGradient id="ikaraGold" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C8A96A"/>
+      <stop offset="1" stop-color="#9E7E40"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#ikaraGold)"/>
+  <path d="M22 18h20v5h-6v18h6v5H22v-5h6V23h-6z" fill="#fff"/>
+</svg>

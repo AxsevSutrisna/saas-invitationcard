@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -114,11 +114,9 @@ export function PricingSection({ packages = [] }) {
     <section id="harga" className="py-20 md:py-28 bg-[#2C2723] border-y border-[#C8A96A]/20 relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 space-y-16">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <Reveal
+          direction="up"
+          duration={0.5}
           className="text-center max-w-2xl mx-auto space-y-3"
         >
           <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
@@ -131,17 +129,16 @@ export function PricingSection({ packages = [] }) {
             Pilih tingkat ruang yang sesuai untuk membagikan kisah dan janji
             pernikahan Anda dengan tenang dan elegan.
           </p>
-        </motion.div>
+        </Reveal>
 
         {/* Plans Grid — GlassCard variant="full" dengan tinggi seragam */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
           {displayPlans.map((plan, index) => (
-            <motion.div
+            <Reveal
               key={plan.name}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.15 }}
+              direction="up"
+              duration={0.5}
+              delay={index * 0.15}
               className={plan.popular ? "md:-translate-y-3 md:z-10 h-full flex flex-col" : "h-full flex flex-col"}
             >
               {/*
@@ -220,7 +217,7 @@ export function PricingSection({ packages = [] }) {
                   </Link>
                 </div>
               </GlassCard>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </div>

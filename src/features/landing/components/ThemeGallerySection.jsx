@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { Sparkles, Eye, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -57,11 +57,9 @@ export function ThemeGallerySection({ initialThemes = [] }) {
     >
       <div className="max-w-6xl mx-auto px-6 space-y-14 relative z-10">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <Reveal
+          direction="up"
+          duration={0.5}
           className="text-center max-w-2xl mx-auto space-y-3"
         >
           <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
@@ -74,17 +72,16 @@ export function ThemeGallerySection({ initialThemes = [] }) {
             Pilih estetika visual yang paling mencerminkan karakter, kehangatan,
             dan keunikan perjalanan kisah cinta Anda.
           </p>
-        </motion.div>
+        </Reveal>
 
         {/* Themes Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {displayThemes.map((theme, index) => (
-            <motion.div
+            <Reveal
               key={theme.id}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              direction="up"
+              duration={0.5}
+              delay={index * 0.1}
               className="h-full flex flex-col"
             >
               {/* 
@@ -152,7 +149,7 @@ export function ThemeGallerySection({ initialThemes = [] }) {
                   </Link>
                 </div>
               </GlassCard>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
 

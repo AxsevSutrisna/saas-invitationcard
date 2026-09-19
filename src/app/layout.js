@@ -10,13 +10,17 @@ const poppins = Poppins({
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  // 300 dibuang: heading tidak pernah memakai font-light (hanya 400–700).
+  weight: ["400", "500", "600", "700"],
 });
 
 const greatVibes = Great_Vibes({
   variable: "--font-greatvibes",
   subsets: ["latin"],
   weight: ["400"],
+  // Font skrip dekoratif & jarang → jangan render-blocking di muat awal.
+  preload: false,
+  display: "swap",
 });
 
 export const metadata = {
@@ -30,9 +34,10 @@ export const metadata = {
     type: "website",
     locale: "id_ID",
   },
+  // Favicon utama kini via konvensi file `app/icon.svg` (< 1 KB, menggantikan
+  // PNG 362 KB yang sebelumnya dimuat tiap halaman). Di sini cukup apple-touch:
+  // wajib PNG (SVG tak didukung iOS) & hanya diambil saat "Add to Home Screen".
   icons: {
-    icon: "/IKARA_LOGO_ICON.png",
-    shortcut: "/IKARA_LOGO_ICON.png",
     apple: "/IKARA_LOGO_ICON.png",
   },
 };

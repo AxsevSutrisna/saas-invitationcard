@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { CheckCircle2, Sliders, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,10 +12,8 @@ export function RealtimeEditorSection() {
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         
         {/* Left Column: Visual Mockups (Form & Phone overlapping) */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
+        <Reveal
+          direction="right"
           className="lg:col-span-6 relative mt-12 lg:mt-0 mb-12 lg:mb-0 flex justify-center lg:justify-start"
         >
           <div className="relative w-full max-w-[450px]">
@@ -78,20 +76,18 @@ export function RealtimeEditorSection() {
                 </p>
               </div>
               
-              <div className="absolute inset-0 bg-[url('/ikara-hero-section-potrait.png')] bg-cover bg-center opacity-30 rounded-xl z-0"></div>
+              <div className="absolute inset-0 bg-[url('/ikara-hero-section-potrait.webp')] bg-cover bg-center opacity-30 rounded-xl z-0"></div>
 
               <div className="p-2 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 text-[9px] text-white relative z-10 font-medium">
                 Tersimpan otomatis
               </div>
             </div>
           </div>
-        </motion.div>
+        </Reveal>
 
         {/* Right Column: Text Content */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
+        <Reveal
+          direction="left"
           className="lg:col-span-6 space-y-6"
         >
           <div className="space-y-2">
@@ -130,7 +126,7 @@ export function RealtimeEditorSection() {
               </Button>
             </Link>
           </div>
-        </motion.div>
+        </Reveal>
 
       </div>
     </section>

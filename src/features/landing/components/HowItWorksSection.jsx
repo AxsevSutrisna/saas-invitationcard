@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { UserPlus, Palette, Send } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 
@@ -33,11 +33,9 @@ export function HowItWorksSection() {
     >
       <div className="max-w-6xl mx-auto px-6 space-y-16">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <Reveal
+          direction="up"
+          duration={0.5}
           className="text-center max-w-2xl mx-auto space-y-3"
         >
           <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
@@ -50,19 +48,18 @@ export function HowItWorksSection() {
             IKARA dirancang agar proses mengabadikan kisah dan janji terpenting
             dalam hidup terasa personal, tenang, dan menyenangkan.
           </p>
-        </motion.div>
+        </Reveal>
 
         {/* Steps Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
           {steps.map((item, index) => {
             const Icon = item.icon;
             return (
-              <motion.div
+              <Reveal
                 key={item.step}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
+                direction="up"
+                duration={0.5}
+                delay={index * 0.15}
                 className="h-full flex flex-col"
               >
                 {/*
@@ -92,7 +89,7 @@ export function HowItWorksSection() {
                     </p>
                   </div>
                 </GlassCard>
-              </motion.div>
+              </Reveal>
             );
           })}
         </div>

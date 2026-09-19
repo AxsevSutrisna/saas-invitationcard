@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { Plus, Play, Sparkles, Heart } from "lucide-react";
 
 export function HeroSection() {
@@ -17,10 +17,11 @@ export function HeroSection() {
         {/* Mobile Background */}
         <div className="block md:hidden relative w-full h-full">
           <Image
-            src="/ikara-hero-section-potrait.png"
+            src="/ikara-hero-section-potrait.webp"
             alt="IKARA Wedding Invitation Hero Mobile"
             fill
             priority
+            quality={72}
             sizes="(max-width: 768px) 100vw, 0vw"
             className="object-cover object-center"
           />
@@ -29,10 +30,11 @@ export function HeroSection() {
         {/* Desktop Background */}
         <div className="hidden md:block relative w-full h-full">
           <Image
-            src="/ikara-hero-section.png"
+            src="/ikara-hero-section.webp"
             alt="IKARA Wedding Invitation Hero Desktop"
             fill
             priority
+            quality={72}
             sizes="(max-width: 768px) 0vw, 100vw"
             className="object-cover object-center"
           />
@@ -44,10 +46,10 @@ export function HeroSection() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
         {/* Text Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+        <Reveal
+          immediate
+          direction="up"
+          duration={0.6}
           className="max-w-2xl space-y-6 text-left"
         >
           {/* Badge */}
@@ -92,7 +94,7 @@ export function HeroSection() {
             </Link>
 
           </div>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );

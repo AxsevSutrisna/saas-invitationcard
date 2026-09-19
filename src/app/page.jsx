@@ -1,18 +1,16 @@
+import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { db } from "@/lib/db";
 import { serialize } from "@/lib/utils";
-import {
-  HeroSection,
-  TrustBarSection,
-  InteractiveScrollSection,
-  RealtimeEditorSection,
-  ThemeGallerySection,
-  HowItWorksSection,
-  PricingSection,
-  FAQSection,
-} from "@/features/landing";
+import { SectionSkeleton } from "@/components/ui/SectionSkeleton";
+// Section atas lipatan → eager (kritis LCP).
+import { HeroSection, TrustBarSection } from "@/features/landing";
+// Section yang butuh data DB → dirender di dalam wrapper async + <Suspense>.
+import { ThemeGallerySection, PricingSection, FAQSection } from "@/features/landing";
+// Section bawah lipatan tanpa data → chunk terpisah lewat boundary client.
+import { BelowFoldSections } from "@/features/landing/components/BelowFoldSections";
 
 export const metadata = {
   title: "IKARA — Every Promise Has a Story",
@@ -20,51 +18,77 @@ export const metadata = {
     "IKARA adalah platform digital untuk mengabadikan dan membagikan kisah cinta serta janji pernikahan Anda melalui pengalaman yang indah, personal, dan bermakna.",
 };
 
-export default async function LandingPage() {
-  // Ambil data dinamis paralel: paket, FAQ, setelan WA, dan tema
-  const [packages, faqs, whatsappSetting, themes] = await Promise.all([
-    db.package.findMany({ where: { isActive: true }, orderBy: { price: "asc" } }),
-    db.fAQ.findMany({ orderBy: { sortOrder: "asc" } }),
-    db.systemSetting.findUnique({ where: { key: "CS_WHATSAPP_NUMBER" } }),
-    db.theme.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" }, take: 3 }),
-  ]);
+/*
+ * Streaming SSR: page tidak lagi menunggu SEMUA query DB sebelum render.
+ * Shell (Navbar, Hero, TrustBar, Footer) langsung ter-flush; tiap section
+ * yang butuh data (tema, harga, FAQ, nomor WA) mengambil datanya sendiri di
+ * dalam Server Component async dan di-stream begitu query-nya selesai — tanpa
+ * saling memblokir. Konten tetap dirender server → aman untuk SEO.
+ */
 
-  const whatsappNumber = whatsappSetting?.value || "6281234567890";
+async function ThemeGalleryData() {
+  const themes = await db.theme.findMany({
+    where: { isActive: true },
+    orderBy: { sortOrder: "asc" },
+    take: 3,
+  });
+  return <ThemeGallerySection initialThemes={serialize(themes)} />;
+}
 
-  // Serialisasi data untuk mencegah warning Next.js SSR Date
-  const serializedPackages = serialize(packages);
-  const serializedFaqs = serialize(faqs);
-  const serializedThemes = serialize(themes);
+async function PricingData() {
+  const packages = await db.package.findMany({
+    where: { isActive: true },
+    orderBy: { price: "asc" },
+  });
+  return <PricingSection packages={serialize(packages)} />;
+}
 
+async function FaqData() {
+  const faqs = await db.fAQ.findMany({ orderBy: { sortOrder: "asc" } });
+  return <FAQSection faqs={serialize(faqs)} />;
+}
+
+async function FloatingWhatsApp() {
+  const setting = await db.systemSetting.findUnique({
+    where: { key: "CS_WHATSAPP_NUMBER" },
+  });
+  return <WhatsAppButton phoneNumber={setting?.value || "6281234567890"} />;
+}
+
+export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F6F2] dark:bg-[#191919] text-foreground font-sans selection:bg-[#C8A96A]/20 selection:text-[#C8A96A] relative overflow-hidden">
       <div className="relative z-10 flex-1 flex flex-col">
         <Navbar />
         <main className="flex-1 space-y-0">
-          {/* 1. Hero & TrustBar (LIGHT: bg-[#F8F6F2] — top header zone) */}
+          {/* 1. Hero & TrustBar (atas lipatan, tanpa data) */}
           <HeroSection />
           <TrustBarSection />
 
-          {/* 2. Theme Gallery Section (DARK: bg-[#1F1F1F] — has GlassCard) */}
-          <ThemeGallerySection initialThemes={serializedThemes} />
+          {/* 2. Theme Gallery (butuh data tema → stream) */}
+          <Suspense fallback={<SectionSkeleton tone="dark" />}>
+            <ThemeGalleryData />
+          </Suspense>
 
-          {/* 3. Interactive Scroll Showcase (LIGHT: bg-[#F8F6F2]) */}
-          <InteractiveScrollSection />
+          {/* 3–5. Showcase bawah lipatan tanpa data (chunk terpisah) */}
+          <BelowFoldSections />
 
-          {/* 4. How It Works Section (DARK: bg-[#1F1F1F] — has GlassCard) */}
-          <HowItWorksSection />
+          {/* 6. Pricing (butuh data paket → stream) */}
+          <Suspense fallback={<SectionSkeleton tone="dark" />}>
+            <PricingData />
+          </Suspense>
 
-          {/* 5. Realtime Editor Showcase (LIGHT: bg-[#F8F6F2]) */}
-          <RealtimeEditorSection />
-
-          {/* 6. Pricing Section (DARK: bg-[#1F1F1F] — has GlassCard) */}
-          <PricingSection packages={serializedPackages} />
-
-          {/* 7. FAQ Section (LIGHT: bg-[#F8F6F2]) */}
-          <FAQSection faqs={serializedFaqs} />
+          {/* 7. FAQ (butuh data FAQ → stream) */}
+          <Suspense fallback={<SectionSkeleton tone="light" rows={4} />}>
+            <FaqData />
+          </Suspense>
         </main>
         <Footer />
-        <WhatsAppButton phoneNumber={whatsappNumber} />
+
+        {/* Tombol WA melayang (butuh setelan nomor → stream, non-blocking) */}
+        <Suspense fallback={null}>
+          <FloatingWhatsApp />
+        </Suspense>
       </div>
     </div>
   );

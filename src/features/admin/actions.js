@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { deleteObjectByUrl, deleteObjectsByUrls } from "@/lib/r2";
 import { upsertActiveSubscription } from "@/features/subscription/repository";
 import { requireSuperAdmin } from "@/features/auth/guard";
 
@@ -103,6 +104,12 @@ export async function updateThemeAction(themeId, data) {
     await requireSuperAdmin();
     const { name, slug, description, thumbnailUrl, isPremium, isActive } = data;
 
+    // Ambil thumbnail lama untuk cek pergantian gambar
+    const existing = await db.theme.findUnique({
+      where: { id: themeId },
+      select: { thumbnailUrl: true },
+    });
+
     await db.theme.update({
       where: { id: themeId },
       data: {
@@ -114,6 +121,11 @@ export async function updateThemeAction(themeId, data) {
         isActive: isActive ?? true,
       },
     });
+
+    // Thumbnail lama diganti → hapus objek R2 lama (best-effort, guard domain).
+    if (existing?.thumbnailUrl && existing.thumbnailUrl !== (thumbnailUrl ?? null)) {
+      await deleteObjectByUrl(existing.thumbnailUrl);
+    }
 
     revalidatePath("/dashboard/admin");
     revalidatePath("/dashboard/themes");
@@ -139,9 +151,21 @@ export async function deleteThemeAction(themeId) {
       };
     }
 
+    // Ambil aset R2 (thumbnail + preview) sebelum record dihapus
+    const existing = await db.theme.findUnique({
+      where: { id: themeId },
+      select: { thumbnailUrl: true, previewImages: true },
+    });
+
     await db.theme.delete({
       where: { id: themeId },
     });
+
+    // Bersihkan objek R2 milik tema (best-effort, guard domain).
+    const previews = Array.isArray(existing?.previewImages)
+      ? existing.previewImages
+      : [];
+    await deleteObjectsByUrls([existing?.thumbnailUrl, ...previews]);
 
     revalidatePath("/dashboard/admin");
     revalidatePath("/dashboard/themes");
@@ -240,6 +264,12 @@ export async function updateMusicTemplateAction(musicId, data) {
     await requireSuperAdmin();
     const { title, url, isActive } = data;
 
+    // Ambil URL lagu lama untuk cek pergantian berkas
+    const existing = await db.musicTemplate.findUnique({
+      where: { id: musicId },
+      select: { url: true },
+    });
+
     await db.musicTemplate.update({
       where: { id: musicId },
       data: {
@@ -248,6 +278,11 @@ export async function updateMusicTemplateAction(musicId, data) {
         isActive: isActive ?? true,
       },
     });
+
+    // Berkas lama diganti → hapus objek R2 lama (best-effort, guard domain).
+    if (existing?.url && existing.url !== url) {
+      await deleteObjectByUrl(existing.url);
+    }
 
     revalidatePath("/dashboard/admin");
     return { success: true, message: "Lagu latar berhasil diperbarui." };
@@ -260,9 +295,18 @@ export async function deleteMusicTemplateAction(musicId) {
   try {
     await requireSuperAdmin();
 
+    // Ambil URL berkas sebelum record dihapus
+    const existing = await db.musicTemplate.findUnique({
+      where: { id: musicId },
+      select: { url: true },
+    });
+
     await db.musicTemplate.delete({
       where: { id: musicId },
     });
+
+    // Bersihkan berkas audio di R2 (best-effort, guard domain).
+    await deleteObjectByUrl(existing?.url);
 
     revalidatePath("/dashboard/admin");
     return { success: true, message: "Lagu latar berhasil dihapus." };

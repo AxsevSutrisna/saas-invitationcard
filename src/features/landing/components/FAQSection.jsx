@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { ChevronDown, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -35,11 +35,9 @@ export function FAQSection({ faqs = [] }) {
     <section id="faq" className="py-20 md:py-28 bg-[#F8F6F2]">
       <div className="max-w-4xl mx-auto px-6 space-y-16">
         {/* Header FAQ */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <Reveal
+          direction="up"
+          duration={0.5}
           className="text-center space-y-3"
         >
           <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
@@ -48,19 +46,18 @@ export function FAQSection({ faqs = [] }) {
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#1F1F1F] dark:text-zinc-50">
             Sering Ditanyakan (FAQ)
           </h2>
-        </motion.div>
+        </Reveal>
 
         {/* Accordion FAQ */}
         <div className="space-y-4">
           {displayFaqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <motion.div
+              <Reveal
                 key={idx}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                direction="up"
+                duration={0.4}
+                delay={idx * 0.1}
                 className={`rounded-3xl border transition-all duration-300 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md hover:bg-white/60 dark:hover:bg-zinc-800/60 shadow-sm ${
                   isOpen
                     ? "border-[#C8A96A]/80 shadow-[0_6px_25px_rgba(200,169,106,0.08)] bg-white/60 dark:bg-zinc-900/60"
@@ -83,16 +80,14 @@ export function FAQSection({ faqs = [] }) {
                     {faq.a}
                   </div>
                 )}
-              </motion.div>
+              </Reveal>
             );
           })}
         </div>
 
         {/* Closing Conversion CTA Banner */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+        <Reveal
+          direction="none"
           className="rounded-[32px] bg-[#2C2723] text-white p-10 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden border border-[#C8A96A]/40"
         >
 
@@ -115,7 +110,7 @@ export function FAQSection({ faqs = [] }) {
               </Button>
             </Link>
           </div>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );
