@@ -1,15 +1,25 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { Sparkles, Eye, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/ui/GlassCard";
 
-/**
- * ThemeGallerySection Component
- * Galeri pilihan desain tema undangan digital (menggunakan data dummy sesuai seed database).
- */
-export function ThemeGallerySection() {
-  const dummyThemes = [
+import Link from "next/link";
+import Image from "next/image";
+
+export function ThemeGallerySection({ initialThemes = [] }) {
+  // Gunakan data tema dari database jika ada, jika tidak (misal database kosong saat testing), gunakan dummy
+  const displayThemes = initialThemes.length > 0 ? initialThemes.map((t, idx) => ({
+    id: t.id,
+    name: t.name,
+    slug: t.slug,
+    desc: t.description || "Desain eksklusif untuk pernikahan Anda.",
+    badge: t.isPremium ? "Premium" : "Populer",
+    isPremium: t.isPremium,
+    thumbnailUrl: t.thumbnailUrl,
+    accent: idx % 2 === 0 ? "text-gold-400" : "text-zinc-500", // variasi warna
+  })) : [
     {
       id: "1",
       name: "Classic Elegance",
@@ -17,8 +27,7 @@ export function ThemeGallerySection() {
       desc: "Desain undangan klasik dengan nuansa warna emas dan putih gading, sangat mewah.",
       badge: "Populer",
       isPremium: false,
-      bgColor: "from-amber-100 to-amber-50 dark:from-zinc-800 dark:to-zinc-900 border-[#C8A96A]/40",
-      accent: "text-[#C8A96A]",
+      accent: "text-gold-400",
     },
     {
       id: "2",
@@ -27,105 +36,133 @@ export function ThemeGallerySection() {
       desc: "Tema bunga-bunga romantis dengan animasi kelopak berguguran yang memikat.",
       badge: "Premium",
       isPremium: true,
-      bgColor: "from-rose-100 to-rose-50 dark:from-zinc-800 dark:to-zinc-900 border-[#B76E79]/40",
-      accent: "text-[#B76E79]",
+      accent: "text-accent",
     },
     {
       id: "3",
       name: "Modern Minimalist",
       slug: "modern-minimalist",
-      desc: "Tampilan bersih, santai, dan kontemporer untuk pasangan pasangan modern.",
+      desc: "Tampilan bersih, santai, dan kontemporer untuk pasangan modern.",
       badge: "Baru",
       isPremium: true,
-      bgColor: "from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 border-zinc-300 dark:border-zinc-700",
-      accent: "text-zinc-700 dark:text-zinc-300",
+      accent: "text-zinc-500",
     },
   ];
 
   return (
-    <section id="tema" className="py-20 md:py-28 relative">
-      <div className="max-w-6xl mx-auto px-6 space-y-12">
-        {/* Header Teks */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+    <section
+      id="tema"
+      aria-label="Galeri Tema Undangan"
+      className="scroll-mt-28 py-20 md:py-28 relative overflow-hidden bg-[#2C2723] border-y border-gold-400/20"
+    >
+      <div className="max-w-6xl mx-auto px-6 space-y-14 relative z-10">
+        {/* Section Header */}
+        <Reveal
+          direction="up"
+          duration={0.5}
           className="text-center max-w-2xl mx-auto space-y-3"
         >
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-gold-400">
             Modern Editorial Romance
           </span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#1F1F1F] dark:text-zinc-50">
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white">
             Find the look that feels like you.
           </h2>
-          <p className="text-muted-foreground text-sm sm:text-base font-light leading-relaxed">
-            Pilih estetika visual yang paling mencerminkan karakter, kehangatan, dan keunikan perjalanan kisah cinta Anda.
+          <p className="text-zinc-400 text-sm sm:text-base font-light leading-relaxed">
+            Pilih estetika visual yang paling mencerminkan karakter, kehangatan,
+            dan keunikan perjalanan kisah cinta Anda.
           </p>
-        </motion.div>
+        </Reveal>
 
-        {/* Theme Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {dummyThemes.map((theme, index) => (
-            <motion.div
+        {/* Themes Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {displayThemes.map((theme, index) => (
+            <Reveal
               key={theme.id}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`rounded-3xl bg-gradient-to-b ${theme.bgColor} border p-6 flex flex-col justify-between shadow-lg hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1`}
+              direction="up"
+              duration={0.5}
+              delay={index * 0.1}
+              className="h-full flex flex-col"
             >
-              <div className="space-y-4">
-                {/* Theme Card Mockup Area */}
-                <div className="w-full aspect-[4/5] rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-white/60 p-4 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:scale-[1.02] transition-transform">
-                  <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#C8A96A]/20 text-[#9e7e40] border border-[#C8A96A]/30">
-                    {theme.badge}
-                  </span>
-                  
-                  <div className={`w-14 h-14 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center ${theme.accent} mb-3 shadow-inner`}>
-                    <Sparkles className="w-7 h-7 fill-current" />
+              {/* 
+                Komponen Kartu 
+              */}
+              <GlassCard
+                variant="full"
+                className="p-6 flex flex-col justify-between group hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300"
+              >
+                {/* Phone Mockup Frame (Taller Android Style) */}
+                <div className="flex justify-center relative mb-4">
+                  <div className="relative w-45 sm:w-50 h-95 bg-[#1C1C1E] dark:bg-[#1C1C1E] rounded-[32px] border-8 border-[#1C1C1E] shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden">
+                    {theme.thumbnailUrl ? (
+                      <Image
+                        src={theme.thumbnailUrl}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 300px"
+                        className="object-cover"
+                        alt={`Preview tema ${theme.name}`}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center p-6 space-y-4">
+                        <div className={`w-14 h-14 rounded-full bg-white/10 shadow-md flex items-center justify-center`}>
+                          <Sparkles className="w-6 h-6 text-gold-400" />
+                        </div>
+                        <h3 className="font-heading text-xl font-bold text-white">
+                          {theme.name}
+                        </h3>
+                        <span className="text-[10px] text-white/70 font-light uppercase tracking-widest border border-white/20 px-3 py-1 rounded-full">
+                          {theme.badge}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium">
-                    Preview Tema
-                  </p>
-                  <h3 className="font-heading text-2xl font-bold text-foreground">
-                    James & Syifa
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Sample Wedding Card
-                  </p>
                 </div>
 
-                {/* Theme Meta */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-lg text-foreground">
+                {/* Theme Metadata */}
+                <div className="mt-3.5 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="font-bold text-[16px] text-white font-poppins leading-tight">
                       {theme.name}
                     </h4>
                     {theme.isPremium && (
-                      <span className="flex items-center gap-1 text-xs font-semibold text-[#C8A96A]">
-                        <Star className="w-3.5 h-3.5 fill-current" /> Premium
+                      <span className="flex items-center gap-0.5 text-[12px] font-bold text-gold-600 shrink-0">
+                        <Star className="w-3.5 h-3.5 fill-current" aria-hidden="true" />{" "}
+                        Premium
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-[12px] text-zinc-300 leading-relaxed font-semibold">
                     {theme.desc}
                   </p>
                 </div>
-              </div>
 
-              {/* Action Button */}
-              <div className="pt-6">
-                <Button
-                  variant="outline"
-                  className="w-full rounded-xl border-[#C8A96A]/40 hover:bg-[#C8A96A] hover:text-white font-medium text-xs h-10 flex items-center justify-center gap-2 transition-all"
-                >
-                  <Eye className="w-4 h-4" /> Lihat Demo Tema
-                </Button>
-              </div>
-            </motion.div>
+                {/* CTA Button */}
+                <div className="mt-4">
+                  <Link href={`/theme/preview/${theme.slug}`} target="_blank" className="w-full block">
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 rounded-xl border border-gold-400/50 bg-black/40 backdrop-blur-md hover:bg-gold-400/20 hover:border-gold-400 text-white hover:text-[#F6E5B3] font-medium text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer transition-all active:scale-95"
+                      aria-label={`Lihat demo tema ${theme.name}`}
+                    >
+                      <Eye className="w-4 h-4" aria-hidden="true" /> Lihat Demo Tema
+                    </Button>
+                  </Link>
+                </div>
+              </GlassCard>
+            </Reveal>
           ))}
+        </div>
+
+        {/* View All Themes CTA */}
+        <div className="flex justify-center pt-8">
+          <Link href="/themes">
+            <Button
+              className="h-12 px-8 rounded-full bg-gold-400 hover:bg-gold-500 text-white font-semibold text-base flex items-center justify-center gap-2 group shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer border-none"
+            >
+              Lihat Semua Koleksi Tema
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

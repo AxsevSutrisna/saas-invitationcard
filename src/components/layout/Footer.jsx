@@ -15,16 +15,17 @@ export function Footer() {
         <div className="md:col-span-1 space-y-4">
           <Link href="/" className="flex items-center">
             <Image
-              src="/IKARA_Logo_V3.png"
+              src="/IKARA_Logo_V3_footer.png"
               alt="IKARA Logo"
               width={160}
               height={44}
               style={{ width: "auto", height: "40px" }}
               className="object-contain"
+              loading="lazy"
             />
           </Link>
           <p className="text-sm text-zinc-400 leading-relaxed font-light">
-            <span className="italic font-serif text-[#C8A96A] font-medium">{siteConfig.tagline}.</span>{" "}
+            <span className="italic font-serif text-gold-400 font-medium">{siteConfig.tagline}.</span>{" "}
             {siteConfig.philosophy}
           </p>
         </div>
@@ -36,23 +37,23 @@ export function Footer() {
           </h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="#features" className="hover:text-[#C8A96A] transition-colors">
-                Fitur Utama
+              <Link href="#fitur" className="hover:text-gold-400 transition-colors">
+                Fitur
               </Link>
             </li>
             <li>
-              <Link href="#themes" className="hover:text-[#C8A96A] transition-colors">
-                Koleksi Tema
+              <Link href="#tema" className="hover:text-gold-400 transition-colors">
+                Tema
               </Link>
             </li>
             <li>
-              <Link href="#how-it-works" className="hover:text-[#C8A96A] transition-colors">
-                Cara Kerja
+              <Link href="#cara-kerja" className="hover:text-gold-400 transition-colors">
+                Panduan
               </Link>
             </li>
             <li>
-              <Link href="#pricing" className="hover:text-[#C8A96A] transition-colors">
-                Paket Harga
+              <Link href="#harga" className="hover:text-gold-400 transition-colors">
+                Harga
               </Link>
             </li>
           </ul>
@@ -65,18 +66,28 @@ export function Footer() {
           </h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href={ROUTES.REGISTER} className="hover:text-[#C8A96A] transition-colors">
-                Buat Undangan Gratis
+              <Link href={ROUTES.LOGIN} className="hover:text-gold-400 transition-colors">
+                Buat Undangan
               </Link>
             </li>
             <li>
-              <Link href={ROUTES.LOGIN} className="hover:text-[#C8A96A] transition-colors">
-                Masuk ke Dashboard
+              <Link href={ROUTES.LOGIN} className="hover:text-gold-400 transition-colors">
+                Login
               </Link>
             </li>
             <li>
-              <Link href="#faq" className="hover:text-[#C8A96A] transition-colors">
-                Tanya Jawab (FAQ)
+              <Link href="#faq" className="hover:text-gold-400 transition-colors">
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="hover:text-gold-400 transition-colors">
+                Ketentuan
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy" className="hover:text-gold-400 transition-colors">
+                Privasi
               </Link>
             </li>
           </ul>
@@ -90,7 +101,7 @@ export function Footer() {
           <p className="text-sm text-zinc-400">
             Punya pertanyaan atau butuh bantuan khusus? Tim support kami siap melayani Anda.
           </p>
-          <div className="text-sm text-[#C8A96A] font-medium pt-1">
+          <div className="text-sm text-gold-400 font-medium pt-1">
             <a
               href={`mailto:${siteConfig.contact.support}`}
               className="hover:underline"
@@ -102,11 +113,18 @@ export function Footer() {
       </div>
 
       {/* Copyright Bar */}
-      <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-zinc-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-4">
-        <p>© {new Date().getFullYear()} IKARA. All rights reserved.</p>
-        <p className="flex items-center gap-1">
-          Dibuat dengan <Heart className="w-3.5 h-3.5 text-[#B76E79] fill-current" /> untuk hari spesial Anda.
-        </p>
+      <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-zinc-800/60 flex flex-col items-center justify-center text-center text-xs text-zinc-500 gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-center">
+          <p>© {new Date().getFullYear()} IKARA. All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link href="/terms" className="hover:text-zinc-300 transition-colors">
+              Syarat & Ketentuan
+            </Link>
+            <Link href="/privacy" className="hover:text-zinc-300 transition-colors">
+              Kebijakan Privasi
+            </Link>
+          </div>
+        </div>
       </div>
     </footer>
   );
