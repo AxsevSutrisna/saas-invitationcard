@@ -207,8 +207,13 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
       initial={{ y: 0 }}
       exit={{ y: "-100%" }}
       transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-      className="absolute inset-0 z-50 flex flex-col items-center justify-between py-4 sm:py-8 px-4 sm:px-6 select-none overflow-hidden"
+      className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-8 sm:gap-12 py-10 px-4 sm:px-6 select-none overflow-hidden"
     >
+      {/* 0. Base solid (OPAQUE) — tirai wajib menutup penuh konten di belakangnya
+          selama transisi luncur-naik, agar isi undangan tak "menembus" (mencegah
+          efek transisi ganda). Layer paling bawah, di bawah foto blur & overlay. */}
+      <div className={`absolute inset-0 z-0 ${config.solid || "bg-[#F8F6F2] dark:bg-zinc-950"}`} />
+
       {/* 1. Blurred Background Image of Couple */}
       {invitation?.coverUrl && (
         <div
@@ -345,7 +350,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
 
       {/* 4. Couple Names (Top Section) */}
       <div className="text-center z-20 space-y-0.5 mt-2">
-        <span className="text-[8px] tracking-[0.35em] uppercase font-bold text-muted-foreground opacity-70">
+        <span className={`text-[8px] tracking-[0.35em] uppercase font-bold ${config.textSecondary}`}>
           THE WEDDING OF
         </span>
 
@@ -373,16 +378,16 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
       <div className="w-full max-w-xs mx-auto z-20 space-y-3 flex flex-col items-center">
         {/* Guest Name Card */}
         <div className={`py-2 px-3 ${guestCardClass} ${config.cardBg} backdrop-blur-md w-[220px] text-center space-y-1`}>
-          <p className="text-[8px] tracking-[0.25em] uppercase font-bold text-muted-foreground opacity-75">
+          <p className={`text-[8px] tracking-[0.25em] uppercase font-bold ${config.cardMuted || "text-zinc-500"}`}>
             Kepada Yth.
           </p>
           <div className="space-y-0.5">
-            <h2 className="text-base font-bold tracking-normal text-foreground">
+            <h2 className={`text-base font-bold tracking-normal ${config.cardName || "text-zinc-800"}`}>
               {guestName || "Tamu Undangan"}
             </h2>
-            <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-[#C8A96A] to-transparent mx-auto opacity-40" />
+            <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-current to-transparent mx-auto opacity-30" style={{ color: config.ornamentsColor }} />
           </div>
-          <p className="text-[8px] text-muted-foreground leading-relaxed font-light px-1">
+          <p className={`text-[8px] leading-relaxed font-light px-1 ${config.cardMuted || "text-zinc-500"}`}>
             Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami.
           </p>
         </div>

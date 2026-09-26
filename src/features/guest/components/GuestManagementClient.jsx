@@ -31,7 +31,7 @@ import {
   updateGuestAction,
   deleteGuestAction
 } from "@/features/guest/actions";
-import { buildWhatsAppUrl } from "@/lib/format";
+import { buildWhatsAppUrl, formatEventDate, formatShortDateTime } from "@/lib/format";
 
 export function GuestManagementClient({ invitations, selectedInvitation, initialGuests }) {
   const router = useRouter();
@@ -254,12 +254,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       `;
     }).join("");
 
-    const dateStr = new Date().toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    const dateStr = formatEventDate(new Date());
 
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
@@ -685,7 +680,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                             </Badge>
                             {guest.openedAt && (
                               <span className="block text-[8px] text-muted-foreground font-light pl-1">
-                                {new Date(guest.openedAt).toLocaleDateString("id-ID", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                {formatShortDateTime(guest.openedAt)}
                               </span>
                             )}
                           </div>

@@ -46,8 +46,9 @@ import {
   deleteFaqAction,
   updateSystemSettingAction
 } from "@/features/admin/actions";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatShortDate, formatDateTime } from "@/lib/format";
 import { ROLES } from "@/constants/roles";
+import { THEME_CATEGORIES } from "@/features/theme/theme-catalog";
 
 const TAB_TITLES = {
   users: {
@@ -139,7 +140,7 @@ export function AdminClient({
   const [waNumberInput, setWaNumberInput] = useState(waSetting);
 
   // Form inputs untuk CRUD
-  const [themeInput, setThemeInput] = useState({ name: "", slug: "", description: "", thumbnailUrl: "", isPremium: false, isActive: true });
+  const [themeInput, setThemeInput] = useState({ name: "", slug: "", description: "", category: "", thumbnailUrl: "", previewImages: [], isPremium: false, isActive: true });
   const [quoteInput, setQuoteInput] = useState({ title: "", content: "", category: "Islami" });
   const [musicInput, setMusicInput] = useState({ title: "", url: "", isActive: true });
   const [faqInput, setFaqInput] = useState({ question: "", answer: "", sortOrder: "" });
@@ -156,7 +157,7 @@ export function AdminClient({
   const closeModal = () => {
     setModalOpen(false);
     setEditItem(null);
-    setThemeInput({ name: "", slug: "", description: "", thumbnailUrl: "", isPremium: false, isActive: true });
+    setThemeInput({ name: "", slug: "", description: "", category: "", thumbnailUrl: "", previewImages: [], isPremium: false, isActive: true });
     setQuoteInput({ title: "", content: "", category: "Islami" });
     setMusicInput({ title: "", url: "", isActive: true });
     setFaqInput({ question: "", answer: "", sortOrder: "" });
@@ -183,7 +184,9 @@ export function AdminClient({
         name: item.name,
         slug: item.slug,
         description: item.description || "",
+        category: item.category || "",
         thumbnailUrl: item.thumbnailUrl || "",
+        previewImages: Array.isArray(item.previewImages) ? item.previewImages : [],
         isPremium: item.isPremium,
         isActive: item.isActive
       });
@@ -532,7 +535,7 @@ export function AdminClient({
                             {activeSub ? (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gold-400">
                                 <Sparkles className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
-                                {activeSub.package.name} (s.d. {new Date(activeSub.validUntil).toLocaleDateString("id-ID")})
+                                {activeSub.package.name} (s.d. {formatShortDate(activeSub.validUntil)})
                               </span>
                             ) : (
                               <span className="font-light text-muted-foreground">Free Trial</span>
@@ -656,7 +659,7 @@ export function AdminClient({
                             </Badge>
                           </td>
                           <td className="px-4 py-3.5 text-right font-light text-muted-foreground">
-                            {new Date(t.createdAt).toLocaleDateString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                            {formatDateTime(t.createdAt)}
                           </td>
                         </tr>
                       ))}
@@ -1121,6 +1124,20 @@ export function AdminClient({
                     className={FIELD_CLASS}
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="theme-category" className="text-xs font-semibold text-foreground">Kategori</label>
+                  <select
+                    id="theme-category"
+                    value={themeInput.category}
+                    onChange={(e) => setThemeInput({ ...themeInput, category: e.target.value })}
+                    className={FIELD_CLASS}
+                  >
+                    <option value="">— Pilih kategori —</option>
+                    {THEME_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
                 {/* Tab Switcher for Thumbnail Source Mode */}
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-foreground">Sumber Gambar Thumbnail</span>
@@ -1199,6 +1216,44 @@ export function AdminClient({
                     )}
                   </div>
                 )}
+                {/* Galeri Preview (multi-gambar screenshot tema) */}
+                <div className="space-y-1.5">
+                  <span className="text-xs font-semibold text-foreground">
+                    Galeri Preview <span className="font-normal text-muted-foreground">(opsional — screenshot tema, bisa beberapa)</span>
+                  </span>
+                  {themeInput.previewImages.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {themeInput.previewImages.map((url, i) => (
+                        <div key={i} className="relative overflow-hidden rounded-lg border border-border">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt={`Preview ${i + 1}`} className="h-20 w-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setThemeInput((prev) => ({
+                                ...prev,
+                                previewImages: prev.previewImages.filter((_, idx) => idx !== i),
+                              }))
+                            }
+                            aria-label={`Hapus preview ${i + 1}`}
+                            className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white shadow"
+                          >
+                            <X className="h-3 w-3" aria-hidden="true" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <FileUploader
+                    value=""
+                    onChange={(url) =>
+                      setThemeInput((prev) => ({ ...prev, previewImages: [...prev.previewImages, url] }))
+                    }
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    maxSize={5 * 1024 * 1024}
+                    helperText="Unggah screenshot tema (JPG/PNG/WEBP, maks 5MB). Ulangi untuk menambah beberapa."
+                  />
+                </div>
                 <div className="flex items-center gap-6 pt-2">
                   <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-foreground">
                     <input

@@ -45,6 +45,23 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
     }
   }, [isOpen, isMuted, isMusicEnabled]);
 
+  // Preload gambar kritikal isi undangan SELAGI cover masih tampil, agar begitu
+  // tirai terbuka gambar sudah ter-cache (tidak "pop-in" di koneksi lambat).
+  // coverUrl umumnya sudah dimuat cover; foto mempelai & galeri pertama belum.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const urls = [
+      invitation?.coverUrl,
+      invitation?.groomPhotoUrl,
+      invitation?.bridePhotoUrl,
+      invitation?.galleries?.[0]?.mediaUrl,
+    ].filter(Boolean);
+    urls.forEach((url) => {
+      const img = new window.Image();
+      img.src = url;
+    });
+  }, [invitation]);
+
   // Lock body scroll when envelope cover is closed
   useEffect(() => {
     if (!isOpen) {

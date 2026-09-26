@@ -78,7 +78,8 @@ export async function upgradeUserSubscriptionAction(userId, packageId) {
 export async function createThemeAction(data) {
   try {
     await requireSuperAdmin();
-    const { name, slug, description, thumbnailUrl, isPremium, isActive } = data;
+    const { name, slug, description, category, thumbnailUrl, previewImages, isPremium, isActive } = data;
+    const previews = Array.isArray(previewImages) ? previewImages.filter(Boolean) : [];
 
     // Cek duplikasi slug
     const exists = await db.theme.findUnique({ where: { slug } });
@@ -91,7 +92,9 @@ export async function createThemeAction(data) {
         name,
         slug,
         description: description || null,
+        category: category || null,
         thumbnailUrl: thumbnailUrl || null,
+        previewImages: previews,
         isPremium: isPremium ?? false,
         isActive: isActive ?? true,
       },
@@ -108,12 +111,13 @@ export async function createThemeAction(data) {
 export async function updateThemeAction(themeId, data) {
   try {
     await requireSuperAdmin();
-    const { name, slug, description, thumbnailUrl, isPremium, isActive } = data;
+    const { name, slug, description, category, thumbnailUrl, previewImages, isPremium, isActive } = data;
+    const newPreviews = Array.isArray(previewImages) ? previewImages.filter(Boolean) : [];
 
-    // Ambil thumbnail lama untuk cek pergantian gambar
+    // Ambil aset lama untuk cek pergantian gambar (thumbnail + preview)
     const existing = await db.theme.findUnique({
       where: { id: themeId },
-      select: { thumbnailUrl: true },
+      select: { thumbnailUrl: true, previewImages: true },
     });
 
     await db.theme.update({
@@ -122,15 +126,23 @@ export async function updateThemeAction(themeId, data) {
         name,
         slug,
         description: description ?? null,
+        category: category || null,
         thumbnailUrl: thumbnailUrl ?? null,
+        previewImages: newPreviews,
         isPremium: isPremium ?? false,
         isActive: isActive ?? true,
       },
     });
 
-    // Thumbnail lama diganti → hapus objek R2 lama (best-effort, guard domain).
+    // Bersihkan objek R2 lama yang tak lagi dipakai (thumbnail diganti + preview
+    // yang dihapus). Best-effort; aset tema (bukan ber-prefix user) → tanpa guard.
+    const oldPreviews = Array.isArray(existing?.previewImages) ? existing.previewImages : [];
+    const orphaned = oldPreviews.filter((u) => !newPreviews.includes(u));
     if (existing?.thumbnailUrl && existing.thumbnailUrl !== (thumbnailUrl ?? null)) {
-      await deleteObjectByUrl(existing.thumbnailUrl);
+      orphaned.push(existing.thumbnailUrl);
+    }
+    if (orphaned.length > 0) {
+      await deleteObjectsByUrls(orphaned);
     }
 
     revalidatePath("/dashboard/admin");

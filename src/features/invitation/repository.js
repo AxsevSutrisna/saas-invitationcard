@@ -28,124 +28,16 @@ const invitationRelationsOrdered = {
  * Membuat record undangan baru beserta relasi Events, LoveStories, Galleries, dan Gifts secara atomic
  */
 export async function createInvitation(userId, data) {
-  const {
-    title,
-    slug,
-    themeId,
-    // Pasangan Pria
-    groomNickname,
-    groomFullName,
-    groomFather,
-    groomMother,
-    groomPhotoUrl,
-    // Pasangan Wanita
-    brideNickname,
-    brideFullName,
-    brideFather,
-    brideMother,
-    bridePhotoUrl,
-    // Fallback names
-    groomName,
-    brideName,
-    // Media & Layout
-    coverUrl,
-    galleryLayout = "CAROUSEL",
-    quotes,
-    openingText,
-    // Kado Fisik
-    physicalGiftAddress,
-    physicalGiftReceiver,
-    physicalGiftPhone,
-    // Musik Latar
-    musicUrl,
-    musicTitle,
-    isMusicEnabled = true,
-    // Arrays
-    events = [],
-    loveStories = [],
-    galleries = [],
-    gifts = [],
-    isPublished = true,
-  } = data;
+  const { isPublished = true } = data;
 
-  const finalGroomNickname = groomNickname || groomName || "William";
-  const finalGroomFullName = groomFullName || groomName || "William Jonathan";
-  const finalBrideNickname = brideNickname || brideName || "Eleanor";
-  const finalBrideFullName = brideFullName || brideName || "Eleanor Grace";
-
+  // Pakai builder bersama (buildInvitationWriteData) agar konsisten dengan
+  // updateInvitation — termasuk pemetaan gift.qrCodeUrl.
   return db.invitation.create({
     data: {
       userId,
-      themeId,
-      slug,
-      title: title || `Pernikahan ${finalGroomNickname} & ${finalBrideNickname}`,
-      groomNickname: finalGroomNickname,
-      groomFullName: finalGroomFullName,
-      groomFather: groomFather || null,
-      groomMother: groomMother || null,
-      groomPhotoUrl: groomPhotoUrl || null,
-      brideNickname: finalBrideNickname,
-      brideFullName: finalBrideFullName,
-      brideFather: brideFather || null,
-      brideMother: brideMother || null,
-      bridePhotoUrl: bridePhotoUrl || null,
-      coverUrl: coverUrl || null,
-      galleryLayout: galleryLayout || "CAROUSEL",
-      quotes: quotes || null,
-      openingText: openingText || null,
-      physicalGiftAddress: physicalGiftAddress || null,
-      physicalGiftReceiver: physicalGiftReceiver || null,
-      physicalGiftPhone: physicalGiftPhone || null,
-      musicUrl: musicUrl || null,
-      musicTitle: musicTitle || null,
-      isMusicEnabled: isMusicEnabled ?? true,
+      ...buildInvitationWriteData(data),
       isPublished,
       publishedAt: isPublished ? new Date() : null,
-
-      // Nested Creates
-      events: {
-        create: events.map((evt, idx) => ({
-          name: evt.name,
-          date: new Date(evt.date),
-          startTime: evt.startTime,
-          endTime: evt.endTime || null,
-          locationName: evt.locationName,
-          address: evt.address,
-          mapUrl: evt.mapUrl || null,
-          sortOrder: idx,
-        })),
-      },
-
-      loveStories: {
-        create: loveStories.map((story, idx) => ({
-          title: story.title,
-          date: story.date || null,
-          description: story.description,
-          imageUrl: story.imageUrl || null,
-          sortOrder: idx,
-        })),
-      },
-
-      galleries: {
-        create: galleries.map((gal, idx) => ({
-          mediaUrl: gal.mediaUrl,
-          thumbnailUrl: gal.thumbnailUrl || null,
-          type: gal.type || "PHOTO",
-          caption: gal.caption || null,
-          sortOrder: idx,
-        })),
-      },
-
-      gifts: {
-        create: gifts.map((gft, idx) => ({
-          type: gft.type || "BANK",
-          providerName: gft.providerName,
-          accountName: gft.accountName,
-          accountNumber: gft.accountNumber || null,
-          note: gft.note || null,
-          sortOrder: idx,
-        })),
-      },
     },
     include: invitationRelations,
   });
@@ -168,6 +60,34 @@ export async function getInvitationsByUserId(userId) {
       },
     },
     orderBy: { createdAt: "desc" },
+  });
+}
+
+/**
+ * Ringkasan undangan milik user (id + judul saja) — untuk dropdown/pemilih
+ * pada halaman analytics, tanpa memuat relasi berat.
+ */
+export async function getInvitationSummariesByUserId(userId) {
+  return db.invitation.findMany({
+    where: { userId },
+    select: { id: true, title: true },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+/**
+ * Detail satu undangan untuk analytics (owner-scoped): hanya field yang dipakai
+ * halaman — tanggal acara (untuk hitung hari) + jumlah tamu/rsvp/kunjungan.
+ */
+export async function getInvitationAnalytics(id, userId) {
+  return db.invitation.findFirst({
+    where: { id, userId },
+    select: {
+      id: true,
+      title: true,
+      events: { select: { date: true }, orderBy: { date: "asc" } },
+      _count: { select: { guests: true, rsvps: true, visitorLogs: true } },
+    },
   });
 }
 

@@ -165,6 +165,7 @@ model Theme {
   name          String
   slug          String   @unique
   description   String?
+  category      String? // Kategori katalog (Elegant/Floral/Minimalist/Blue/Nature)
   thumbnailUrl  String?
   previewImages Json? // Array of preview image URLs
   isPremium     Boolean  @default(false)

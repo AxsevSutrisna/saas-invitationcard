@@ -5,7 +5,6 @@ import { authorize } from "@/features/auth/guard";
 import {
   createGuest,
   createGuestsBulk,
-  getGuestsByInvitationId,
   updateGuest,
   deleteGuest,
   trackGuestOpen,
@@ -88,23 +87,6 @@ export async function createGuestsBulkAction(payload) {
       success: false,
       error: error.errors?.[0]?.message || error.message || "Gagal menambah tamu massal.",
     };
-  }
-}
-
-/**
- * Action: Get all guests for an invitation (hanya pemilik undangan)
- */
-export async function getGuestsAction(invitationId) {
-  try {
-    // Otorisasi: hanya pemilik undangan yang boleh melihat daftar tamunya.
-    const invitation = await getInvitationOwner(invitationId);
-    await authorize("guest:read", invitation);
-
-    const guests = await getGuestsByInvitationId(invitationId);
-    return { success: true, data: guests };
-  } catch (error) {
-    console.error("Error getGuestsAction:", error);
-    return { success: false, error: "Gagal mengambil daftar tamu." };
   }
 }
 

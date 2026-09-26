@@ -63,7 +63,7 @@ export function FloralWreath({ color = "#B76E79", size = 160 }) {
       {/* Leaves (4 diagonal) */}
       {[30, 120, 210, 300].map((angle, i) => (
         <g key={`leaf-${i}`} style={{ transformOrigin: "80px 80px", transform: `rotate(${angle}deg)` }}>
-          <ellipse cx="80" cy="16" rx="4" ry="8" fill="#86efac" opacity="0.5" />
+          <ellipse cx="80" cy="16" rx="4" ry="8" fill={color} opacity="0.3" />
         </g>
       ))}
       {/* Small accent dots */}

@@ -5,30 +5,44 @@ import { ModernMinimalistTheme } from "@/features/theme/designs/modern-minimalis
 import { NatureHarmonyTheme } from "@/features/theme/designs/nature-harmony";
 import { getThemeConfig } from "@/features/theme/theme-config";
 
-export function ThemeRegistry({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
+/**
+ * Peta renderer → komponen. Nilai `renderer` diambil dari THEME_CONFIG.
+ *
+ * Menambah tema dengan LAYOUT yang sudah ada (mis. "traditional") cukup
+ * menambah entri di THEME_CONFIG — file ini TIDAK perlu disentuh.
+ * File ini hanya berubah bila memperkenalkan LAYOUT/renderer baru.
+ */
+const RENDERERS = {
+  traditional: TraditionalLayout,
+  modern: ModernMinimalistTheme,
+  nature: NatureHarmonyTheme,
+};
+
+export function ThemeRegistry({
+  invitation,
+  rsvps,
+  guestName,
+  onRsvpSuccess,
+  isPreview,
+  guest,
+  isMuted,
+  setIsMuted,
+}) {
   const themeSlug = invitation?.theme?.slug || "classic-elegance";
+  const config = getThemeConfig(themeSlug); // fallback ke classic-elegance
+  const Renderer = RENDERERS[config.renderer] || TraditionalLayout;
 
-  const props = {
-    invitation,
-    rsvps,
-    guestName,
-    onRsvpSuccess,
-    isPreview,
-    guest,
-    isMuted,
-    setIsMuted,
-  };
-
-  switch (themeSlug) {
-    case "classic-elegance":
-    case "floral-blossom":
-    case "floral-blue":
-      return <TraditionalLayout config={getThemeConfig(themeSlug)} {...props} />;
-    case "modern-minimalist":
-      return <ModernMinimalistTheme {...props} />;
-    case "nature-harmony":
-      return <NatureHarmonyTheme {...props} />;
-    default:
-      return <TraditionalLayout config={getThemeConfig("classic-elegance")} {...props} />;
-  }
+  return (
+    <Renderer
+      config={config}
+      invitation={invitation}
+      rsvps={rsvps}
+      guestName={guestName}
+      onRsvpSuccess={onRsvpSuccess}
+      isPreview={isPreview}
+      guest={guest}
+      isMuted={isMuted}
+      setIsMuted={setIsMuted}
+    />
+  );
 }

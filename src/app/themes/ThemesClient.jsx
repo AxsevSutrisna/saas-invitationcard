@@ -5,56 +5,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Eye, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const DEFAULT_THUMBNAILS = {
-  "classic-elegance": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600",
-  "floral-blossom": "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=600",
-  "modern-minimalist": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600",
-  "floral-blue": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=600",
-  "nature-harmony": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=600",
-};
-
-const CATEGORY_MAP = {
-  "classic-elegance": {
-    category: "Elegant",
-    tag: "Populer",
-    badgeColor: "bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300 border border-gold-200 dark:border-gold-400/20",
-    gradient: "from-gold-100 to-gold-50 dark:from-zinc-800 dark:to-zinc-900",
-  },
-  "floral-blossom": {
-    category: "Floral",
-    tag: "Eksklusif",
-    badgeColor: "bg-accent/10 text-accent dark:bg-accent/20 dark:text-accent border border-accent/20 dark:border-accent/30",
-    gradient: "from-accent/10 to-accent/5 dark:from-zinc-800 dark:to-zinc-900",
-  },
-  "modern-minimalist": {
-    category: "Minimalist",
-    tag: "Favorit",
-    badgeColor: "bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300 border border-gold-200 dark:border-gold-400/20",
-    gradient: "from-gold-100 to-gold-50 dark:from-zinc-800 dark:to-zinc-900",
-  },
-  "floral-blue": {
-    category: "Blue",
-    tag: "Baru",
-    badgeColor: "bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300 border border-gold-200 dark:border-gold-400/20",
-    gradient: "from-gold-100 to-gold-50 dark:from-zinc-800 dark:to-zinc-900",
-  },
-};
+import {
+  getThemeCatalog,
+  THEME_FILTERS,
+  DEFAULT_THUMBNAILS,
+} from "@/features/theme/theme-catalog";
 
 export function ThemesClient({ initialThemes = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
 
-  const categories = ["Semua", "Elegant", "Floral", "Minimalist", "Blue"];
+  const categories = THEME_FILTERS;
 
-  // Mapping data tema database dengan meta-style visual
+  // Mapping data tema database dengan meta-style visual (dari katalog terpusat)
   const themes = initialThemes.map((theme) => {
-    const meta = CATEGORY_MAP[theme.slug] || {
-      category: "Elegant",
-      tag: "Premium",
-      badgeColor: "bg-zinc-100 text-zinc-600",
-      gradient: "from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900",
-    };
+    const meta = getThemeCatalog(theme);
     const previewUrl = theme.thumbnailUrl || DEFAULT_THUMBNAILS[theme.slug] || null;
     return {
       ...theme,
@@ -126,74 +91,97 @@ export function ThemesClient({ initialThemes = [] }) {
       {/* Themes Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
         {filteredThemes.map((theme) => (
-          <div
-            key={theme.id}
-            className="rounded-[2rem] bg-card border border-border/60 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-          >
-            {/* Phone Mockup Frame (Taller Android Style) */}
-            <div className="p-8 bg-zinc-50 dark:bg-zinc-800/40 flex justify-center relative">
-              <div className="relative w-[240px] h-[500px] bg-[#1C1C1E] dark:bg-[#1C1C1E] rounded-[40px] border-[10px] border-[#1C1C1E] shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden group-hover:-translate-y-2 transition-transform duration-500">
-                {theme.previewUrl ? (
-                  <Image
-                    src={theme.previewUrl}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 300px"
-                    className="object-cover"
-                    alt={`Preview tema ${theme.name}`}
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center p-6 space-y-4">
-                    <div className={`w-14 h-14 rounded-full bg-white/10 shadow-md flex items-center justify-center`}>
-                      <Sparkles className="w-6 h-6 text-gold-400" />
-                    </div>
-                    <h3 className="font-heading text-xl font-bold text-white">
-                      {theme.name}
-                    </h3>
-                    <span className="text-[10px] text-white/70 font-light uppercase tracking-widest border border-white/20 px-3 py-1 rounded-full">
-                      {theme.isPremium ? "Premium" : "Populer"}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Theme Meta & Buttons */}
-            <div className="p-6 space-y-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-gold-400" />
-                  <span className="font-heading text-base font-bold text-foreground">
-                    {theme.name}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                  {theme.description || "Desain undangan eksklusif dengan sentuhan estetika tinggi."}
-                </p>
-              </div>
-
-              {/* Actions: Lihat & Pakai */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <Link href={`/theme/preview/${theme.slug}`} target="_blank">
-                  <Button
-                    variant="outline"
-                    className="w-full h-10 rounded-xl bg-transparent border border-border/60 text-muted-foreground hover:text-gold-400 hover:border-gold-400 hover:bg-gold-400/5 font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-300 active:scale-95"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    Lihat Contoh
-                  </Button>
-                </Link>
-
-                <Link href={`/dashboard/invitations/new?themeId=${theme.id}`}>
-                  <Button
-                    className="w-full h-10 rounded-xl bg-gold-400 hover:bg-gold-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
-                  >
-                    Pakai Tema Ini
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
+          <ThemeCard key={theme.id} theme={theme} />
         ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Kartu tema dengan galeri preview: gambar utama bisa diganti lewat strip
+ * thumbnail (thumbnail utama + previewImages). State lokal per kartu.
+ */
+function ThemeCard({ theme }) {
+  const images = [...new Set([theme.previewUrl, ...(theme.previewImages || [])].filter(Boolean))];
+  const [active, setActive] = useState(0);
+  const current = images[active] ?? theme.previewUrl;
+
+  return (
+    <div className="rounded-[2rem] bg-card border border-border/60 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+      {/* Phone Mockup Frame */}
+      <div className="p-8 bg-zinc-50 dark:bg-zinc-800/40 flex flex-col items-center gap-4 relative">
+        <div className="relative w-60 h-125 bg-[#1C1C1E] dark:bg-[#1C1C1E] rounded-[40px] border-10 border-[#1C1C1E] shadow-2xl flex flex-col items-center justify-center text-center overflow-hidden group-hover:-translate-y-2 transition-transform duration-500">
+          {current ? (
+            <Image
+              src={current}
+              fill
+              sizes="(max-width: 768px) 100vw, 300px"
+              className="object-cover"
+              alt={`Preview tema ${theme.name}`}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center p-6 space-y-4">
+              <div className="w-14 h-14 rounded-full bg-white/10 shadow-md flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-gold-400" />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-white">{theme.name}</h3>
+              <span className="text-[10px] text-white/70 font-light uppercase tracking-widest border border-white/20 px-3 py-1 rounded-full">
+                {theme.isPremium ? "Premium" : "Populer"}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Strip thumbnail — muncul bila ada lebih dari 1 gambar */}
+        {images.length > 1 && (
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setActive(i)}
+                aria-label={`Lihat gambar ${i + 1}`}
+                className={`relative h-14 w-10 shrink-0 overflow-hidden rounded-lg border-2 transition-all cursor-pointer ${
+                  active === i ? "border-gold-400" : "border-transparent opacity-70 hover:opacity-100"
+                }`}
+              >
+                <Image src={img} fill sizes="40px" className="object-cover" alt={`Thumbnail ${i + 1} tema ${theme.name}`} />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Theme Meta & Buttons */}
+      <div className="p-6 space-y-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-gold-400" />
+            <span className="font-heading text-base font-bold text-foreground">{theme.name}</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+            {theme.description || "Desain undangan eksklusif dengan sentuhan estetika tinggi."}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <Link href={`/theme/preview/${theme.slug}`} target="_blank">
+            <Button
+              variant="outline"
+              className="w-full h-10 rounded-xl bg-transparent border border-border/60 text-muted-foreground hover:text-gold-400 hover:border-gold-400 hover:bg-gold-400/5 font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-300 active:scale-95"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              Lihat Contoh
+            </Button>
+          </Link>
+
+          <Link href={`/dashboard/invitations/new?themeId=${theme.id}`}>
+            <Button className="w-full h-10 rounded-xl bg-gold-400 hover:bg-gold-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95">
+              Pakai Tema Ini
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

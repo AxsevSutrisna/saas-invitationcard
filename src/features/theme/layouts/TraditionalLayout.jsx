@@ -28,6 +28,11 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
   const { accent } = cfg;
   const { hero, fonts, copy, layout: surfaces } = cfg;
 
+  // Bayangan premium ber-tint aksen (kedalaman lembut & berlapis) + kelas
+  // hover-lift halus — dipakai konsisten lintas kartu agar terasa mewah.
+  const cardShadow = `0 2px 8px ${accent}0c, 0 24px 48px -14px ${accent}22`;
+  const cardHover = "transition-all duration-500 hover:-translate-y-1";
+
   const groom     = invitation?.groomNickname || "Pria";
   const bride     = invitation?.brideNickname  || "Wanita";
   const groomFull = invitation?.groomFullName  || "Nama Pria Lengkap";
@@ -108,7 +113,7 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
           <Reveal direction="zoom" delay={0.15}>
             <h1
               className={`${fonts.heading} font-extrabold leading-tight`}
-              style={{ color: accent, fontSize: "clamp(2.2rem,11cqw,4.2rem)" }}
+              style={{ color: accent, fontSize: "clamp(2.2rem,11cqw,4.2rem)", letterSpacing: "-0.01em", textShadow: `0 4px 28px ${accent}33` }}
             >
               {groom}
               <span className="block font-greatvibes text-3xl sm:text-4xl py-1 opacity-70">&amp;</span>
@@ -164,7 +169,7 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
       </section>
 
       {/* ════════ 2. QUOTES ════════ */}
-      <section aria-label="Kutipan" className="py-20 px-6 max-w-2xl mx-auto text-center space-y-6">
+      <section aria-label="Kutipan" className="py-24 px-6 max-w-2xl mx-auto text-center space-y-6">
         <Reveal direction="zoom">
           <Heart className="w-10 h-10 mx-auto animate-pulse" style={{ color: accent, fill: `${accent}25` }} />
         </Reveal>
@@ -174,18 +179,18 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
           </blockquote>
         </Reveal>
         <Reveal direction="up" delay={0.2}>
-          <p className="text-xs text-gray-400 font-light tracking-wider">{invitation?.quotes || "QS. Ar-Rum: 21"}</p>
+          <p className="text-xs text-gray-500 font-light tracking-wider">{invitation?.quotes || "QS. Ar-Rum: 21"}</p>
         </Reveal>
       </section>
 
       {/* ════════ 3. COUPLES ════════ */}
-      <section aria-label="Mempelai" className="py-20 px-6" style={{ background: surfaces.surfaceBg }}>
-        <div className="max-w-xl mx-auto space-y-12">
+      <section aria-label="Mempelai" className="py-24 px-6" style={{ background: surfaces.surfaceBg }}>
+        <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-12">
           <SectionHeading title={copy.coupleTitle} subtitle={copy.coupleSubtitle} color={accent} glyph={cfg.divider} fontClass={fonts.heading} />
 
           {/* Groom */}
           <Reveal direction="up">
-            <div className="flex flex-col items-center gap-4 p-5 rounded-3xl bg-white/80 backdrop-blur-sm border shadow-sm text-center" style={{ borderColor: `${accent}25` }}>
+            <div className={`flex flex-col items-center gap-4 p-5 rounded-3xl bg-white/80 backdrop-blur-sm border text-center ${cardHover}`} style={{ borderColor: `${accent}25`, boxShadow: cardShadow }}>
               <div className="relative w-28 h-28 shrink-0">
                 <Frame kind={cfg.frame} color={accent} size={112} />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -218,7 +223,7 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
 
           {/* Bride */}
           <Reveal direction="up">
-            <div className="flex flex-col items-center gap-4 p-5 rounded-3xl bg-white/80 backdrop-blur-sm border shadow-sm text-center" style={{ borderColor: `${accent}25` }}>
+            <div className={`flex flex-col items-center gap-4 p-5 rounded-3xl bg-white/80 backdrop-blur-sm border text-center ${cardHover}`} style={{ borderColor: `${accent}25`, boxShadow: cardShadow }}>
               <div className="relative w-28 h-28 shrink-0">
                 <Frame kind={cfg.frame} color={accent} size={112} />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -244,13 +249,13 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
       </section>
 
       {/* ════════ 4. EVENTS ════════ */}
-      <section aria-label="Acara" className="py-20 px-6">
-        <div className="max-w-xl mx-auto space-y-10">
+      <section aria-label="Acara" className="py-24 px-6">
+        <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
           <SectionHeading title={copy.eventsTitle} subtitle={copy.eventsSubtitle} color={accent} glyph={cfg.divider} fontClass={fonts.heading} />
           <div className="space-y-6">
             {invitation?.events?.map((evt, i) => (
               <Reveal key={evt.id} direction="up" delay={i * 0.12}>
-                <div className="rounded-3xl bg-white border shadow-sm overflow-hidden" style={{ borderColor: `${accent}25` }}>
+                <div className={`rounded-3xl bg-white border overflow-hidden ${cardHover}`} style={{ borderColor: `${accent}25`, boxShadow: cardShadow }}>
                   <div className="px-6 py-4 text-white text-center relative overflow-hidden" style={{ background: cfg.eventGradient }}>
                     {cfg.eventOverlay === "stripes" && (
                       <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,white,white_1px,transparent_0,transparent_12px)]" />
@@ -270,17 +275,17 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
                   </div>
                   <div className="p-6 grid grid-cols-2 gap-4 text-xs">
                     <div className="space-y-1">
-                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-400">Tanggal</p>
+                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-500">Tanggal</p>
                       <p className="font-semibold text-gray-800 leading-snug">
                         {formatEventDate(evt.date)}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-400">Waktu</p>
+                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-500">Waktu</p>
                       <p className="font-semibold text-gray-800">{evt.startTime} {evt.endTime ? `– ${evt.endTime}` : "WIB"}</p>
                     </div>
                     <div className="col-span-2 space-y-1 pt-3 border-t" style={{ borderColor: `${accent}20` }}>
-                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-400 flex items-center gap-1">
+                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-500 flex items-center gap-1">
                         <MapPin className="w-3 h-3" style={{ color: accent }} /> Lokasi
                       </p>
                       <p className="font-bold text-gray-800">{evt.locationName}</p>
@@ -309,15 +314,15 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
 
       {/* ════════ 5. LOVE STORY ════════ */}
       {invitation?.loveStories?.length > 0 && (
-        <section aria-label="Cerita Cinta" className="py-20 px-6" style={{ background: surfaces.surfaceBg }}>
-          <div className="max-w-xl mx-auto space-y-10">
+        <section aria-label="Cerita Cinta" className="py-24 px-6" style={{ background: surfaces.surfaceBg }}>
+          <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
             <SectionHeading title={copy.loveTitle} color={accent} glyph={cfg.divider} fontClass={fonts.heading} />
             <div className="relative pl-8 border-l-2 space-y-10" style={{ borderColor: `${accent}30` }}>
               {invitation.loveStories.map((story, i) => (
                 <Reveal key={story.id} direction="left" delay={i * 0.1}>
                   <div className="relative">
                     <div className="absolute -left-[39px] top-2 w-5 h-5 rounded-full border-4 border-white shadow-md" style={{ background: accent }} />
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-5 border shadow-sm space-y-2" style={{ borderColor: `${accent}20` }}>
+                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-5 border space-y-2" style={{ borderColor: `${accent}20`, boxShadow: cardShadow }}>
                       <p className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: accent }}>{story.date}</p>
                       <h4 className={`${fonts.heading} text-xl font-bold text-gray-800`}>{story.title}</h4>
                       <p className="text-xs text-gray-500 font-light leading-relaxed">{story.description}</p>
@@ -332,8 +337,8 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
 
       {/* ════════ 6. GALLERY ════════ */}
       {galleries.length > 0 && (
-        <section aria-label="Galeri" className="py-20 px-6">
-          <div className="max-w-xl mx-auto space-y-8">
+        <section aria-label="Galeri" className="py-24 px-6">
+          <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-8">
             <SectionHeading title={copy.galleryTitle} subtitle={copy.gallerySubtitle} color={accent} glyph={cfg.divider} fontClass={fonts.heading} />
             {galleryLayout === "CAROUSEL" ? (
               <Reveal direction="zoom">
@@ -394,21 +399,21 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
 
       {/* ════════ 7. GIFTS ════════ */}
       {invitation?.gifts?.length > 0 && (
-        <section aria-label="Kado" className="py-20 px-6" style={{ background: surfaces.surfaceBg }}>
-          <div className="max-w-xl mx-auto space-y-10">
+        <section aria-label="Kado" className="py-24 px-6" style={{ background: surfaces.surfaceBg }}>
+          <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
             <SectionHeading title={copy.giftsTitle} subtitle={copy.giftsSubtitle} color={accent} glyph={cfg.divider} fontClass={fonts.heading} />
             <div className="space-y-6 max-w-sm mx-auto">
               {invitation.gifts.map((gft, i) => (
                 <Reveal key={gft.id} direction="up" delay={i * 0.15}>
                   {gft.type === "PHYSICAL" ? (
-                    <div className="p-6 rounded-3xl bg-white border shadow-sm text-left space-y-3" style={{ borderColor: `${accent}25` }}>
+                    <div className={`p-6 rounded-3xl bg-white border text-left space-y-3 ${cardHover}`} style={{ borderColor: `${accent}25`, boxShadow: cardShadow }}>
                       <div className="flex items-center gap-2">
                         <Gift className="w-5 h-5" style={{ color: accent }} />
                         <h3 className="font-semibold text-gray-800">Kirim Kado Fisik</h3>
                       </div>
                       <p className="font-bold text-gray-800">{invitation?.physicalGiftReceiver}</p>
                       <p className="text-xs text-gray-500 leading-relaxed">{invitation?.physicalGiftAddress}</p>
-                      {invitation?.physicalGiftPhone && <p className="text-xs text-gray-400">📞 {invitation.physicalGiftPhone}</p>}
+                      {invitation?.physicalGiftPhone && <p className="text-xs text-gray-500">📞 {invitation.physicalGiftPhone}</p>}
                     </div>
                   ) : (
                     <BankCard
@@ -431,11 +436,11 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
       )}
 
       {/* ════════ 8. RSVP ════════ */}
-      <section aria-label="RSVP" className="py-20 px-6">
-        <div className="max-w-xl mx-auto space-y-10">
+      <section aria-label="RSVP" className="py-24 px-6">
+        <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
           <SectionHeading title={copy.rsvpTitle} subtitle={copy.rsvpSubtitle} color={accent} glyph={cfg.divider} fontClass={fonts.heading} />
           <Reveal direction="up">
-            <div className="p-6 rounded-3xl bg-white border shadow-sm" style={{ borderColor: `${accent}25` }}>
+            <div className="p-6 rounded-3xl bg-white border" style={{ borderColor: `${accent}25`, boxShadow: cardShadow }}>
               <RsvpForm
                 invitationId={invitation.id}
                 defaultGuestName={guestName}
@@ -449,7 +454,7 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
           </Reveal>
           <Reveal direction="up" delay={0.1}>
             <div className="space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 pl-1">{copy.guestbookLabel} ({rsvps?.length || 0})</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">{copy.guestbookLabel} ({rsvps?.length || 0})</h3>
               <GuestWishes rsvps={rsvps} accent={accent} />
             </div>
           </Reveal>
@@ -461,13 +466,13 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
         <Reveal direction="up"><Frame kind={cfg.frame} color={accent} size={80} /></Reveal>
         <Reveal direction="up" delay={0.1}>
           <div className="space-y-2">
-            <p className="text-[10px] text-gray-400 font-light tracking-wider uppercase">Merupakan kehormatan bagi kami</p>
+            <p className="text-[10px] text-gray-500 font-light tracking-wider uppercase">Merupakan kehormatan bagi kami</p>
             <p className={`${fonts.heading} text-xl font-bold`} style={{ color: accent }}>Kami Yang Berbahagia,</p>
             <h4 className="font-greatvibes text-3xl" style={{ color: accent }}>{groom} &amp; {bride}</h4>
           </div>
         </Reveal>
         <Reveal direction="up" delay={0.2}>
-          <div className="text-[9px] text-gray-400 tracking-[0.3em] font-semibold uppercase flex items-center justify-center gap-2">
+          <div className="text-[9px] text-gray-500 tracking-[0.3em] font-semibold uppercase flex items-center justify-center gap-2">
             <span>CREATED WITH ♥ BY</span>
             <span className={`${fonts.heading} text-sm font-bold`} style={{ color: accent }}>IKARA</span>
           </div>

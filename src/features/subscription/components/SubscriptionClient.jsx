@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, formatLongDate, formatDateTime } from "@/lib/format";
 import { createCheckoutAction } from "@/features/payment/actions";
 
 const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
@@ -152,11 +152,7 @@ export function SubscriptionClient({
                   <div className="mt-1 flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400">
                     <Calendar className="h-4 w-4" aria-hidden="true" />
                     <span>
-                      s.d. {new Date(activeSubscription.validUntil).toLocaleDateString("id-ID", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      s.d. {formatLongDate(activeSubscription.validUntil)}
                     </span>
                   </div>
                 ) : (
@@ -305,13 +301,7 @@ export function SubscriptionClient({
                     <td className="px-4 py-3.5 text-foreground">{trx.package.name}</td>
                     <td className="px-4 py-3.5 font-medium text-foreground">{formatRupiah(trx.amount)}</td>
                     <td className="px-4 py-3.5 text-muted-foreground">
-                      {new Date(trx.createdAt).toLocaleString("id-ID", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {formatDateTime(trx.createdAt)}
                     </td>
                     <td className="px-4 py-3.5">
                       {trx.status === "SUCCESS" ? (

@@ -37,6 +37,7 @@ export const THEME_CONFIG = {
   "classic-elegance": {
     slug: "classic-elegance",
     name: "Classic Elegance",
+    renderer: "traditional",
     accent: "#C8A96A",
     accentDark: "#b39150",
     accentDarker: "#9e7e40",
@@ -104,27 +105,21 @@ export const THEME_CONFIG = {
   "floral-blossom": {
     slug: "floral-blossom",
     name: "Floral Blossom",
+    renderer: "traditional",
     accent: "#B76E79",
     accentDark: "#a65f6a",
     accentDarker: "#8B3E4A",
-    fonts: { heading: "font-cormorant", name: "font-greatvibes" },
+    fonts: { heading: "font-playfair", name: "font-greatvibes" },
     frame: "floral",
     divider: "heart",
     particle: "petals",
     bankCard: {
-      gradient: "linear-gradient(135deg, #2d3f5e 0%, #1a2a48 50%, #0d1a30 100%)",
+      // Semua kartu bank memakai gradient rose agar selaras dengan palet tema
+      // (sebelumnya bank non-BCA/BNI tampil navy — keluar dari palet rose).
+      gradient: "linear-gradient(135deg, #B76E79 0%, #8B3E4A 50%, #5C1F2B 100%)",
       overlay: "glass",
       chipClass: CHIP_AMBER,
       providerFont: null,
-      // isRose (BCA/BNI) → gradient rose; selain itu → gradient biru gelap
-      resolveGradient: (providerName) => {
-        const isRose =
-          providerName?.toLowerCase().includes("bca") ||
-          providerName?.toLowerCase().includes("bni");
-        return isRose
-          ? "linear-gradient(135deg, #B76E79 0%, #8B3E4A 50%, #5C1F2B 100%)"
-          : "linear-gradient(135deg, #2d3f5e 0%, #1a2a48 50%, #0d1a30 100%)";
-      },
     },
     hero: {
       pretitle: "✦ THE WEDDING CELEBRATION ✦",
@@ -158,6 +153,7 @@ export const THEME_CONFIG = {
     },
     cover: {
       bg: "bg-[#F8F6F2]/90 dark:bg-zinc-950/90",
+      solid: "bg-[#F8F6F2] dark:bg-zinc-950",
       textPrimary: "text-[#B76E79]",
       textSecondary: "text-zinc-500 dark:text-zinc-400",
       fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
@@ -166,6 +162,8 @@ export const THEME_CONFIG = {
       btnText: "text-[#B76E79]",
       ornamentsColor: "#B76E79",
       frameKind: "floral-blossom",
+      cardName: "text-zinc-800",
+      cardMuted: "text-zinc-500",
       particleType: "petals",
       layout: "framed",
       guestCardShape: "rounded-2xl",
@@ -180,10 +178,11 @@ export const THEME_CONFIG = {
   "floral-blue": {
     slug: "floral-blue",
     name: "Floral Blue",
+    renderer: "traditional",
     accent: "#1A365D",
     accentDark: "#122744",
     accentDarker: "#0d1a30",
-    fonts: { heading: "font-cormorant", name: "font-greatvibes" },
+    fonts: { heading: "font-baskerville", name: "font-greatvibes" },
     frame: "blue-leaf",
     divider: "wave",
     particle: "bubbles",
@@ -225,6 +224,7 @@ export const THEME_CONFIG = {
     },
     cover: {
       bg: "bg-[#E8F4FD]/90 dark:bg-[#0b1420]/90",
+      solid: "bg-[#E8F4FD] dark:bg-[#0b1420]",
       textPrimary: "text-[#1A365D]",
       textSecondary: "text-zinc-500 dark:text-zinc-400",
       fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
@@ -233,6 +233,8 @@ export const THEME_CONFIG = {
       btnText: "text-[#1A365D]",
       ornamentsColor: "#1A365D",
       frameKind: "floral-blue",
+      cardName: "text-zinc-800",
+      cardMuted: "text-zinc-500",
       particleType: "bubbles",
       layout: "framed",
       guestCardShape: "rounded-2xl",
@@ -247,6 +249,7 @@ export const THEME_CONFIG = {
   "modern-minimalist": {
     slug: "modern-minimalist",
     name: "Modern Minimalist",
+    renderer: "modern",
     accent: "#0F172A",
     accentDark: "#1E293B",
     accentDarker: "#020617",
@@ -279,6 +282,7 @@ export const THEME_CONFIG = {
     copy: {},
     cover: {
       bg: "bg-[#0F172A]/90 dark:bg-[#090d16]/95",
+      solid: "bg-[#0F172A] dark:bg-[#090d16]",
       textPrimary: "text-zinc-100",
       textSecondary: "text-zinc-400",
       fontName: "font-sans font-black text-xl sm:text-2xl tracking-widest uppercase",
@@ -287,6 +291,8 @@ export const THEME_CONFIG = {
       btnText: "text-zinc-200",
       ornamentsColor: "#FFFFFF",
       frameKind: "modern",
+      cardName: "text-zinc-100",
+      cardMuted: "text-zinc-400",
       particleType: "grid",
       layout: "framed",
       guestCardShape: "rounded-none",
@@ -301,10 +307,11 @@ export const THEME_CONFIG = {
   "nature-harmony": {
     slug: "nature-harmony",
     name: "Nature Harmony",
+    renderer: "nature",
     accent: "#4A6B3D",
     accentDark: "#2F4A28",
     accentDarker: "#1B2E16",
-    fonts: { heading: "font-cormorant", name: "font-greatvibes" },
+    fonts: { heading: "font-fraunces", name: "font-greatvibes" },
     frame: "blob",
     divider: "leaf",
     particle: "leaves",
@@ -333,6 +340,7 @@ export const THEME_CONFIG = {
     copy: {},
     cover: {
       bg: "bg-[#F7F5EE]/90 dark:bg-[#171d14]/95",
+      solid: "bg-[#F7F5EE] dark:bg-[#171d14]",
       textPrimary: "text-[#4A6B3D]",
       textSecondary: "text-zinc-500 dark:text-zinc-400",
       fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
@@ -341,6 +349,8 @@ export const THEME_CONFIG = {
       btnText: "text-[#4A6B3D]",
       ornamentsColor: "#4A6B3D",
       frameKind: "blob",
+      cardName: "text-zinc-800",
+      cardMuted: "text-zinc-500",
       particleType: "leaves",
       layout: "framed",
       guestCardShape: "rounded-2xl",
