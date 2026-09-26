@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Leaf, TreePine, Gift, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapEmbed } from "@/features/theme/components/MapEmbed";
 import { CountdownTimer } from "@/features/theme/components/CountdownTimer";
 import { RsvpForm } from "@/features/rsvp/components/RsvpForm";
 import { GuestWishes } from "@/features/rsvp/components/GuestWishes";
@@ -268,18 +269,21 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                     </div>
                   </div>
 
-                  {evt.mapUrl && (
-                    <div className="px-6 pb-6">
-                      <a
-                        href={evt.mapUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full h-10 rounded-2xl flex items-center justify-center gap-2 text-[11px] font-bold text-white transition-opacity hover:opacity-90 cursor-pointer"
-                        style={{ background: `linear-gradient(135deg, ${FOREST} 0%, #2F4A28 100%)` }}
-                      >
-                        <MapPin className="w-3.5 h-3.5" />
-                        Buka Google Maps
-                      </a>
+                  {(evt.address || evt.mapUrl) && (
+                    <div className="px-6 pb-6 space-y-3">
+                      <MapEmbed locationName={evt.locationName} address={evt.address} accent={FOREST} />
+                      {evt.mapUrl && (
+                        <a
+                          href={evt.mapUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-full h-10 rounded-2xl flex items-center justify-center gap-2 text-[11px] font-bold text-white transition-opacity hover:opacity-90 cursor-pointer"
+                          style={{ background: `linear-gradient(135deg, ${FOREST} 0%, #2F4A28 100%)` }}
+                        >
+                          <MapPin className="w-3.5 h-3.5" />
+                          Buka Google Maps
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>

@@ -72,6 +72,18 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// Token reset password (kredensial). `token` menyimpan HASH SHA-256 dari
+// token asli yang dikirim via email (token asli tak pernah disimpan mentah).
+model PasswordResetToken {
+  id        String   @id @default(uuid(7))
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
 // =============================================================================
 // DOMAIN 2: MONETIZATION
 // =============================================================================

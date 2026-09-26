@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -76,9 +77,17 @@ export function LoginForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password font-semibold">
-            Password <span className="text-destructive">*</span>
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password font-semibold">
+              Password <span className="text-destructive">*</span>
+            </Label>
+            <Link
+              href="/forgot-password"
+              className="text-xs font-semibold text-gold-600 hover:underline"
+            >
+              Lupa password?
+            </Link>
+          </div>
           <div className="relative">
             <Input
               id="password"

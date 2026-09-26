@@ -20,3 +20,16 @@ export const loginSchema = z.object({
     .string({ required_error: "Password is required." })
     .min(1, "Password is required."),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string({ required_error: "Email wajib diisi." })
+    .email("Format email tidak valid."),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Token tidak valid."),
+  password: z
+    .string({ required_error: "Kata sandi wajib diisi." })
+    .min(8, "Kata sandi minimal 8 karakter."),
+});

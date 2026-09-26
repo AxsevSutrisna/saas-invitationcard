@@ -13,7 +13,7 @@ const MUSIC_PRESETS = [
   { title: "Shane Filan - Beautiful in White", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
 ];
 
-export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting, musicTemplates = [] }) {
+export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting, musicTemplates = [], isEdit = false }) {
   const displayMusics = musicTemplates.length > 0
     ? musicTemplates.map((m) => ({ title: m.title, url: m.url }))
     : MUSIC_PRESETS;
@@ -128,6 +128,23 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                   className="w-full rounded-xl border border-border bg-zinc-50 px-3.5 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                 />
               </div>
+
+              {/* Upload QR muncul khusus untuk E-Wallet (QRIS/GoPay/OVO/dsb) */}
+              {watch(`gifts.${index}.type`) === "EWALLET" && (
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-muted-foreground">
+                    Kode QR / QRIS <span className="font-normal">(opsional)</span>
+                  </label>
+                  <FileUploader
+                    value={watch(`gifts.${index}.qrCodeUrl`)}
+                    onChange={(url) =>
+                      setValue(`gifts.${index}.qrCodeUrl`, url, { shouldDirty: true })
+                    }
+                    accept="image/*"
+                    helperText="Unggah gambar QRIS agar tamu bisa langsung scan untuk mengirim hadiah."
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -343,7 +360,11 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           className="w-full sm:w-auto"
         >
           <Sparkles className="fill-current" aria-hidden="true" />
-          {isSubmitting ? "Memproses..." : "Publikasikan Undangan"}
+          {isSubmitting
+            ? "Memproses..."
+            : isEdit
+            ? "Simpan Perubahan"
+            : "Publikasikan Undangan"}
         </Button>
       </div>
     </div>

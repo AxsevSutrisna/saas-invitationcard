@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invitationFormSchema } from "@/features/invitation/schema";
-import { createInvitationAction } from "@/features/invitation/actions";
+import { createInvitationAction, updateInvitationAction } from "@/features/invitation/actions";
 import { OnboardingGuideModal } from "./OnboardingGuideModal";
 import { LivePhonePreview } from "./LivePhonePreview";
 import { Step1InfoTheme } from "./Step1InfoTheme";
@@ -25,7 +25,16 @@ const STEPS = [
   { id: 5, title: "Finalisasi" },
 ];
 
-export function InvitationWizard({ themes = [], activeSubscription = null, quoteTemplates = [], musicTemplates = [] }) {
+export function InvitationWizard({
+  themes = [],
+  activeSubscription = null,
+  quoteTemplates = [],
+  musicTemplates = [],
+  mode = "create",
+  invitationId = null,
+  initialData = null,
+}) {
+  const isEdit = mode === "edit";
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryThemeId = searchParams.get("themeId");
@@ -45,7 +54,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(invitationFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       title: "Pernikahan William & Eleanor",
       slug: "william-eleanor",
       themeId: defaultThemeId,
@@ -170,9 +179,13 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
       return;
     }
 
-    const res = await createInvitationAction(data);
+    const res = isEdit
+      ? await updateInvitationAction(invitationId, data)
+      : await createInvitationAction(data);
+
     if (res.success) {
       router.push("/dashboard");
+      router.refresh();
     } else {
       setServerError(res.error || "Terjadi kesalahan saat memproses data.");
     }
@@ -190,10 +203,12 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
       <div className="flex flex-col gap-4 border-b border-border/40 pb-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-            Buat Undangan Baru
+            {isEdit ? "Edit Undangan" : "Buat Undangan Baru"}
           </h1>
           <p className="text-xs font-light text-muted-foreground">
-            Isi informasi di bawah untuk membuat undangan pernikahan digital Anda
+            {isEdit
+              ? "Perbarui informasi undangan Anda. Perubahan langsung tersimpan setelah difinalisasi."
+              : "Isi informasi di bawah untuk membuat undangan pernikahan digital Anda"}
           </p>
         </div>
 
@@ -300,6 +315,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
                 setValue={setValue}
                 isSubmitting={isSubmitting}
                 musicTemplates={musicTemplates}
+                isEdit={isEdit}
               />
             )}
 

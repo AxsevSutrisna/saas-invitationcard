@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Gift, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapEmbed } from "@/features/theme/components/MapEmbed";
 import { CountdownTimer } from "@/features/theme/components/CountdownTimer";
 import { RsvpForm } from "@/features/rsvp/components/RsvpForm";
 import { GuestWishes } from "@/features/rsvp/components/GuestWishes";
@@ -247,13 +248,16 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
                       <p className="text-gray-500 font-light text-[11px] mt-0.5">{evt.address}</p>
                     </div>
                   </div>
-                  {evt.mapUrl && (
-                    <div className="px-6 pb-6 bg-white">
-                      <a href={evt.mapUrl} target="_blank" rel="noreferrer"
-                        className="w-full h-10 rounded-xl flex items-center justify-center gap-2 text-[11px] font-bold text-white cursor-pointer hover:opacity-90"
-                        style={{ background: DARK }}>
-                        <MapPin className="w-3.5 h-3.5" /> Buka Google Maps
-                      </a>
+                  {(evt.address || evt.mapUrl) && (
+                    <div className="px-6 pb-6 bg-white space-y-3">
+                      <MapEmbed locationName={evt.locationName} address={evt.address} accent={DARK} />
+                      {evt.mapUrl && (
+                        <a href={evt.mapUrl} target="_blank" rel="noreferrer"
+                          className="w-full h-10 rounded-xl flex items-center justify-center gap-2 text-[11px] font-bold text-white cursor-pointer hover:opacity-90"
+                          style={{ background: DARK }}>
+                          <MapPin className="w-3.5 h-3.5" /> Buka Google Maps
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>

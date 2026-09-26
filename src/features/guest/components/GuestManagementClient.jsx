@@ -167,6 +167,59 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
     return buildWhatsAppUrl(guest.whatsapp, message);
   };
 
+  // Export daftar tamu sebagai file CSV (dibuka di Excel/Google Sheets)
+  const handleExportCSV = () => {
+    // Bungkus nilai yang mengandung koma/kutip/baris baru sesuai standar CSV
+    const escapeCsv = (val) => {
+      const s = String(val ?? "");
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rsvpLabel = (g) => {
+      if (!g.rsvp) return "Belum Konfirmasi";
+      if (g.rsvp.attendance === "YES") return "Hadir";
+      if (g.rsvp.attendance === "NO") return "Tidak Hadir";
+      return "Ragu-ragu";
+    };
+
+    const header = [
+      "No",
+      "Nama",
+      "WhatsApp",
+      "Status Undangan",
+      "Konfirmasi RSVP",
+      "Jumlah Tamu",
+      "Ucapan & Doa",
+      "Link Personal",
+    ];
+    const rows = initialGuests.map((g, i) => [
+      i + 1,
+      g.name,
+      g.whatsapp || "",
+      g.isOpened ? "Sudah Dibuka" : "Belum Dibuka",
+      rsvpLabel(g),
+      g.rsvp?.pax ?? "",
+      g.rsvp?.message || "",
+      `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(g.name)}&code=${g.uniqueCode}`,
+    ]);
+
+    const csv = [header, ...rows]
+      .map((r) => r.map(escapeCsv).join(","))
+      .join("\r\n");
+
+    // Prefix BOM (﻿) agar Excel membaca UTF-8 dengan benar (nama & emoji)
+    const blob = new Blob(["﻿" + csv], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `daftar-tamu-${selectedInvitation.slug || "undangan"}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   // Print and Generate PDF report of Guests list
   const handlePrintPDF = () => {
     // Calculate metrics for summary
@@ -546,6 +599,16 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
           <Button onClick={handlePrintPDF} variant="outline" size="sm">
             <Printer className="w-4 h-4" aria-hidden="true" />
             <span>Cetak Daftar Hadir Tamu</span>
+          </Button>
+
+          <Button
+            onClick={handleExportCSV}
+            variant="outline"
+            size="sm"
+            disabled={initialGuests.length === 0}
+          >
+            <FileSpreadsheet className="w-4 h-4" aria-hidden="true" />
+            <span>Export CSV</span>
           </Button>
 
           <Button onClick={() => setShowBulkModal(true)} variant="outline" size="sm">

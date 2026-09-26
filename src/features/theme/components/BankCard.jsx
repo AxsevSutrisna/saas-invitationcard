@@ -65,9 +65,12 @@ export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-
   const background = resolveGradient ? resolveGradient(gift.providerName) : gradient;
   const providerFontClass = providerFont === "cormorant" ? "font-cormorant" : "";
 
+  const isEwallet = gift.type === "EWALLET";
+
   return (
+    <div className="w-full max-w-sm mx-auto space-y-3">
     <div
-      className="relative w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl"
+      className="relative rounded-3xl overflow-hidden shadow-2xl"
       style={{ background, minHeight: 180 }}
     >
       <CardOverlay overlay={overlay} />
@@ -76,7 +79,7 @@ export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-
         {/* Top: bank name + chip */}
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[9px] text-white/60 tracking-[0.25em] uppercase">Bank Transfer</p>
+            <p className="text-[9px] text-white/60 tracking-[0.25em] uppercase">{isEwallet ? "E-Wallet" : "Bank Transfer"}</p>
             <p className={`text-white font-bold text-lg tracking-wide ${providerFontClass}`}>{gift.providerName}</p>
           </div>
           {/* Chip */}
@@ -112,6 +115,23 @@ export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-
           </button>
         </div>
       </div>
+    </div>
+
+    {/* Panel QR / QRIS — hanya tampil bila undangan menyertakan gambar QR */}
+    {gift.qrCodeUrl && (
+      <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-4 shadow-lg">
+        <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-400">
+          Scan QRIS untuk Kirim Hadiah
+        </p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={gift.qrCodeUrl}
+          alt={`Kode QRIS ${gift.providerName}`}
+          className="h-44 w-44 rounded-lg object-contain"
+          loading="lazy"
+        />
+      </div>
+    )}
     </div>
   );
 }
