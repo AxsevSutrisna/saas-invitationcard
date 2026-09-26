@@ -18,7 +18,7 @@ export function HeroSection() {
         <div className="block md:hidden relative w-full h-full">
           <Image
             src="/ikara-hero-section-potrait.webp"
-            alt="IKARA Wedding Invitation Hero Mobile"
+            alt="Pasangan pengantin menikmati momen pernikahan dengan undangan digital IKARA"
             fill
             priority
             quality={72}
@@ -31,7 +31,7 @@ export function HeroSection() {
         <div className="hidden md:block relative w-full h-full">
           <Image
             src="/ikara-hero-section.webp"
-            alt="IKARA Wedding Invitation Hero Desktop"
+            alt="Pasangan pengantin menikmati momen pernikahan dengan undangan digital IKARA"
             fill
             priority
             quality={72}
@@ -53,7 +53,7 @@ export function HeroSection() {
           className="max-w-2xl space-y-6 text-left"
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/40 border border-[#C8A96A]/40 text-[#E2C785] text-xs font-semibold uppercase tracking-widest backdrop-blur-md shadow-lg">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/40 border border-gold-400/40 text-[#E2C785] text-xs font-semibold uppercase tracking-widest backdrop-blur-md shadow-lg">
             Every Promise Has a Story
           </div>
 
@@ -75,7 +75,7 @@ export function HeroSection() {
             <Link href={ROUTES.LOGIN} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl bg-[#C8A96A] hover:bg-[#b39150] text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl bg-gold-400 hover:bg-gold-500 text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
               >
                 <Plus className="w-5 h-5" />
                 Begin Your Story
@@ -86,9 +86,9 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-[#C8A96A]/50 bg-black/40 backdrop-blur-md hover:bg-[#C8A96A]/20 hover:border-[#C8A96A] text-white hover:text-[#F6E5B3] font-medium text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer transition-all active:scale-95"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-gold-400/50 bg-black/40 backdrop-blur-md hover:bg-gold-400/20 hover:border-gold-400 text-white hover:text-[#F6E5B3] font-medium text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer transition-all active:scale-95"
               >
-                <Play className="w-4 h-4 fill-current text-[#C8A96A]" />
+                <Play className="w-4 h-4 fill-current text-gold-400" />
                 Lihat Demo Tema
               </Button>
             </Link>

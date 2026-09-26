@@ -13,7 +13,7 @@ export function Header({ user }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-white/80 px-4 backdrop-blur-md dark:bg-[#1A1A1A]/80 sm:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-card/80 px-4 backdrop-blur-md sm:px-8">
       {/* Left: Mobile Menu Toggle */}
       <div className="flex items-center gap-3">
         <button
@@ -67,7 +67,7 @@ export function Header({ user }) {
                 className="fixed inset-0 z-40"
               />
 
-              <div className="absolute right-0 z-50 mt-2 w-56 space-y-1 rounded-2xl border border-border/60 bg-white py-2 text-sm shadow-2xl dark:bg-[#202020]">
+              <div className="absolute right-0 z-50 mt-2 w-56 space-y-1 rounded-2xl border border-border/60 bg-card py-2 text-sm shadow-2xl">
                 <div className="border-b border-border/40 px-4 py-2">
                   <p className="truncate font-semibold text-foreground">
                     {user?.name || "Pengguna IKARA"}

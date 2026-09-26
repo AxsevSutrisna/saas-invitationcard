@@ -65,7 +65,7 @@ export function Navbar({ overlay = false }) {
               href={item.href}
               className={`text-[0.9rem] font-medium tracking-wide px-4 py-2 rounded-full transition-all duration-300 active:scale-95 ${
                 solid
-                  ? "text-zinc-700 dark:text-zinc-200 hover:bg-gold-400/12 hover:text-[#9e7e40] dark:hover:text-[#E2C785]"
+                  ? "text-zinc-700 dark:text-zinc-200 hover:bg-gold-400/12 hover:text-gold-600 dark:hover:text-[#E2C785]"
                   : "text-white hover:bg-white/20 hover:text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.35)]"
               }`}
             >
@@ -82,7 +82,7 @@ export function Navbar({ overlay = false }) {
               size="sm"
               className={`font-medium tracking-wide text-[0.9rem] rounded-full px-4 active:scale-95 transition-all duration-300 ${
                 solid
-                  ? "text-zinc-700 dark:text-zinc-200 hover:bg-gold-400/12 hover:text-[#9e7e40]"
+                  ? "text-zinc-700 dark:text-zinc-200 hover:bg-gold-400/12 hover:text-gold-600"
                   : "text-white hover:bg-white/20 hover:text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.35)]"
               }`}
             >
@@ -92,7 +92,7 @@ export function Navbar({ overlay = false }) {
           <Link href={ROUTES.LOGIN}>
             <Button
               size="sm"
-              className="rounded-full bg-gold-400 hover:bg-[#b39150] text-white text-[0.9rem] font-semibold tracking-wide px-5 cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95"
+              className="rounded-full bg-gold-400 hover:bg-gold-500 text-white text-[0.9rem] font-semibold tracking-wide px-5 cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95"
             >
               Buat Undangan
             </Button>
@@ -122,7 +122,7 @@ export function Navbar({ overlay = false }) {
                 key={item.label}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-semibold tracking-wide text-zinc-800 dark:text-zinc-200 px-4 py-3 rounded-xl hover:bg-gold-400/15 hover:text-[#9e7e40] dark:hover:text-[#E2C785] active:scale-95 transition-all duration-300"
+                className="text-base font-semibold tracking-wide text-zinc-800 dark:text-zinc-200 px-4 py-3 rounded-xl hover:bg-gold-400/15 hover:text-gold-600 dark:hover:text-[#E2C785] active:scale-95 transition-all duration-300"
               >
                 {item.label}
               </Link>
@@ -135,7 +135,7 @@ export function Navbar({ overlay = false }) {
               </Button>
             </Link>
             <Link href={ROUTES.LOGIN} onClick={() => setMobileMenuOpen(false)}>
-              <Button className="w-full justify-center bg-gold-400 hover:bg-[#b39150] text-white transition-all active:scale-95 shadow-md">
+              <Button className="w-full justify-center bg-gold-400 hover:bg-gold-500 text-white transition-all active:scale-95 shadow-md">
                 Buat Undangan
               </Button>
             </Link>

@@ -48,11 +48,11 @@ export default function LoginPage() {
       </Card>
       <p className="text-[12px] text-muted-foreground text-center px-4 leading-relaxed font-normal">
         Dengan masuk, Anda menyetujui{" "}
-        <Link href="/terms" className="text-[#C8A96A] hover:underline font-semibold">
+        <Link href="/terms" className="text-gold-400 hover:underline font-semibold">
           Syarat & Ketentuan
         </Link>{" "}
         dan{" "}
-        <Link href="/privacy" className="text-[#C8A96A] hover:underline font-semibold">
+        <Link href="/privacy" className="text-gold-400 hover:underline font-semibold">
           Kebijakan Privasi
         </Link>{" "}
         kami.

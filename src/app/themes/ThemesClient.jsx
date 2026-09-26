@@ -74,10 +74,10 @@ export function ThemesClient({ initialThemes = [] }) {
     <div className="space-y-8">
       {/* Header Halaman */}
       <div className="text-center space-y-3 pb-4">
-        <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
+        <span className="text-xs font-semibold uppercase tracking-widest text-gold-400">
           Koleksi Desain Premium
         </span>
-        <h1 className="font-heading text-4xl md:text-5xl font-bold text-[#1F1F1F] dark:text-zinc-50 font-cormorant leading-tight">
+        <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground font-cormorant leading-tight">
           Visual Indah yang Mencerminkan<br />Kisah Anda
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto pt-2">
@@ -86,7 +86,7 @@ export function ThemesClient({ initialThemes = [] }) {
       </div>
 
       {/* Filter Bar & Search Input */}
-      <div className="p-6 rounded-3xl bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-border/60 shadow-sm space-y-4 max-w-4xl mx-auto">
+      <div className="p-6 rounded-3xl bg-card/60 backdrop-blur-md border border-border/60 shadow-sm space-y-4 max-w-4xl mx-auto">
         {/* Search Bar */}
         <div className="relative">
           <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-light" />
@@ -95,7 +95,7 @@ export function ThemesClient({ initialThemes = [] }) {
             placeholder="Cari tema..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-zinc-900 border border-border/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all font-light"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-zinc-900 border border-border/60 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400/50 transition-all font-light"
           />
         </div>
 
@@ -109,7 +109,7 @@ export function ThemesClient({ initialThemes = [] }) {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? "bg-[#C8A96A] text-white shadow-md shadow-[#C8A96A]/20"
+                    ? "bg-gold-400 text-white shadow-md shadow-gold-400/20"
                     : "bg-white dark:bg-zinc-800 border border-border/50 text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -128,7 +128,7 @@ export function ThemesClient({ initialThemes = [] }) {
         {filteredThemes.map((theme) => (
           <div
             key={theme.id}
-            className="rounded-[2rem] bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+            className="rounded-[2rem] bg-card border border-border/60 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
           >
             {/* Phone Mockup Frame (Taller Android Style) */}
             <div className="p-8 bg-zinc-50 dark:bg-zinc-800/40 flex justify-center relative">
@@ -144,7 +144,7 @@ export function ThemesClient({ initialThemes = [] }) {
                 ) : (
                   <div className="flex flex-col items-center justify-center p-6 space-y-4">
                     <div className={`w-14 h-14 rounded-full bg-white/10 shadow-md flex items-center justify-center`}>
-                      <Sparkles className="w-6 h-6 text-[#C8A96A]" />
+                      <Sparkles className="w-6 h-6 text-gold-400" />
                     </div>
                     <h3 className="font-heading text-xl font-bold text-white">
                       {theme.name}
@@ -161,7 +161,7 @@ export function ThemesClient({ initialThemes = [] }) {
             <div className="p-6 space-y-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-[#C8A96A]" />
+                  <div className="w-4 h-4 rounded-full bg-gold-400" />
                   <span className="font-heading text-base font-bold text-foreground">
                     {theme.name}
                   </span>
@@ -176,7 +176,7 @@ export function ThemesClient({ initialThemes = [] }) {
                 <Link href={`/theme/preview/${theme.slug}`} target="_blank">
                   <Button
                     variant="outline"
-                    className="w-full h-10 rounded-xl bg-transparent border border-border/60 text-muted-foreground hover:text-[#C8A96A] hover:border-[#C8A96A] hover:bg-[#C8A96A]/5 font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-300 active:scale-95"
+                    className="w-full h-10 rounded-xl bg-transparent border border-border/60 text-muted-foreground hover:text-gold-400 hover:border-gold-400 hover:bg-gold-400/5 font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-300 active:scale-95"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     Lihat Contoh
@@ -185,7 +185,7 @@ export function ThemesClient({ initialThemes = [] }) {
 
                 <Link href={`/dashboard/invitations/new?themeId=${theme.id}`}>
                   <Button
-                    className="w-full h-10 rounded-xl bg-[#C8A96A] hover:bg-[#b39150] text-white font-medium text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
+                    className="w-full h-10 rounded-xl bg-gold-400 hover:bg-gold-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
                   >
                     Pakai Tema Ini
                   </Button>

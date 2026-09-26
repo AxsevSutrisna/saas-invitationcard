@@ -34,14 +34,14 @@ export default async function PaymentFinishPage({ searchParams }) {
   const view = resolveView(transactionStatus);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F6F2] dark:bg-[#191919] px-4 py-16">
-      <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm p-8 text-center space-y-5">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-16">
+      <div className="w-full max-w-md rounded-3xl bg-card border border-border/60 shadow-sm p-8 text-center space-y-5">
         <div className={`w-20 h-20 mx-auto rounded-3xl flex items-center justify-center ${view.iconWrap}`}>
           <view.Icon className="w-10 h-10 stroke-[1.5]" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="font-heading text-2xl font-bold text-[#1F1F1F] dark:text-zinc-100">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             {view.title}
           </h1>
           <p className="text-sm text-muted-foreground font-light leading-relaxed">
@@ -57,7 +57,7 @@ export default async function PaymentFinishPage({ searchParams }) {
         <div className="flex flex-col gap-2 pt-2">
           <Link
             href={ROUTES.SUBSCRIPTION}
-            className="h-11 rounded-2xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-medium text-sm flex items-center justify-center transition-all"
+            className="h-11 rounded-2xl bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-white font-medium text-sm flex items-center justify-center transition-all"
           >
             Lihat Status Langganan
           </Link>

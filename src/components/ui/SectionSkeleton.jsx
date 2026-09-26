@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  */
 export function SectionSkeleton({ tone = "light", rows = 3, className }) {
   const bg =
-    tone === "dark" ? "bg-[#1F1F1F]" : "bg-[#F8F6F2] dark:bg-[#191919]";
+    tone === "dark" ? "bg-[#1F1F1F]" : "bg-background";
   const block = "bg-black/5 dark:bg-white/10 animate-pulse";
 
   return (

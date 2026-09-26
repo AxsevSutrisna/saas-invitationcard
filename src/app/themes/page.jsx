@@ -17,7 +17,7 @@ export default async function PublicThemesPage() {
   const whatsappNumber = whatsappSetting?.value || "6281234567890";
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F6F2] dark:bg-[#191919] text-foreground font-sans selection:bg-[#C8A96A]/20 selection:text-[#C8A96A] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-background text-foreground font-sans selection:bg-gold-400/20 selection:text-gold-400 relative overflow-hidden">
       <div className="relative z-10 flex-1 flex flex-col">
         <Navbar />
         

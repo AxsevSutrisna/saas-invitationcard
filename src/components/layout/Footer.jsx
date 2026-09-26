@@ -25,7 +25,7 @@ export function Footer() {
             />
           </Link>
           <p className="text-sm text-zinc-400 leading-relaxed font-light">
-            <span className="italic font-serif text-[#C8A96A] font-medium">{siteConfig.tagline}.</span>{" "}
+            <span className="italic font-serif text-gold-400 font-medium">{siteConfig.tagline}.</span>{" "}
             {siteConfig.philosophy}
           </p>
         </div>
@@ -37,22 +37,22 @@ export function Footer() {
           </h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="#fitur" className="hover:text-[#C8A96A] transition-colors">
+              <Link href="#fitur" className="hover:text-gold-400 transition-colors">
                 Fitur
               </Link>
             </li>
             <li>
-              <Link href="#tema" className="hover:text-[#C8A96A] transition-colors">
+              <Link href="#tema" className="hover:text-gold-400 transition-colors">
                 Tema
               </Link>
             </li>
             <li>
-              <Link href="#cara-kerja" className="hover:text-[#C8A96A] transition-colors">
+              <Link href="#cara-kerja" className="hover:text-gold-400 transition-colors">
                 Panduan
               </Link>
             </li>
             <li>
-              <Link href="#harga" className="hover:text-[#C8A96A] transition-colors">
+              <Link href="#harga" className="hover:text-gold-400 transition-colors">
                 Harga
               </Link>
             </li>
@@ -66,27 +66,27 @@ export function Footer() {
           </h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href={ROUTES.LOGIN} className="hover:text-[#C8A96A] transition-colors">
+              <Link href={ROUTES.LOGIN} className="hover:text-gold-400 transition-colors">
                 Buat Undangan
               </Link>
             </li>
             <li>
-              <Link href={ROUTES.LOGIN} className="hover:text-[#C8A96A] transition-colors">
+              <Link href={ROUTES.LOGIN} className="hover:text-gold-400 transition-colors">
                 Login
               </Link>
             </li>
             <li>
-              <Link href="#faq" className="hover:text-[#C8A96A] transition-colors">
+              <Link href="#faq" className="hover:text-gold-400 transition-colors">
                 FAQ
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="hover:text-[#C8A96A] transition-colors">
+              <Link href="/terms" className="hover:text-gold-400 transition-colors">
                 Ketentuan
               </Link>
             </li>
             <li>
-              <Link href="/privacy" className="hover:text-[#C8A96A] transition-colors">
+              <Link href="/privacy" className="hover:text-gold-400 transition-colors">
                 Privasi
               </Link>
             </li>
@@ -101,7 +101,7 @@ export function Footer() {
           <p className="text-sm text-zinc-400">
             Punya pertanyaan atau butuh bantuan khusus? Tim support kami siap melayani Anda.
           </p>
-          <div className="text-sm text-[#C8A96A] font-medium pt-1">
+          <div className="text-sm text-gold-400 font-medium pt-1">
             <a
               href={`mailto:${siteConfig.contact.support}`}
               className="hover:underline"

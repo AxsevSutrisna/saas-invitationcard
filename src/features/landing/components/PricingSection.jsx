@@ -111,7 +111,7 @@ export function PricingSection({ packages = [] }) {
         ];
 
   return (
-    <section id="harga" className="py-20 md:py-28 bg-[#2C2723] border-y border-[#C8A96A]/20 relative overflow-hidden">
+    <section id="harga" className="scroll-mt-28 py-20 md:py-28 bg-[#2C2723] border-y border-gold-400/20 relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 space-y-16">
         {/* Header */}
         <Reveal
@@ -119,7 +119,7 @@ export function PricingSection({ packages = [] }) {
           duration={0.5}
           className="text-center max-w-2xl mx-auto space-y-3"
         >
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-gold-400">
             Investasi Abadi
           </span>
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white">
@@ -150,13 +150,13 @@ export function PricingSection({ packages = [] }) {
                 className={[
                   "p-7 sm:p-8 flex flex-col justify-between gap-6 h-full transition-transform duration-300",
                   plan.popular
-                    ? "!border-[#C8A96A]/80 shadow-[0_0_40px_rgba(200,169,106,0.25)] hover:scale-[1.02]"
+                    ? "!border-gold-400/80 shadow-[0_0_40px_rgba(200,169,106,0.25)] hover:scale-[1.02]"
                     : "hover:scale-[1.02]",
                 ].join(" ")}
               >
                 {/* Popular Badge */}
                 {plan.popular && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#C8A96A] to-[#b39150] text-white text-[12px] font-bold uppercase tracking-wider shadow-md flex items-center gap-1">
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-to-r from-gold-400 to-gold-500 text-white text-[12px] font-bold uppercase tracking-wider shadow-md flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5 fill-current" /> Most Popular
                   </div>
                 )}
@@ -184,14 +184,14 @@ export function PricingSection({ packages = [] }) {
                     </div>
 
                     {/* Features */}
-                    <div className="border-t border-[#C8A96A]/30 pt-4 space-y-2.5">
+                    <div className="border-t border-gold-400/30 pt-4 space-y-2.5">
                       <p className="text-[12px] font-extrabold text-white uppercase tracking-wider">
                         Yang Didapat:
                       </p>
                       <ul className="space-y-2 text-[12px] text-white font-semibold">
                         {plan.features.map((feat, idx) => (
                           <li key={idx} className="flex items-center gap-2.5">
-                            <Check className="w-4 h-4 text-[#9e7e40] shrink-0" />
+                            <Check className="w-4 h-4 text-gold-600 shrink-0" />
                             <span>{feat}</span>
                           </li>
                         ))}
@@ -208,8 +208,8 @@ export function PricingSection({ packages = [] }) {
                       className={[
                         "w-full h-12 rounded-xl font-medium text-base flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95",
                         plan.popular
-                          ? "bg-[#C8A96A] hover:bg-[#b39150] text-white shadow-md hover:shadow-lg"
-                          : "border border-[#C8A96A]/50 bg-black/40 backdrop-blur-md hover:bg-[#C8A96A]/20 hover:border-[#C8A96A] text-white hover:text-[#F6E5B3] shadow-md hover:shadow-xl",
+                          ? "bg-gold-400 hover:bg-gold-500 text-white shadow-md hover:shadow-lg"
+                          : "border border-gold-400/50 bg-black/40 backdrop-blur-md hover:bg-gold-400/20 hover:border-gold-400 text-white hover:text-[#F6E5B3] shadow-md hover:shadow-xl",
                       ].join(" ")}
                     >
                       {plan.ctaText}
