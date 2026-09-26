@@ -93,6 +93,23 @@ export async function deleteGuest(guestId) {
 }
 
 /**
+ * Mengambil identitas kepemilikan seorang tamu (lewat undangan induknya)
+ * untuk keperluan cek otorisasi. Hanya memuat field yang dibutuhkan `can()`.
+ * @param {string} guestId
+ * @returns {Promise<{ id: string, invitationId: string, invitation: { userId: string } } | null>}
+ */
+export async function getGuestWithOwner(guestId) {
+  return db.guest.findUnique({
+    where: { id: guestId },
+    select: {
+      id: true,
+      invitationId: true,
+      invitation: { select: { userId: true } },
+    },
+  });
+}
+
+/**
  * Track when a guest opens the invitation
  */
 export async function trackGuestOpen(uniqueCode) {

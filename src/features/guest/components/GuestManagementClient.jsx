@@ -757,7 +757,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
             <form onSubmit={handleSingleSubmit} className="space-y-4 text-left">
               {errorMsg && (
-                <div role="alert" className="p-3 text-xs bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-500/20 font-medium">
+                <div role="alert" className="p-3 text-xs bg-destructive/10 text-destructive rounded-xl border border-destructive/20 font-medium">
                   {errorMsg}
                 </div>
               )}
@@ -832,7 +832,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
             <form onSubmit={handleBulkSubmit} className="space-y-4 text-left">
               {errorMsg && (
-                <div role="alert" className="p-3 text-xs bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-500/20 font-medium">
+                <div role="alert" className="p-3 text-xs bg-destructive/10 text-destructive rounded-xl border border-destructive/20 font-medium">
                   {errorMsg}
                 </div>
               )}

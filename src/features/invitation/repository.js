@@ -192,6 +192,32 @@ export async function checkSlugAvailability(slug) {
 }
 
 /**
+ * Mengambil identitas kepemilikan undangan (ringan) untuk cek otorisasi.
+ * Hanya memuat field yang dibutuhkan oleh `can()`.
+ * @param {string} invitationId
+ * @returns {Promise<{ id: string, userId: string } | null>}
+ */
+export async function getInvitationOwner(invitationId) {
+  return db.invitation.findUnique({
+    where: { id: invitationId },
+    select: { id: true, userId: true },
+  });
+}
+
+/**
+ * Mengambil status publikasi undangan (ringan) untuk validasi endpoint publik
+ * (RSVP, log kunjungan). Mengembalikan null bila undangan tidak ada.
+ * @param {string} invitationId
+ * @returns {Promise<{ id: string, isPublished: boolean } | null>}
+ */
+export async function getInvitationPublishStatus(invitationId) {
+  return db.invitation.findUnique({
+    where: { id: invitationId },
+    select: { id: true, isPublished: true },
+  });
+}
+
+/**
  * Menghapus record undangan berdasarkan ID dan milik pengguna
  */
 export async function deleteInvitation(id, userId) {

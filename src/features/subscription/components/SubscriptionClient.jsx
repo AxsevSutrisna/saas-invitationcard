@@ -110,7 +110,7 @@ export function SubscriptionClient({
       {errorMessage && (
         <div
           role="alert"
-          className="flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-950/20 dark:text-rose-300"
+          className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
         >
           <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
           <span>{errorMessage}</span>

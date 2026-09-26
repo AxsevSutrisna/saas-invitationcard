@@ -98,7 +98,7 @@ export default async function PrivacyPage() {
             <section id="pendahuluan" className="scroll-mt-28 space-y-4">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">01.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Pendahuluan
                 </h3>
               </div>
@@ -116,7 +116,7 @@ export default async function PrivacyPage() {
             <section id="data-dikumpul" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">02.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Data yang Dikumpulkan
                 </h3>
               </div>
@@ -138,7 +138,7 @@ export default async function PrivacyPage() {
             <section id="penggunaan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">03.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Penggunaan Informasi
                 </h3>
               </div>
@@ -159,7 +159,7 @@ export default async function PrivacyPage() {
             <section id="keamanan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">04.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Keamanan Data
                 </h3>
               </div>
@@ -179,7 +179,7 @@ export default async function PrivacyPage() {
             <section id="hak-user" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">05.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Hak Pengguna
                 </h3>
               </div>
@@ -199,7 +199,7 @@ export default async function PrivacyPage() {
             <section id="berbagi-data" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">06.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Pihak Ketiga & Berbagi Data
                 </h3>
               </div>
@@ -219,7 +219,7 @@ export default async function PrivacyPage() {
             <section id="cookies" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">07.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Teknologi Cookie
                 </h3>
               </div>
@@ -237,7 +237,7 @@ export default async function PrivacyPage() {
             <section id="kontak" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">08.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Kontak & Keluhan
                 </h3>
               </div>

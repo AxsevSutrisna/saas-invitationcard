@@ -55,7 +55,7 @@ export function Step3Events({ register, errors, control }) {
                 variant="ghost"
                 size="icon-sm"
                 aria-label={`Hapus acara ${index + 1}`}
-                className="absolute right-3 top-3 text-rose-500 hover:text-rose-700"
+                className="absolute right-3 top-3 text-destructive hover:text-destructive/80"
               >
                 <Trash2 aria-hidden="true" />
               </Button>
@@ -72,7 +72,7 @@ export function Step3Events({ register, errors, control }) {
               {/* Nama Acara */}
               <div className="space-y-1">
                 <label htmlFor={`events-${index}-name`} className="text-[11px] font-semibold text-muted-foreground">
-                  Nama Acara <span className="text-rose-500">*</span>
+                  Nama Acara <span className="text-destructive">*</span>
                 </label>
                 <input
                   id={`events-${index}-name`}
@@ -86,7 +86,7 @@ export function Step3Events({ register, errors, control }) {
               {/* Tanggal */}
               <div className="space-y-1">
                 <label htmlFor={`events-${index}-date`} className="text-[11px] font-semibold text-muted-foreground">
-                  Tanggal <span className="text-rose-500">*</span>
+                  Tanggal <span className="text-destructive">*</span>
                 </label>
                 <input
                   id={`events-${index}-date`}
@@ -99,7 +99,7 @@ export function Step3Events({ register, errors, control }) {
               {/* Jam Mulai */}
               <div className="space-y-1">
                 <label htmlFor={`events-${index}-startTime`} className="text-[11px] font-semibold text-muted-foreground">
-                  Jam Mulai <span className="text-rose-500">*</span>
+                  Jam Mulai <span className="text-destructive">*</span>
                 </label>
                 <input
                   id={`events-${index}-startTime`}
@@ -114,7 +114,7 @@ export function Step3Events({ register, errors, control }) {
               {/* Nama Tempat */}
               <div className="space-y-1">
                 <label htmlFor={`events-${index}-locationName`} className="text-[11px] font-semibold text-muted-foreground">
-                  Nama Tempat / Gedung <span className="text-rose-500">*</span>
+                  Nama Tempat / Gedung <span className="text-destructive">*</span>
                 </label>
                 <input
                   id={`events-${index}-locationName`}
@@ -144,7 +144,7 @@ export function Step3Events({ register, errors, control }) {
             {/* Alamat Lengkap */}
             <div className="space-y-1">
               <label htmlFor={`events-${index}-address`} className="text-[11px] font-semibold text-muted-foreground">
-                Alamat Lengkap <span className="text-rose-500">*</span>
+                Alamat Lengkap <span className="text-destructive">*</span>
               </label>
               <textarea
                 id={`events-${index}-address`}
@@ -158,7 +158,7 @@ export function Step3Events({ register, errors, control }) {
         ))}
       </div>
       {errors.events && (
-        <p className="text-xs text-rose-500">{errors.events.message}</p>
+        <p className="text-xs text-destructive">{errors.events.message}</p>
       )}
     </div>
   );

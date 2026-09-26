@@ -204,7 +204,7 @@ export function FileUploader({
           isDragActive
             ? "border-gold-400 bg-gold-400/5"
             : value
-            ? "border-emerald-500/20 bg-emerald-50/5 dark:bg-emerald-950/5"
+            ? "border-gold-400/25 bg-gold-400/5 dark:bg-gold-400/5"
             : "border-border/60 hover:border-zinc-400 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/30"
         } ${!isUploading && !value ? "cursor-pointer" : ""}`}
       >
@@ -258,14 +258,14 @@ export function FileUploader({
           <div className="w-full flex flex-col items-center space-y-3">
             {isAudioType ? (
               // Tampilan Berhasil Unggah Audio
-              <div className="flex items-center gap-3 w-full bg-white dark:bg-zinc-950 border border-emerald-500/10 p-3 rounded-xl shadow-inner max-w-sm">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+              <div className="flex items-center gap-3 w-full bg-white dark:bg-zinc-950 border border-gold-400/15 p-3 rounded-xl shadow-inner max-w-sm">
+                <div className="w-9 h-9 rounded-lg bg-gold-400/10 flex items-center justify-center text-gold-600">
                   <Music className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
                     <span>Musik Latar Aktif</span>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
+                    <Check className="w-3.5 h-3.5 text-gold-600" aria-hidden="true" />
                   </div>
                   <audio src={value} controls className="w-full h-6 mt-1 text-[10px] focus:outline-none" />
                 </div>
@@ -283,7 +283,7 @@ export function FileUploader({
                     onClick={handleRemove}
                     type="button"
                     aria-label="Hapus gambar"
-                    className="p-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60"
+                    className="p-2 rounded-lg bg-destructive text-white hover:bg-destructive/90 transition-colors shadow-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
                     title="Hapus Gambar"
                   >
                     <Trash2 className="w-4 h-4" aria-hidden="true" />
@@ -298,7 +298,7 @@ export function FileUploader({
                 type="button"
                 onClick={handleRemove}
                 aria-label="Hapus berkas audio"
-                className="flex items-center gap-1.5 px-3 py-1.5 border border-rose-500/20 hover:border-rose-500 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60"
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-destructive/25 hover:border-destructive bg-destructive/5 hover:bg-destructive/10 text-destructive rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
               >
                 <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Hapus Berkas</span>
@@ -332,7 +332,7 @@ export function FileUploader({
 
       {/* Error Alert */}
       {error && (
-        <div role="alert" className="flex items-center gap-1.5 text-rose-600 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-950/40 p-2.5 rounded-xl text-[10px] font-medium leading-relaxed">
+        <div role="alert" className="flex items-center gap-1.5 text-destructive bg-destructive/10 border border-destructive/20 p-2.5 rounded-xl text-[10px] font-medium leading-relaxed">
           <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>

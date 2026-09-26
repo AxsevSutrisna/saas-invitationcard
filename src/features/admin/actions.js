@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { deleteObjectByUrl, deleteObjectsByUrls } from "@/lib/r2";
 import { upsertActiveSubscription } from "@/features/subscription/repository";
 import { requireSuperAdmin } from "@/features/auth/guard";
+import { ROLE_VALUES } from "@/constants/roles";
 
 /**
  * Menentukan urutan (sortOrder) FAQ: pakai nilai yang diberikan bila valid,
@@ -26,7 +27,12 @@ async function resolveFaqSortOrder(sortOrder) {
 export async function updateUserRoleAction(userId, role) {
   try {
     await requireSuperAdmin();
-    
+
+    // Validasi: hanya terima nilai role yang sah (cegah nilai sembarang ke DB).
+    if (!ROLE_VALUES.includes(role)) {
+      return { success: false, error: "Peran tidak valid." };
+    }
+
     await db.user.update({
       where: { id: userId },
       data: { role },

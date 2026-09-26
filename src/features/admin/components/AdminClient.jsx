@@ -47,6 +47,7 @@ import {
   updateSystemSettingAction
 } from "@/features/admin/actions";
 import { formatRupiah } from "@/lib/format";
+import { ROLES } from "@/constants/roles";
 
 const TAB_TITLES = {
   users: {
@@ -517,13 +518,14 @@ export function AdminClient({
                             <select
                               value={user.role}
                               onChange={(e) => handleUserRoleChange(user.id, e.target.value)}
-                              disabled={loading || user.role === "SUPER_ADMIN"}
+                              disabled={loading || user.role === ROLES.SUPER_ADMIN}
                               aria-label={`Ubah peran untuk ${user.name || user.email}`}
                               className="cursor-pointer rounded-lg border border-border bg-transparent px-1.5 py-0.5 font-semibold text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30"
                             >
-                              <option value="USER">USER</option>
-                              <option value="ADMIN">ADMIN</option>
-                              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                              <option value={ROLES.USER}>USER</option>
+                              <option value={ROLES.AGENCY}>AGENCY</option>
+                              <option value={ROLES.ADMIN}>ADMIN</option>
+                              <option value={ROLES.SUPER_ADMIN}>SUPER_ADMIN</option>
                             </select>
                           </td>
                           <td className="px-4 py-3.5">
@@ -580,15 +582,15 @@ export function AdminClient({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 rounded-2xl border border-blue-500/15 bg-blue-50 p-6 dark:bg-blue-950/10">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 text-white">
+              <div className="flex items-center gap-4 rounded-2xl border border-gold-400/20 bg-gold-50 p-6 dark:bg-gold-400/10">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold-400 text-white">
                   <CheckCircle className="h-6 w-6" aria-hidden="true" />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Transaksi Sukses
                   </span>
-                  <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                  <div className="text-xl font-bold text-gold-600 dark:text-gold-300">
                     {successTransactions.length} Pembayaran
                   </div>
                 </div>

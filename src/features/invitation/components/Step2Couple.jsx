@@ -20,8 +20,8 @@ export function Step2Couple({ register, errors, watch, setValue }) {
       </div>
 
       {/* Callout Banner Info */}
-      <div className="flex items-start gap-2.5 rounded-2xl border border-blue-200 bg-blue-50/70 p-4 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+      <div className="flex items-start gap-2.5 rounded-2xl border border-gold-400/25 bg-gold-50 p-4 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-gold-600" aria-hidden="true" />
         <p className="font-light leading-relaxed">
           Hanya <span className="font-bold">Nama Panggilan &amp; Nama Lengkap</span> yang wajib. Data orang tua dan foto opsional, namun akan terlihat lebih berkesan jika diisi lengkap.
         </p>
@@ -49,7 +49,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
 
           <div className="space-y-1.5">
             <label htmlFor="groomNickname" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Panggilan <span className="text-rose-500">*</span>
+              Nama Panggilan <span className="text-destructive">*</span>
             </label>
             <input
               id="groomNickname"
@@ -59,13 +59,13 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
             />
             {errors.groomNickname && (
-              <p className="text-[10px] text-rose-500">{errors.groomNickname.message}</p>
+              <p className="text-[10px] text-destructive">{errors.groomNickname.message}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
             <label htmlFor="groomFullName" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Lengkap <span className="text-rose-500">*</span>
+              Nama Lengkap <span className="text-destructive">*</span>
             </label>
             <input
               id="groomFullName"
@@ -75,7 +75,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
             />
             {errors.groomFullName && (
-              <p className="text-[10px] text-rose-500">{errors.groomFullName.message}</p>
+              <p className="text-[10px] text-destructive">{errors.groomFullName.message}</p>
             )}
           </div>
 
@@ -126,7 +126,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
 
           <div className="space-y-1.5">
             <label htmlFor="brideNickname" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Panggilan <span className="text-rose-500">*</span>
+              Nama Panggilan <span className="text-destructive">*</span>
             </label>
             <input
               id="brideNickname"
@@ -136,13 +136,13 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
             />
             {errors.brideNickname && (
-              <p className="text-[10px] text-rose-500">{errors.brideNickname.message}</p>
+              <p className="text-[10px] text-destructive">{errors.brideNickname.message}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
             <label htmlFor="brideFullName" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Lengkap <span className="text-rose-500">*</span>
+              Nama Lengkap <span className="text-destructive">*</span>
             </label>
             <input
               id="brideFullName"
@@ -152,7 +152,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
             />
             {errors.brideFullName && (
-              <p className="text-[10px] text-rose-500">{errors.brideFullName.message}</p>
+              <p className="text-[10px] text-destructive">{errors.brideFullName.message}</p>
             )}
           </div>
 
@@ -196,8 +196,8 @@ export function Step2Couple({ register, errors, watch, setValue }) {
           </p>
         </div>
 
-        <div className="flex items-start gap-2 rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <div className="flex items-start gap-2 rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-gold-600" aria-hidden="true" />
           <p className="font-light">
             Gunakan foto <span className="font-bold">portrait</span> (tegak) untuk hasil terbaik. Foto prewedding sangat direkomendasikan!
           </p>

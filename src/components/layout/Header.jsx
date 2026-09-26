@@ -89,7 +89,7 @@ export function Header({ user }) {
                 <button
                   type="button"
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
+                  className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 dark:hover:bg-destructive/15"
                 >
                   <LogOut className="h-4 w-4" aria-hidden="true" />
                   <span>Keluar</span>

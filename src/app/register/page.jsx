@@ -22,7 +22,7 @@ export default function RegisterPage() {
               </h1>
             </Link>
           </div>
-          <CardTitle className="text-2xl font-semibold tracking-tight">
+          <CardTitle className="font-heading text-2xl font-semibold tracking-tight">
             Create your account
           </CardTitle>
           <CardDescription className="text-muted-foreground">

@@ -155,7 +155,7 @@ export function OnboardingGuideModal({ forceOpen = false, onClose }) {
         <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-700 dark:text-amber-300">
           <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
           <p className="font-light leading-relaxed">
-            Yang bertanda <span className="font-semibold text-amber-600 dark:text-amber-400">*</span> wajib diisi. Sisanya opsional — bisa dilengkapi nanti lewat menu Edit.
+            Yang bertanda <span className="font-semibold text-destructive">*</span> wajib diisi. Sisanya opsional — bisa dilengkapi nanti lewat menu Edit.
           </p>
         </div>
 

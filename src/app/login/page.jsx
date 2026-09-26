@@ -22,7 +22,7 @@ export default function LoginPage() {
               </h1>
             </Link>
           </div>
-          <CardTitle className="text-2xl font-semibold tracking-tight">
+          <CardTitle className="font-heading text-2xl font-semibold tracking-tight">
             Welcome back
           </CardTitle>
           <CardDescription className="text-muted-foreground">

@@ -66,7 +66,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
           className="flex items-center gap-1.5 text-sm font-semibold text-foreground"
         >
           <span>Judul Undangan</span>
-          <span className="text-rose-500">*</span>
+          <span className="text-destructive">*</span>
         </label>
         <input
           id="invitation-title"
@@ -76,7 +76,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
           className="w-full rounded-xl border border-border bg-zinc-50 px-4 py-3 text-sm transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
         />
         {errors.title && (
-          <p className="text-xs text-rose-500">{errors.title.message}</p>
+          <p className="text-xs text-destructive">{errors.title.message}</p>
         )}
       </div>
 
@@ -88,7 +88,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
         >
           <LinkIcon className="h-3.5 w-3.5 text-gold-500" aria-hidden="true" />
           <span>Alamat URL Publik (Slug)</span>
-          <span className="text-rose-500">*</span>
+          <span className="text-destructive">*</span>
         </label>
         <div className="flex items-center overflow-hidden rounded-xl border border-border bg-zinc-50 transition-all focus-within:border-gold-400 focus-within:ring-2 focus-within:ring-gold-400/30 dark:bg-zinc-900">
           <span className="select-none border-r border-border/50 bg-zinc-100 px-4 py-3 text-xs font-medium text-muted-foreground dark:bg-zinc-800">
@@ -103,7 +103,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
           />
         </div>
         {errors.slug && (
-          <p className="text-xs text-rose-500">{errors.slug.message}</p>
+          <p className="text-xs text-destructive">{errors.slug.message}</p>
         )}
       </div>
 
@@ -206,7 +206,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
                       </div>
 
                       {theme.isPremium && (
-                        <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-gold-400 to-amber-600 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white">
+                        <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-linear-to-r from-gold-400 to-gold-600 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white">
                           <Sparkles className="h-2 w-2 fill-current" aria-hidden="true" />
                           <span>PREMIUM</span>
                         </div>

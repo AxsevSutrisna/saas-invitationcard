@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { dashboardNav } from "@/config/navigation.config";
 import { useUIStore } from "@/stores/uiStore";
+import { can } from "@/lib/ability";
 import {
   LayoutGrid,
   BarChart3,
@@ -131,7 +132,7 @@ export function Sidebar({ user }) {
               );
             })}
 
-            {user?.role === "SUPER_ADMIN" && (
+            {can(user, "admin:access") && (
               <div className="space-y-1 pt-1">
                 <button
                   type="button"

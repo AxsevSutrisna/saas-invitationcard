@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireSession } from "@/features/auth/guard";
+import { authorize } from "@/features/auth/guard";
 import {
   createGuest,
   createGuestsBulk,
@@ -9,8 +9,10 @@ import {
   updateGuest,
   deleteGuest,
   trackGuestOpen,
-  getGuestByCode
+  getGuestByCode,
+  getGuestWithOwner,
 } from "@/features/guest/repository";
+import { getInvitationOwner } from "@/features/invitation/repository";
 import {
   guestSchema,
   updateGuestSchema,
@@ -22,9 +24,12 @@ import {
  */
 export async function createGuestAction(payload) {
   try {
-    await requireSession();
-
     const validatedData = guestSchema.parse(payload);
+
+    // Otorisasi: hanya pemilik undangan induk yang boleh menambah tamu.
+    const invitation = await getInvitationOwner(validatedData.invitationId);
+    await authorize("guest:create", invitation);
+
     const newGuest = await createGuest(validatedData);
 
     revalidatePath("/dashboard/invitations/new");
@@ -43,9 +48,11 @@ export async function createGuestAction(payload) {
  */
 export async function createGuestsBulkAction(payload) {
   try {
-    await requireSession();
-
     const { invitationId, rawNames } = bulkGuestSchema.parse(payload);
+
+    // Otorisasi: hanya pemilik undangan induk yang boleh menambah tamu.
+    const invitation = await getInvitationOwner(invitationId);
+    await authorize("guest:create", invitation);
 
     // Parse names from text lines
     const lines = rawNames
@@ -85,11 +92,13 @@ export async function createGuestsBulkAction(payload) {
 }
 
 /**
- * Action: Get all guests for an invitation (Admin only)
+ * Action: Get all guests for an invitation (hanya pemilik undangan)
  */
 export async function getGuestsAction(invitationId) {
   try {
-    await requireSession();
+    // Otorisasi: hanya pemilik undangan yang boleh melihat daftar tamunya.
+    const invitation = await getInvitationOwner(invitationId);
+    await authorize("guest:read", invitation);
 
     const guests = await getGuestsByInvitationId(invitationId);
     return { success: true, data: guests };
@@ -104,9 +113,12 @@ export async function getGuestsAction(invitationId) {
  */
 export async function updateGuestAction(guestId, payload) {
   try {
-    await requireSession();
-
     const validatedData = updateGuestSchema.parse(payload);
+
+    // Otorisasi: hanya pemilik undangan induk yang boleh mengubah tamu.
+    const guest = await getGuestWithOwner(guestId);
+    await authorize("guest:update", guest);
+
     const updated = await updateGuest(guestId, validatedData);
 
     revalidatePath("/dashboard/invitations/new");
@@ -125,7 +137,9 @@ export async function updateGuestAction(guestId, payload) {
  */
 export async function deleteGuestAction(guestId) {
   try {
-    await requireSession();
+    // Otorisasi: hanya pemilik undangan induk yang boleh menghapus tamu.
+    const guest = await getGuestWithOwner(guestId);
+    await authorize("guest:delete", guest);
 
     await deleteGuest(guestId);
 

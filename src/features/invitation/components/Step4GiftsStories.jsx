@@ -76,7 +76,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
-              <Heart className="h-4 w-4 fill-current text-rose-500" aria-hidden="true" />
+              <Heart className="h-4 w-4 fill-current text-accent" aria-hidden="true" />
               <span>Love Story</span>
             </h4>
             <p className="text-xs font-light text-muted-foreground">
@@ -86,8 +86,8 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
         </div>
 
         {/* Info Callout Banner */}
-        <div className="flex items-start gap-2 rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <div className="flex items-start gap-2 rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-gold-600" aria-hidden="true" />
           <p className="font-light leading-relaxed">
             Klik <span className="font-bold">&quot;+ Tambah Cerita&quot;</span> untuk menambahkan momen, misalnya: <span className="font-bold">&quot;2020 — Pertama Bertemu&quot;</span>, <span className="font-bold">&quot;2023 — Lamaran&quot;</span>. Bagian ini opsional.
           </p>
@@ -202,8 +202,8 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
           </p>
         </div>
 
-        <div className="flex items-start gap-2 rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <div className="flex items-start gap-2 rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-gold-600" aria-hidden="true" />
           <p className="font-light leading-relaxed">
             Bisa upload banyak foto sekaligus. Pilih mode <span className="font-bold">Carousel</span> (slideshow) atau <span className="font-bold">Masonry</span> (grid bertumpuk). Bagian ini opsional.
           </p>
@@ -273,7 +273,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                     variant="ghost"
                     size="sm"
                     aria-label={`Hapus foto galeri ${index + 1}`}
-                    className="gap-1 text-[10px] font-semibold uppercase tracking-wider text-rose-500 hover:text-rose-700"
+                    className="gap-1 text-[10px] font-semibold uppercase tracking-wider text-destructive hover:text-destructive/80"
                   >
                     <Trash2 aria-hidden="true" />
                     <span>Hapus</span>
@@ -304,8 +304,8 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
           </p>
         </div>
 
-        <div className="flex items-start gap-2 rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <div className="flex items-start gap-2 rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-gold-600" aria-hidden="true" />
           <p className="font-light leading-relaxed">
             Contoh: Kutipan dari film, puisi, atau kitab suci (Ar-Rum ayat 21). Kosongkan jika tidak diperlukan.
           </p>

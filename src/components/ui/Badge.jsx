@@ -16,8 +16,8 @@ const badgeVariants = cva(
           "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
         neutral:
           "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-        danger: "bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300",
-        info: "bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300",
+        danger: "bg-destructive/10 text-destructive dark:bg-destructive/20",
+        info: "bg-accent/10 text-accent dark:bg-accent/20",
       },
     },
     defaultVariants: { variant: "goldSoft" },

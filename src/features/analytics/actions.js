@@ -3,6 +3,7 @@
 import crypto from "crypto";
 import { headers } from "next/headers";
 import { createVisitorLog } from "@/features/analytics/repository";
+import { getInvitationPublishStatus } from "@/features/invitation/repository";
 
 /**
  * Server Action: Mencatat kunjungan halaman undangan.
@@ -13,6 +14,13 @@ export async function logVisitAction({ invitationId, referrer } = {}) {
   try {
     if (!invitationId) {
       return { success: false, error: "Invitation ID wajib disertakan." };
+    }
+
+    // Integritas: hanya catat kunjungan untuk undangan yang ada & terpublikasi
+    // (cegah log sampah ke ID sembarang / undangan draft).
+    const invitation = await getInvitationPublishStatus(invitationId);
+    if (!invitation || !invitation.isPublished) {
+      return { success: false, error: "Undangan tidak valid." };
     }
 
     const h = await headers();

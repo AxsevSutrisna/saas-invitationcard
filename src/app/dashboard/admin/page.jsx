@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { serialize } from "@/lib/utils";
+import { cannot } from "@/lib/ability";
 import { AdminClient } from "@/features/admin/components/AdminClient";
 
 export const metadata = {
@@ -13,12 +14,8 @@ export const metadata = {
 export default async function AdminPage() {
   const session = await auth();
 
-  // 1. Proteksi Sisi Server: Hanya izinkan role SUPER_ADMIN
-  if (
-    !session ||
-    !session.user ||
-    session.user.role !== "SUPER_ADMIN"
-  ) {
+  // 1. Proteksi Sisi Server: hanya role dengan akses panel admin (SUPER_ADMIN)
+  if (cannot(session?.user, "admin:access")) {
     redirect("/dashboard");
   }
 

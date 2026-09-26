@@ -6,18 +6,19 @@ import {
   createInvitation,
   deleteInvitation,
   checkSlugAvailability,
+  getInvitationOwner,
 } from "@/features/invitation/repository";
 import { db } from "@/lib/db";
 import { deleteObjectsByUrls } from "@/lib/r2";
 import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
-import { requireSession } from "@/features/auth/guard";
+import { authorize } from "@/features/auth/guard";
 
 /**
  * Action: Memproses Pembuatan Undangan Baru
  */
 export async function createInvitationAction(payload) {
   try {
-    const user = await requireSession();
+    const user = await authorize("invitation:create");
 
     // Validasi Zod
     const validatedData = invitationFormSchema.parse(payload);
@@ -72,7 +73,9 @@ export async function createInvitationAction(payload) {
  */
 export async function deleteInvitationAction(invitationId) {
   try {
-    const user = await requireSession();
+    // Otorisasi: hanya pemilik undangan yang boleh menghapus.
+    const owner = await getInvitationOwner(invitationId);
+    const user = await authorize("invitation:delete", owner);
 
     // Kumpulkan seluruh URL media R2 milik undangan SEBELUM dihapus dari DB
     // (dibatasi ke pemilik agar aman). Relasi lain ikut terhapus via cascade DB.

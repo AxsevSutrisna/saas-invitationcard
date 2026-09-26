@@ -59,7 +59,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F6F2] dark:bg-[#191919] text-foreground font-sans selection:bg-[#C8A96A]/20 selection:text-[#C8A96A] relative overflow-hidden">
       <div className="relative z-10 flex-1 flex flex-col">
-        <Navbar />
+        <Navbar overlay />
         <main className="flex-1 space-y-0">
           {/* 1. Hero & TrustBar (atas lipatan, tanpa data) */}
           <HeroSection />

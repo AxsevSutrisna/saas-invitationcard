@@ -98,7 +98,7 @@ export default async function TermsPage() {
             <section id="penerimaan" className="scroll-mt-28 space-y-4">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">01.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Penerimaan Syarat
                 </h3>
               </div>
@@ -116,7 +116,7 @@ export default async function TermsPage() {
             <section id="layanan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">02.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Deskripsi Layanan
                 </h3>
               </div>
@@ -142,7 +142,7 @@ export default async function TermsPage() {
             <section id="akun" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">03.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Keamanan Akun
                 </h3>
               </div>
@@ -160,7 +160,7 @@ export default async function TermsPage() {
             <section id="pembayaran" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">04.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Metode Pembayaran
                 </h3>
               </div>
@@ -181,7 +181,7 @@ export default async function TermsPage() {
             <section id="konten" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">05.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Kebijakan Konten
                 </h3>
               </div>
@@ -199,7 +199,7 @@ export default async function TermsPage() {
             <section id="hak-cipta" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">06.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Hak Kekayaan Intelektual
                 </h3>
               </div>
@@ -217,7 +217,7 @@ export default async function TermsPage() {
             <section id="larangan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">07.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Larangan & Penyalahgunaan
                 </h3>
               </div>
@@ -238,7 +238,7 @@ export default async function TermsPage() {
             <section id="penghentian" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
                 <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">08.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100">
                   Penghentian Layanan
                 </h3>
               </div>

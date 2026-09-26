@@ -61,7 +61,7 @@ export function RegisterForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">
-            Full Name <span className="text-red-500">*</span>
+            Full Name <span className="text-destructive">*</span>
           </Label>
           <Input
             id="name"
@@ -74,7 +74,7 @@ export function RegisterForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">
-            Email address <span className="text-red-500">*</span>
+            Email address <span className="text-destructive">*</span>
           </Label>
           <Input
             id="email"
@@ -87,7 +87,7 @@ export function RegisterForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">
-            Password <span className="text-red-500">*</span>
+            Password <span className="text-destructive">*</span>
           </Label>
           <div className="relative">
             <Input

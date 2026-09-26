@@ -54,7 +54,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           </p>
         </div>
 
-        <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
+        <div className="rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
           <p className="font-light leading-relaxed">
             ℹ️ Tamu bisa mengirim hadiah uang digital. Klik <span className="font-bold">&quot;+ Tambah Rekening&quot;</span> lalu isi nama bank, nomor rekening, dan atas nama. Maksimal 2 rekening.
           </p>
@@ -214,7 +214,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           </p>
         </div>
 
-        <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
+        <div className="rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
           <p className="font-light leading-relaxed">
             ℹ️ Setiap tema sudah memiliki musik default. Kamu bisa menggantinya dengan upload lagu sendiri, music default, atau dari pustaka lagu.
           </p>

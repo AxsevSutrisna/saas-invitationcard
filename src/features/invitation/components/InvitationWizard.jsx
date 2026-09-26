@@ -253,7 +253,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
       {serverError && (
         <div
           role="alert"
-          className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs font-medium text-rose-600"
+          className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-xs font-medium text-destructive"
         >
           {serverError}
         </div>

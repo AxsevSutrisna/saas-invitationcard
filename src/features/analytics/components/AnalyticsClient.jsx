@@ -99,7 +99,7 @@ export function AnalyticsClient({
       >
         {/* Card 1: H-Day Countdown */}
         <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300">
             <Calendar className="h-6 w-6" aria-hidden="true" />
           </div>
           <div className="space-y-1">
@@ -119,7 +119,7 @@ export function AnalyticsClient({
 
         {/* Card 2: Status Akses */}
         <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300">
             <Infinity className="h-6 w-6" aria-hidden="true" />
           </div>
           <div className="space-y-1">
@@ -143,7 +143,7 @@ export function AnalyticsClient({
 
         {/* Card 3: Total Tamu Hadir */}
         <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent dark:bg-accent/15">
             <Users className="h-6 w-6" aria-hidden="true" />
           </div>
           <div className="space-y-1">
@@ -163,7 +163,7 @@ export function AnalyticsClient({
 
         {/* Card 4: Total Dilihat */}
         <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300">
             <Eye className="h-6 w-6" aria-hidden="true" />
           </div>
           <div className="space-y-1">

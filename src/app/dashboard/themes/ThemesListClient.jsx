@@ -21,32 +21,32 @@ const CATEGORY_MAP = {
   "classic-elegance": {
     category: "Elegant",
     tag: "Populer",
-    badgeColor: "bg-amber-100 text-gold-400 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50",
-    gradient: "from-amber-100 to-amber-50 dark:from-zinc-800 dark:to-zinc-900",
+    badgeColor: "bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300 border border-gold-200 dark:border-gold-400/20",
+    gradient: "from-gold-100 to-gold-50 dark:from-zinc-800 dark:to-zinc-900",
   },
   "floral-blossom": {
     category: "Floral",
     tag: "Eksklusif",
-    badgeColor: "bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50",
-    gradient: "from-rose-100 to-rose-50 dark:from-zinc-800 dark:to-zinc-900",
+    badgeColor: "bg-accent/10 text-accent dark:bg-accent/20 dark:text-accent border border-accent/20 dark:border-accent/30",
+    gradient: "from-accent/10 to-accent/5 dark:from-zinc-800 dark:to-zinc-900",
   },
   "modern-minimalist": {
     category: "Minimalist",
     tag: "Favorit",
-    badgeColor: "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50",
-    gradient: "from-emerald-100 to-emerald-50 dark:from-zinc-800 dark:to-zinc-900",
+    badgeColor: "bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300 border border-gold-200 dark:border-gold-400/20",
+    gradient: "from-gold-100 to-gold-50 dark:from-zinc-800 dark:to-zinc-900",
   },
   "floral-blue": {
     category: "Blue",
     tag: "Baru",
-    badgeColor: "bg-sky-100 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300 border border-sky-200 dark:border-sky-900/50",
-    gradient: "from-sky-100 to-sky-50 dark:from-zinc-800 dark:to-zinc-900",
+    badgeColor: "bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300 border border-gold-200 dark:border-gold-400/20",
+    gradient: "from-gold-100 to-gold-50 dark:from-zinc-800 dark:to-zinc-900",
   },
   "nature-harmony": {
     category: "Nature",
     tag: "Baru",
-    badgeColor: "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-300 border border-green-200 dark:border-green-900/50",
-    gradient: "from-green-100 to-emerald-50 dark:from-zinc-800 dark:to-zinc-900",
+    badgeColor: "bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300 border border-gold-200 dark:border-gold-400/20",
+    gradient: "from-gold-100 to-gold-50 dark:from-zinc-800 dark:to-zinc-900",
   },
 };
 
