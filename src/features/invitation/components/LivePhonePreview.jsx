@@ -5,44 +5,7 @@ import { Sparkles, Calendar, MapPin, Heart, Link as LinkIcon, Music, Gift, Credi
 import { AnimatePresence } from "framer-motion";
 import { ThemeRegistry } from "@/features/theme/components/ThemeRegistry";
 import { EnvelopeCover } from "@/features/theme/components/EnvelopeCover";
-
-const THEME_STYLES = {
-  "classic-elegance": {
-    bg: "bg-[#F8F6F2] dark:bg-[#191919]",
-    accent: "text-[#C8A96A]",
-    accentBg: "bg-[#C8A96A]/15 border-[#C8A96A]/30 text-[#C8A96A]",
-    cardBg: "bg-white dark:bg-[#222]",
-    primaryBtn: "bg-[#C8A96A] text-white",
-  },
-  "floral-blossom": {
-    bg: "bg-rose-50/70 dark:bg-[#1f1618]",
-    accent: "text-rose-600",
-    accentBg: "bg-rose-100 border-rose-300 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
-    cardBg: "bg-white dark:bg-[#251d1f]",
-    primaryBtn: "bg-rose-600 text-white",
-  },
-  "modern-minimalist": {
-    bg: "bg-slate-50 dark:bg-[#111827]",
-    accent: "text-slate-800 dark:text-slate-200",
-    accentBg: "bg-slate-200 border-slate-300 text-slate-800 dark:bg-slate-800 dark:text-slate-200",
-    cardBg: "bg-white dark:bg-[#1f2937]",
-    primaryBtn: "bg-slate-800 text-white",
-  },
-  "floral-blue": {
-    bg: "bg-sky-50/70 dark:bg-[#121d28]",
-    accent: "text-sky-600",
-    accentBg: "bg-sky-100 border-sky-300 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300",
-    cardBg: "bg-white dark:bg-[#1b2633]",
-    primaryBtn: "bg-sky-600 text-white",
-  },
-  "nature-harmony": {
-    bg: "bg-[#F7F5EE] dark:bg-[#171d14]",
-    accent: "text-[#4A6B3D]",
-    accentBg: "bg-green-100 border-green-300 text-green-700 dark:bg-green-950/40 dark:text-green-300",
-    cardBg: "bg-white dark:bg-[#1e2619]",
-    primaryBtn: "bg-[#4A6B3D] text-white",
-  },
-};
+import { getThemeConfig } from "@/features/theme/theme-config";
 
 export function LivePhonePreview({ formData, themes = [] }) {
   const selectedTheme =
@@ -52,7 +15,7 @@ export function LivePhonePreview({ formData, themes = [] }) {
     };
 
   const themeKey = selectedTheme.slug || "classic-elegance";
-  const themeStyle = THEME_STYLES[themeKey] || THEME_STYLES["classic-elegance"];
+  const themeStyle = getThemeConfig(themeKey).preview;
 
   const title = formData?.title || "Pernikahan William & Eleanor";
   const slug = formData?.slug || "william-eleanor";
@@ -140,22 +103,8 @@ export function LivePhonePreview({ formData, themes = [] }) {
     }
   }, [isMusicEnabled, isMuted]);
 
-  const [activeSlide, setActiveSlide] = useState(0);
-  const galleriesCount = galleries.length;
-
-  useEffect(() => {
-    if (activeSlide >= galleriesCount) {
-      setActiveSlide(0);
-    }
-  }, [galleriesCount, activeSlide]);
-
-  useEffect(() => {
-    if (galleryLayout !== "CAROUSEL" || galleriesCount <= 1) return;
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % galleriesCount);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [galleryLayout, galleriesCount]);
+  // Autoplay galeri ditangani oleh tema di dalam ThemeRegistry (useCarousel),
+  // jadi tidak ada state carousel duplikat di sini.
 
   const [isCoverOpen, setIsCoverOpen] = useState(false);
 

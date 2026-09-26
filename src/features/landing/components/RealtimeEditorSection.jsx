@@ -1,21 +1,32 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Reveal } from "@/components/ui/Reveal";
 import { CheckCircle2, Sliders, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 
 export function RealtimeEditorSection() {
+  // State demo interaktif (client-only). Tidak disimpan ke DB — reset saat refresh.
+  const [groom, setGroom] = useState("William");
+  const [bride, setBride] = useState("Elleanor");
+  const [location, setLocation] = useState("The Ritz-Carlton, Jakarta");
+
+  const coupleName =
+    [groom.trim(), bride.trim()].filter(Boolean).join(" & ") || "Nama Mempelai";
+  const displayLocation = location.trim() || "Lokasi Acara";
+
+  const inputClass =
+    "w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
+
   return (
     <section className="py-20 md:py-28 bg-[#F8F6F2] relative">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         
         {/* Left Column: Visual Mockups (Form & Phone overlapping) */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
+        <Reveal
+          direction="right"
           className="lg:col-span-6 relative mt-12 lg:mt-0 mb-12 lg:mb-0 flex justify-center lg:justify-start"
         >
           <div className="relative w-full max-w-[450px]">
@@ -30,76 +41,92 @@ export function RealtimeEditorSection() {
                     Editor Acara
                   </span>
                 </div>
-                <Sliders className="w-4 h-4 text-[#C8A96A]" />
+                <Sliders className="w-4 h-4 text-gold-400" />
               </div>
 
               <div className="space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="font-medium text-foreground">Nama Mempelai Pria</label>
+                  <label htmlFor="demo-groom" className="font-medium text-foreground">
+                    Nama Mempelai Pria
+                  </label>
                   <input
+                    id="demo-groom"
                     type="text"
-                    readOnly
-                    value="William"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground"
+                    maxLength={20}
+                    value={groom}
+                    onChange={(e) => setGroom(e.target.value)}
+                    placeholder="Nama pria"
+                    className={inputClass}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="font-medium text-foreground">Nama Mempelai Wanita</label>
+                  <label htmlFor="demo-bride" className="font-medium text-foreground">
+                    Nama Mempelai Wanita
+                  </label>
                   <input
+                    id="demo-bride"
                     type="text"
-                    readOnly
-                    value="Elleanor"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground"
+                    maxLength={20}
+                    value={bride}
+                    onChange={(e) => setBride(e.target.value)}
+                    placeholder="Nama wanita"
+                    className={inputClass}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="font-medium text-foreground">Lokasi Acara</label>
+                  <label htmlFor="demo-location" className="font-medium text-foreground">
+                    Lokasi Acara
+                  </label>
                   <input
+                    id="demo-location"
                     type="text"
-                    readOnly
-                    value="The Ritz-Carlton, Jakarta"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[#C8A96A] font-medium"
+                    maxLength={40}
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Lokasi acara"
+                    className={`${inputClass} text-gold-500 font-medium`}
                   />
                 </div>
+                <p className="pt-1 text-[10px] italic text-muted-foreground">
+                  ✨ Coba ketik di sini — preview di samping berubah langsung.
+                </p>
               </div>
             </div>
 
             {/* Live Mobile Screen Preview (Foreground Overlapping) */}
-            <div className="absolute -bottom-10 -right-4 md:-right-10 w-[200px] sm:w-[220px] h-[320px] bg-gradient-to-b from-[#2C2723] to-[#1a1613] rounded-2xl p-4 border-4 border-[#C8A96A] shadow-2xl flex flex-col justify-between text-center transform hover:-translate-y-2 transition-transform duration-500">
+            <div className="absolute -bottom-10 -right-4 md:-right-10 w-[200px] sm:w-[220px] h-[320px] bg-gradient-to-b from-[#2C2723] to-[#1a1613] rounded-2xl p-4 border-4 border-gold-400 shadow-2xl flex flex-col justify-between text-center transform hover:-translate-y-2 transition-transform duration-500">
               <div className="space-y-2 pt-4 relative z-10">
-                <span className="text-[8px] uppercase tracking-widest text-[#E2C785] font-bold bg-[#C8A96A]/20 px-2 py-1 rounded-full">
+                <span className="text-[8px] uppercase tracking-widest text-[#E2C785] font-bold bg-gold-400/20 px-2 py-1 rounded-full">
                   ● Live Preview
                 </span>
-                <h4 className="font-heading text-2xl font-bold text-white mt-4 font-cormorant">
-                  William & Elleanor
+                <h4 className="font-heading text-2xl font-bold text-white mt-4 font-cormorant wrap-break-word px-2 leading-tight">
+                  {coupleName}
                 </h4>
-                <p className="text-[9px] text-zinc-300">
-                  The Ritz-Carlton, Jakarta
+                <p className="text-[9px] text-zinc-300 wrap-break-word px-2">
+                  {displayLocation}
                 </p>
               </div>
               
-              <div className="absolute inset-0 bg-[url('/ikara-hero-section-potrait.png')] bg-cover bg-center opacity-30 rounded-xl z-0"></div>
+              <div className="absolute inset-0 bg-[url('/ikara-hero-section-potrait.webp')] bg-cover bg-center opacity-30 rounded-xl z-0"></div>
 
               <div className="p-2 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 text-[9px] text-white relative z-10 font-medium">
                 Tersimpan otomatis
               </div>
             </div>
           </div>
-        </motion.div>
+        </Reveal>
 
         {/* Right Column: Text Content */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
+        <Reveal
+          direction="left"
           className="lg:col-span-6 space-y-6"
         >
           <div className="space-y-2">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
+            <span className="text-xs font-semibold uppercase tracking-widest text-gold-400">
               Bebas Revisi Kapan Saja
             </span>
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#1F1F1F] dark:text-zinc-50 leading-tight">
-              Edit Sendiri, Langsung <span className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#C8A96A] to-[#b39150]">Jadi.</span>
+              Edit Sendiri, Langsung <span className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-500">Jadi.</span>
             </h2>
           </div>
 
@@ -114,7 +141,7 @@ export function RealtimeEditorSection() {
               "Cara pakainya semudah membalas pesan, siapa pun pasti bisa menggunakannya.",
             ].map((text, idx) => (
               <li key={idx} className="flex items-start gap-3 text-sm md:text-base text-zinc-700 dark:text-zinc-200 font-medium">
-                <CheckCircle2 className="w-5 h-5 text-[#C8A96A] shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-gold-400 shrink-0 mt-0.5" />
                 <span>{text}</span>
               </li>
             ))}
@@ -123,14 +150,14 @@ export function RealtimeEditorSection() {
           <div className="pt-4">
             <Link href={ROUTES.LOGIN}>
               <Button
-                className="h-13 px-7 rounded-2xl bg-[#C8A96A] hover:bg-[#b39150] text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
+                className="h-13 px-7 rounded-2xl bg-gold-400 hover:bg-gold-500 text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
               >
                 <Edit3 className="w-4 h-4" />
                 Coba Dashboard Editor
               </Button>
             </Link>
           </div>
-        </motion.div>
+        </Reveal>
 
       </div>
     </section>

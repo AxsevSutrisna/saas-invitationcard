@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
-import { CreditCard, Plus, Trash2, Gift, Music, Sparkles, CheckCircle2, Volume2, VolumeX, Upload, Disc, X } from "lucide-react";
+import { CreditCard, Plus, Trash2, Gift, Music, Sparkles, Volume2, VolumeX, Disc, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FileUploader } from "@/components/shared/FileUploader";
 
@@ -32,29 +32,29 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
   });
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="animate-in fade-in space-y-6 duration-200">
       <div className="space-y-1">
         <h3 className="font-heading text-xl font-bold text-foreground">
           Step 5: Finalisasi Undangan
         </h3>
-        <p className="text-xs text-muted-foreground font-light">
+        <p className="text-xs font-light text-muted-foreground">
           Lengkapi informasi rekening amplop digital, pengiriman kado fisik, dan musik latar.
         </p>
       </div>
 
-      {/* Modul A: 💳 Informasi Bank (Gift) (Maksimal 2 Rekening) */}
-      <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-border/60 space-y-4">
+      {/* Modul A: Informasi Bank (Gift) (Maksimal 2 Rekening) */}
+      <div className="space-y-4 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
         <div className="space-y-0.5">
-          <h4 className="font-heading text-base font-bold text-foreground flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-[#C8A96A]" />
+          <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+            <CreditCard className="h-4 w-4 text-gold-500" aria-hidden="true" />
             <span>Informasi Bank (Gift)</span>
           </h4>
-          <p className="text-xs text-muted-foreground font-light">
+          <p className="text-xs font-light text-muted-foreground">
             Rekening untuk amplop digital. Bisa lebih dari satu (Maksimal 2 rekening).
           </p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-xs flex items-start gap-2">
+        <div className="rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
           <p className="font-light leading-relaxed">
             ℹ️ Tamu bisa mengirim hadiah uang digital. Klik <span className="font-bold">&quot;+ Tambah Rekening&quot;</span> lalu isi nama bank, nomor rekening, dan atas nama. Maksimal 2 rekening.
           </p>
@@ -64,27 +64,31 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           {giftFields.map((field, index) => (
             <div
               key={field.id}
-              className="p-4 rounded-2xl bg-white dark:bg-zinc-800 border border-border/60 space-y-3 relative"
+              className="relative space-y-3 rounded-2xl border border-border/60 bg-white p-4 dark:bg-zinc-800"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-foreground uppercase tracking-wider">
+                <span className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Rekening #{index + 1}
                 </span>
-                <button
+                <Button
                   type="button"
                   onClick={() => removeGift(index)}
-                  className="w-7 h-7 rounded-full bg-rose-50 text-rose-500 hover:text-rose-700 flex items-center justify-center text-xs"
+                  variant="destructive"
+                  size="icon-sm"
+                  aria-label={`Hapus rekening ${index + 1}`}
+                  className="rounded-full"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                  <Trash2 aria-hidden="true" />
+                </Button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-muted-foreground">Jenis</label>
+                  <label htmlFor={`gifts-${index}-type`} className="text-[11px] font-semibold text-muted-foreground">Jenis</label>
                   <select
+                    id={`gifts-${index}-type`}
                     {...register(`gifts.${index}.type`)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none"
+                    className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   >
                     <option value="BANK">Bank Transfer</option>
                     <option value="EWALLET">E-Wallet (GoPay/OVO/ShopeePay)</option>
@@ -92,33 +96,36 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-muted-foreground">Nama Bank / E-Wallet</label>
+                  <label htmlFor={`gifts-${index}-providerName`} className="text-[11px] font-semibold text-muted-foreground">Nama Bank / E-Wallet</label>
                   <input
+                    id={`gifts-${index}-providerName`}
                     type="text"
                     placeholder="BCA / Mandiri / GoPay"
                     {...register(`gifts.${index}.providerName`)}
-                    className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none"
+                    className="w-full rounded-xl border border-border bg-zinc-50 px-3.5 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-muted-foreground">Nomor Rekening / HP</label>
+                  <label htmlFor={`gifts-${index}-accountNumber`} className="text-[11px] font-semibold text-muted-foreground">Nomor Rekening / HP</label>
                   <input
+                    id={`gifts-${index}-accountNumber`}
                     type="text"
                     placeholder="1234567890"
                     {...register(`gifts.${index}.accountNumber`)}
-                    className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none"
+                    className="w-full rounded-xl border border-border bg-zinc-50 px-3.5 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-muted-foreground">Atas Nama Pemilik</label>
+                <label htmlFor={`gifts-${index}-accountName`} className="text-[11px] font-semibold text-muted-foreground">Atas Nama Pemilik</label>
                 <input
+                  id={`gifts-${index}-accountName`}
                   type="text"
                   placeholder="William Jonathan Tanuwidjaja"
                   {...register(`gifts.${index}.accountName`)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 text-xs focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-zinc-50 px-3.5 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                 />
               </div>
             </div>
@@ -138,74 +145,76 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
             }
             variant="outline"
             size="sm"
-            className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A] hover:bg-[#C8A96A]/10"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus aria-hidden="true" />
             <span>Tambah Rekening (Maks. 2)</span>
           </Button>
         )}
       </div>
 
-      {/* Modul B: 📦 Alamat Pengiriman Kado Fisik (Opsional) */}
-      <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-border/60 space-y-4">
+      {/* Modul B: Alamat Pengiriman Kado Fisik (Opsional) */}
+      <div className="space-y-4 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
         <div className="space-y-0.5">
-          <h4 className="font-heading text-base font-bold text-foreground flex items-center gap-2">
-            <Gift className="w-4 h-4 text-[#C8A96A]" />
+          <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+            <Gift className="h-4 w-4 text-gold-500" aria-hidden="true" />
             <span>Alamat Pengiriman Kado Fisik (Opsional)</span>
           </h4>
-          <p className="text-xs text-muted-foreground font-light">
+          <p className="text-xs font-light text-muted-foreground">
             Alamat bagi tamu yang ingin mengirim kado fisik/paket secara langsung.
           </p>
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-semibold text-muted-foreground">
+          <label htmlFor="physicalGiftAddress" className="text-[11px] font-semibold text-muted-foreground">
             Alamat Lengkap Penerima
           </label>
           <textarea
+            id="physicalGiftAddress"
             rows={3}
             placeholder="Contoh: Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)"
             {...register("physicalGiftAddress")}
-            className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none focus:ring-2 focus:ring-[#C8A96A]/50 transition-all leading-relaxed"
+            className="w-full rounded-xl border border-border bg-white px-4 py-3 text-xs leading-relaxed transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-muted-foreground">Nama Penerima</label>
+            <label htmlFor="physicalGiftReceiver" className="text-[11px] font-semibold text-muted-foreground">Nama Penerima</label>
             <input
+              id="physicalGiftReceiver"
               type="text"
               placeholder="Contoh: William & Elleanor"
               {...register("physicalGiftReceiver")}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none"
+              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-muted-foreground">No. Telepon Penerima</label>
+            <label htmlFor="physicalGiftPhone" className="text-[11px] font-semibold text-muted-foreground">No. Telepon Penerima</label>
             <input
+              id="physicalGiftPhone"
               type="text"
               placeholder="Contoh: 081234567890"
               {...register("physicalGiftPhone")}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-border/60 text-xs focus:outline-none"
+              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
             />
           </div>
         </div>
       </div>
 
-      {/* Modul C: 🎵 Musik Latar */}
-      <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-border/60 space-y-4">
+      {/* Modul C: Musik Latar */}
+      <div className="space-y-4 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
         <div className="space-y-0.5">
-          <h4 className="font-heading text-base font-bold text-foreground flex items-center gap-2">
-            <Music className="w-4 h-4 text-[#C8A96A]" />
+          <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+            <Music className="h-4 w-4 text-gold-500" aria-hidden="true" />
             <span>Musik Latar</span>
           </h4>
-          <p className="text-xs text-muted-foreground font-light">
+          <p className="text-xs font-light text-muted-foreground">
             Lagu yang berputar otomatis saat undangan dibuka.
           </p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-xs">
+        <div className="rounded-2xl border border-gold-400/25 bg-gold-50 p-3.5 text-xs text-gold-800 dark:border-gold-400/20 dark:bg-gold-400/10 dark:text-gold-200">
           <p className="font-light leading-relaxed">
             ℹ️ Setiap tema sudah memiliki musik default. Kamu bisa menggantinya dengan upload lagu sendiri, music default, atau dari pustaka lagu.
           </p>
@@ -238,9 +247,8 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
               onClick={() => setShowMusicModal(true)}
               variant="outline"
               size="sm"
-              className="rounded-xl text-xs flex items-center gap-1.5 border-[#C8A96A]/40 text-[#C8A96A]"
             >
-              <Music className="w-3.5 h-3.5" />
+              <Music aria-hidden="true" />
               <span>Pilih Dari Pustaka Lagu</span>
             </Button>
 
@@ -260,16 +268,15 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
               }}
               variant={isMusicEnabled ? "outline" : "destructive"}
               size="sm"
-              className="rounded-xl text-xs flex items-center gap-1.5"
             >
-              {isMusicEnabled ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              {isMusicEnabled ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
               <span>{isMusicEnabled ? "Nonaktifkan Musik" : "Aktifkan Musik"}</span>
             </Button>
           </div>
 
           {isMusicEnabled && musicTitle && (
-            <div className="text-[10px] text-muted-foreground flex items-center gap-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
-              <Disc className="w-3.5 h-3.5 text-[#C8A96A] animate-spin" />
+            <div className="flex items-center gap-1.5 rounded-xl bg-zinc-100 px-3 py-2 text-[10px] text-muted-foreground dark:bg-zinc-800">
+              <Disc className="h-3.5 w-3.5 animate-spin text-gold-500" aria-hidden="true" />
               <span>Musik Aktif: <strong className="text-foreground">{musicTitle}</strong></span>
             </div>
           )}
@@ -278,38 +285,45 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
 
       {/* Modal Popup Pustaka Lagu */}
       {showMusicModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-md rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-2 border-b border-border/40">
-              <h3 className="font-heading text-base font-bold text-foreground">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="music-modal-title"
+          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200"
+        >
+          <div className="max-h-[85vh] w-full max-w-md space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border/40 pb-2">
+              <h3 id="music-modal-title" className="font-heading text-base font-bold text-foreground">
                 Pustaka Lagu Pernikahan
               </h3>
               <button
                 type="button"
                 onClick={() => setShowMusicModal(false)}
-                className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 text-muted-foreground flex items-center justify-center"
+                aria-label="Tutup dialog pustaka lagu"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-100 text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 dark:bg-zinc-800"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
 
             <div className="space-y-2">
               {displayMusics.map((m, idx) => (
-                <div
+                <button
                   key={idx}
+                  type="button"
                   onClick={() => {
                     setValue("musicTitle", m.title);
                     setValue("musicUrl", m.url);
                     setValue("isMusicEnabled", true);
                     setShowMusicModal(false);
                   }}
-                  className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/60 hover:border-[#C8A96A] cursor-pointer flex items-center justify-between transition-all"
+                  className="flex w-full items-center justify-between rounded-2xl border border-border/60 bg-zinc-50 p-3 text-left transition-all hover:border-gold-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 dark:bg-zinc-900"
                 >
                   <div className="flex items-center gap-2">
-                    <Music className="w-4 h-4 text-[#C8A96A]" />
+                    <Music className="h-4 w-4 text-gold-500" aria-hidden="true" />
                     <span className="text-xs font-semibold text-foreground">{m.title}</span>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -317,17 +331,18 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
       )}
 
       {/* Modul D: Tombol Final Publikasi Undangan */}
-      <div className="pt-4 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-xs text-muted-foreground font-light">
+      <div className="flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-4 sm:flex-row">
+        <p className="text-xs font-light text-muted-foreground">
           Data dapat diubah kapan saja lewat menu edit di Dashboard.
         </p>
 
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full sm:w-auto h-12 px-8 rounded-2xl bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-semibold text-sm shadow-lg shadow-[#C8A96A]/25 flex items-center justify-center gap-2"
+          size="lg"
+          className="w-full sm:w-auto"
         >
-          <Sparkles className="w-4 h-4 fill-current" />
+          <Sparkles className="fill-current" aria-hidden="true" />
           {isSubmitting ? "Memproses..." : "Publikasikan Undangan"}
         </Button>
       </div>

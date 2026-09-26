@@ -1,5 +1,7 @@
 "use client";
 
+import { buildWhatsAppUrl } from "@/lib/format";
+
 /**
  * WhatsAppButton - Shared Floating Action Button Component
  * Tombol WhatsApp melayang di sudut kanan bawah dengan ikon resmi WhatsApp
@@ -7,10 +9,10 @@
  */
 
 export function WhatsAppButton({ phoneNumber = "6282127322357" }) {
-  const message = encodeURIComponent(
+  const waUrl = buildWhatsAppUrl(
+    phoneNumber,
     "Halo, saya berminat untuk membuat undangan digital di IKARA Invitation. Bisa bantu saya?"
   );
-  const waUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
   return (
     <a

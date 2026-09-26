@@ -1,12 +1,14 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { PublicInvitationClient } from "@/features/theme/components/PublicInvitationClient";
 
+// Dedupe fetch tema: dipakai generateMetadata & page dalam 1 request
+const loadTheme = cache((slug) => db.theme.findUnique({ where: { slug } }));
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const theme = await db.theme.findUnique({
-    where: { slug },
-  });
+  const theme = await loadTheme(slug);
 
   if (!theme) {
     return { title: "Tema Tidak Ditemukan - IKARA" };
@@ -21,10 +23,8 @@ export async function generateMetadata({ params }) {
 export default async function ThemePreviewPage({ params }) {
   const { slug } = await params;
 
-  // 1. Ambil info tema dari database untuk memvalidasi
-  const theme = await db.theme.findUnique({
-    where: { slug },
-  });
+  // 1. Ambil info tema dari database untuk memvalidasi (deduped via cache)
+  const theme = await loadTheme(slug);
 
   if (!theme) {
     notFound();

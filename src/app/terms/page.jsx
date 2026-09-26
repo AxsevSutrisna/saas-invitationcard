@@ -28,18 +28,18 @@ export default async function TermsPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F6F2] dark:bg-[#191919] text-foreground font-sans selection:bg-[#C8A96A]/20 selection:text-[#C8A96A]">
+    <div className="min-h-screen flex flex-col bg-background text-foreground font-sans selection:bg-gold-400/20 selection:text-gold-400">
       <Navbar />
       
       {/* Editorial Header Banner */}
       <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-b from-[#e8dec6]/30 to-transparent dark:from-zinc-800/10">
         <div className="absolute inset-0 bg-[radial-gradient(#C8A96A_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.07] pointer-events-none" />
         <div className="max-w-6xl mx-auto px-6 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C8A96A]/10 border border-[#C8A96A]/20 text-[#9e7e40] dark:text-[#E2C785] text-[12px] font-bold uppercase tracking-widest font-poppins">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-400/10 border border-gold-400/20 text-gold-600 dark:text-[#E2C785] text-[12px] font-bold uppercase tracking-widest font-poppins">
             <Scale className="w-4 h-4" />
             Dokumen Hukum
           </div>
-          <h1 className="font-heading text-[36px] sm:text-[48px] font-bold tracking-tight text-[#1F1F1F] dark:text-zinc-50 font-cormorant leading-tight">
+          <h1 className="font-heading text-[36px] sm:text-[48px] font-bold tracking-tight text-foreground font-cormorant leading-tight">
             Syarat & Ketentuan
           </h1>
           <p className="text-[16px] sm:text-[20px] text-muted-foreground max-w-xl mx-auto font-light leading-relaxed font-sans">
@@ -58,7 +58,7 @@ export default async function TermsPage() {
         
         {/* Sticky Left Navigation (Desktop Only) */}
         <aside className="hidden lg:block lg:col-span-3 sticky top-28 space-y-6">
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm">
+          <div className="p-6 rounded-3xl bg-card border border-border/60 shadow-sm">
             <h4 className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-4 font-poppins">
               Navigasi Cepat
             </h4>
@@ -67,7 +67,7 @@ export default async function TermsPage() {
                 <Link
                   key={item.id}
                   href={`#${item.id}`}
-                  className="text-[12px] text-muted-foreground hover:text-[#C8A96A] hover:translate-x-1 transition-all py-1.5 font-light block border-b border-border/30 last:border-0 font-poppins"
+                  className="text-[12px] text-muted-foreground hover:text-gold-400 hover:translate-x-1 transition-all py-1.5 font-light block border-b border-border/30 last:border-0 font-poppins"
                 >
                   {item.label}
                 </Link>
@@ -79,12 +79,12 @@ export default async function TermsPage() {
         {/* Content Body */}
         <article className="lg:col-span-9 space-y-12">
           {/* Important Notice Box */}
-          <div className="p-6 rounded-3xl bg-[#C8A96A]/5 dark:bg-[#C8A96A]/2 border border-[#C8A96A]/20 flex items-start gap-4">
-            <div className="p-2 bg-[#C8A96A]/10 rounded-xl text-[#9e7e40] dark:text-[#E2C785] shrink-0">
+          <div className="p-6 rounded-3xl bg-gold-400/5 dark:bg-gold-400/2 border border-gold-400/20 flex items-start gap-4">
+            <div className="p-2 bg-gold-400/10 rounded-xl text-gold-600 dark:text-[#E2C785] shrink-0">
               <Shield className="w-5 h-5" />
             </div>
             <div className="space-y-1.5">
-              <h4 className="text-[16px] font-semibold text-[#1F1F1F] dark:text-white font-poppins">Pemberitahuan Penting</h4>
+              <h4 className="text-[16px] font-semibold text-foreground font-poppins">Pemberitahuan Penting</h4>
               <p className="text-[12px] sm:text-[16px] text-muted-foreground leading-relaxed font-light font-sans">
                 Dengan membuat akun atau menggunakan layanan IKARA, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh isi Syarat & Ketentuan ini. Jika Anda tidak menyetujui salah satu poin di dalamnya, mohon untuk tidak melanjutkan penggunaan platform ini.
               </p>
@@ -97,14 +97,14 @@ export default async function TermsPage() {
             {/* Section 1 */}
             <section id="penerimaan" className="scroll-mt-28 space-y-4">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">01.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">01.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Penerimaan Syarat
                 </h3>
               </div>
               <div className="text-[16px] text-muted-foreground leading-relaxed font-light space-y-4 font-sans">
                 <p>
-                  Perjanjian ini mengatur akses dan penggunaan Anda terhadap platform <strong className="font-semibold text-foreground">IKARA</strong> ("Kami", "Platform"). Dengan mendaftar, mengakses, membuat undangan digital, atau memanfaatkan layanan kami dalam bentuk apa pun, Anda dianggap secara sadar, jujur, dan sukarela telah membaca, memahami, serta menyetujui untuk mengikatkan diri pada seluruh Syarat & Ketentuan ini.
+                  Perjanjian ini mengatur akses dan penggunaan Anda terhadap platform <strong className="font-semibold text-foreground">IKARA</strong> (&quot;Kami&quot;, &quot;Platform&quot;). Dengan mendaftar, mengakses, membuat undangan digital, atau memanfaatkan layanan kami dalam bentuk apa pun, Anda dianggap secara sadar, jujur, dan sukarela telah membaca, memahami, serta menyetujui untuk mengikatkan diri pada seluruh Syarat & Ketentuan ini.
                 </p>
                 <p>
                   Apabila Anda mendaftarkan akun atas nama pihak ketiga (seperti pasangan, keluarga, atau agen <em className="italic">wedding organizer</em>), Anda menjamin bahwa Anda memiliki wewenang hukum yang sah untuk mengikatkan pihak tersebut pada ketentuan ini. Jika Anda tidak menyetujui salah satu bagian dari ketentuan ini, Anda tidak diperkenankan untuk melanjutkan penggunaan platform IKARA.
@@ -115,8 +115,8 @@ export default async function TermsPage() {
             {/* Section 2 */}
             <section id="layanan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">02.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">02.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Deskripsi Layanan
                 </h3>
               </div>
@@ -141,8 +141,8 @@ export default async function TermsPage() {
             {/* Section 3 */}
             <section id="akun" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">03.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">03.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Keamanan Akun
                 </h3>
               </div>
@@ -159,8 +159,8 @@ export default async function TermsPage() {
             {/* Section 4 */}
             <section id="pembayaran" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">04.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">04.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Metode Pembayaran
                 </h3>
               </div>
@@ -180,8 +180,8 @@ export default async function TermsPage() {
             {/* Section 5 */}
             <section id="konten" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">05.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">05.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Kebijakan Konten
                 </h3>
               </div>
@@ -198,14 +198,14 @@ export default async function TermsPage() {
             {/* Section 6 */}
             <section id="hak-cipta" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">06.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">06.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Hak Kekayaan Intelektual
                 </h3>
               </div>
               <div className="text-[16px] text-muted-foreground leading-relaxed font-light space-y-4 font-sans">
                 <p>
-                  Seluruh aset visual, desain tata letak (<em className="italic">layout</em>), kombinasi warna, tipografi editorial, grafis ornamen, logo, nama merek "IKARA", kode sumber (<em className="italic">source code</em>), dan arsitektur platform merupakan hak kekayaan intelektual milik <strong className="font-semibold text-foreground">IKARA</strong> yang dilindungi oleh Undang-Undang Hak Cipta Republik Indonesia dan hukum internasional.
+                  Seluruh aset visual, desain tata letak (<em className="italic">layout</em>), kombinasi warna, tipografi editorial, grafis ornamen, logo, nama merek &quot;IKARA&quot;, kode sumber (<em className="italic">source code</em>), dan arsitektur platform merupakan hak kekayaan intelektual milik <strong className="font-semibold text-foreground">IKARA</strong> yang dilindungi oleh Undang-Undang Hak Cipta Republik Indonesia dan hukum internasional.
                 </p>
                 <p>
                   Pengguna dilarang keras menduplikasi, menyalin, menjual kembali, mendistribusikan ulang, melakukan <em className="italic">reverse engineering</em>, atau memanfaatkan komponen tata letak visual IKARA untuk kepentingan komersial pihak lain tanpa izin tertulis secara resmi dari kami.
@@ -216,8 +216,8 @@ export default async function TermsPage() {
             {/* Section 7 */}
             <section id="larangan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">07.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">07.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Larangan & Penyalahgunaan
                 </h3>
               </div>
@@ -237,8 +237,8 @@ export default async function TermsPage() {
             {/* Section 8 */}
             <section id="penghentian" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-[#C8A96A] font-cormorant">08.</span>
-                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-[#1F1F1F] dark:text-zinc-100 font-poppins">
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">08.</span>
+                <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Penghentian Layanan
                 </h3>
               </div>

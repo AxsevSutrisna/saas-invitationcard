@@ -10,29 +10,58 @@ const poppins = Poppins({
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  // 300 dibuang: heading tidak pernah memakai font-light (hanya 400–700).
+  weight: ["400", "500", "600", "700"],
 });
 
 const greatVibes = Great_Vibes({
   variable: "--font-greatvibes",
   subsets: ["latin"],
   weight: ["400"],
+  // Font skrip dekoratif & jarang → jangan render-blocking di muat awal.
+  preload: false,
+  display: "swap",
 });
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
 export const metadata = {
-  title: "IKARA | Undangan Pernikahan Digital Mewah & Elegan",
+  metadataBase: new URL(APP_URL),
+  title: {
+    default: "IKARA | Undangan Pernikahan Digital Mewah & Elegan",
+    template: "%s | IKARA",
+  },
   description:
     "IKARA adalah platform undangan pernikahan digital premium. Abadikan kisah cinta dan janji pernikahan Anda dengan desain website pernikahan yang elegan, personal, dan eksklusif.",
-  keywords: ["undangan pernikahan digital", "undangan online mewah", "website pernikahan premium", "bikin undangan digital", "IKARA"],
+  keywords: ["undangan pernikahan digital", "undangan online mewah", "website pernikahan premium", "bikin undangan digital", "RSVP online", "IKARA"],
+  alternates: { canonical: "/" },
   openGraph: {
     title: "IKARA | Undangan Pernikahan Digital Mewah",
     description: "Abadikan kisah cinta Anda dengan undangan pernikahan digital premium yang elegan dan bermakna.",
+    url: APP_URL,
+    siteName: "IKARA",
     type: "website",
     locale: "id_ID",
+    images: [
+      {
+        url: "/ikara-hero-section.webp",
+        width: 1200,
+        height: 630,
+        alt: "IKARA — Undangan Pernikahan Digital Mewah & Elegan",
+      },
+    ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "IKARA | Undangan Pernikahan Digital Mewah",
+    description: "Abadikan kisah cinta Anda dengan undangan pernikahan digital premium yang elegan dan bermakna.",
+    images: ["/ikara-hero-section.webp"],
+  },
+  robots: { index: true, follow: true },
+  // Favicon utama kini via konvensi file `app/icon.svg` (< 1 KB, menggantikan
+  // PNG 362 KB yang sebelumnya dimuat tiap halaman). Di sini cukup apple-touch:
+  // wajib PNG (SVG tak didukung iOS) & hanya diambil saat "Add to Home Screen".
   icons: {
-    icon: "/IKARA_LOGO_ICON.png",
-    shortcut: "/IKARA_LOGO_ICON.png",
     apple: "/IKARA_LOGO_ICON.png",
   },
 };

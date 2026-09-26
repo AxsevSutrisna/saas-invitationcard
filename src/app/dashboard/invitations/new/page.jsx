@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { findActiveSubscriptionByUserId } from "@/server/repositories/subscription.repository";
+import { serialize } from "@/lib/utils";
+import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
 import { InvitationWizard } from "@/features/invitation";
 import { ROUTES } from "@/constants/routes";
 
@@ -19,36 +20,17 @@ export default async function NewInvitationPage() {
     redirect(ROUTES.LOGIN || "/login");
   }
 
-  // 2. Fetch active subscription
-  const activeSubscription = await findActiveSubscriptionByUserId(session.user.id);
-  const serializedSubscription = activeSubscription
-    ? JSON.parse(JSON.stringify(activeSubscription))
-    : null;
+  // 2. Ambil data paralel: langganan, tema, template kutipan & musik
+  const [activeSubscription, themes, quoteTemplates, musicTemplates] = await Promise.all([
+    findActiveSubscriptionByUserId(session.user.id),
+    db.theme.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } }),
+    db.quoteTemplate.findMany(),
+    db.musicTemplate.findMany({ where: { isActive: true } }),
+  ]);
 
-  // 3. Fetch active themes
-  let themes = await db.theme.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: "asc" },
-  });
-
-  // Fallback if themes database is empty
-  if (!themes || themes.length === 0) {
-    themes = [
-      { id: "cm6theme01", name: "Classic Elegance", slug: "classic-elegance", isPremium: false },
-      { id: "cm6theme02", name: "Floral Blossom", slug: "floral-blossom", isPremium: true },
-      { id: "cm6theme03", name: "Modern Minimalist", slug: "modern-minimalist", isPremium: true },
-      { id: "cm6theme04", name: "Floral Blue", slug: "floral-blue", isPremium: true },
-    ];
-  }
-
-  // 4. Fetch Quotes & Music templates from Neon DB
-  const quoteTemplates = await db.quoteTemplate.findMany();
-  const musicTemplates = await db.musicTemplate.findMany({
-    where: { isActive: true },
-  });
-
-  const serializedQuotes = JSON.parse(JSON.stringify(quoteTemplates));
-  const serializedMusics = JSON.parse(JSON.stringify(musicTemplates));
+  const serializedSubscription = activeSubscription ? serialize(activeSubscription) : null;
+  const serializedQuotes = serialize(quoteTemplates);
+  const serializedMusics = serialize(musicTemplates);
 
   return (
     <div className="max-w-6xl mx-auto">

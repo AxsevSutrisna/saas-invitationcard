@@ -2,8 +2,9 @@ import { db } from "@/lib/db";
 import { ThemesListClient } from "./ThemesListClient";
 
 export const metadata = {
-  title: "Koleksi Tema Undangan — IKARA",
+  title: "Koleksi Tema Undangan — IKARA Dashboard",
   description: "Lihat dan pilih tema undangan digital premium terbaik dari IKARA.",
+  robots: { index: false, follow: false },
 };
 
 /**

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { s3Client, R2_BUCKET_NAME, R2_PUBLIC_DOMAIN } from "@/lib/r2";
+import { s3Client, R2_BUCKET_NAME, buildPublicUrl } from "@/lib/r2";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -96,9 +96,8 @@ export async function POST(req) {
 
     const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 60 });
 
-    // 6. Tentukan URL Publik Akhir
-    const cleanPublicDomain = R2_PUBLIC_DOMAIN.endsWith("/") ? R2_PUBLIC_DOMAIN.slice(0, -1) : R2_PUBLIC_DOMAIN;
-    const publicUrl = `${cleanPublicDomain}/${uniqueKey}`;
+    // 6. Tentukan URL Publik Akhir (buildPublicUrl menjamin skema https://)
+    const publicUrl = buildPublicUrl(uniqueKey);
 
     return NextResponse.json({
       success: true,

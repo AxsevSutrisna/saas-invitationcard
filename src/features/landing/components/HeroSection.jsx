@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { Plus, Play, Sparkles, Heart } from "lucide-react";
 
 export function HeroSection() {
@@ -17,10 +17,11 @@ export function HeroSection() {
         {/* Mobile Background */}
         <div className="block md:hidden relative w-full h-full">
           <Image
-            src="/ikara-hero-section-potrait.png"
-            alt="IKARA Wedding Invitation Hero Mobile"
+            src="/ikara-hero-section-potrait.webp"
+            alt="Pasangan pengantin menikmati momen pernikahan dengan undangan digital IKARA"
             fill
             priority
+            quality={72}
             sizes="(max-width: 768px) 100vw, 0vw"
             className="object-cover object-center"
           />
@@ -29,10 +30,11 @@ export function HeroSection() {
         {/* Desktop Background */}
         <div className="hidden md:block relative w-full h-full">
           <Image
-            src="/ikara-hero-section.png"
-            alt="IKARA Wedding Invitation Hero Desktop"
+            src="/ikara-hero-section.webp"
+            alt="Pasangan pengantin menikmati momen pernikahan dengan undangan digital IKARA"
             fill
             priority
+            quality={72}
             sizes="(max-width: 768px) 0vw, 100vw"
             className="object-cover object-center"
           />
@@ -44,14 +46,14 @@ export function HeroSection() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
         {/* Text Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+        <Reveal
+          immediate
+          direction="up"
+          duration={0.6}
           className="max-w-2xl space-y-6 text-left"
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/40 border border-[#C8A96A]/40 text-[#E2C785] text-xs font-semibold uppercase tracking-widest backdrop-blur-md shadow-lg">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/40 border border-gold-400/40 text-[#E2C785] text-xs font-semibold uppercase tracking-widest backdrop-blur-md shadow-lg">
             Every Promise Has a Story
           </div>
 
@@ -73,7 +75,7 @@ export function HeroSection() {
             <Link href={ROUTES.LOGIN} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl bg-[#C8A96A] hover:bg-[#b39150] text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl bg-gold-400 hover:bg-gold-500 text-white font-medium text-base flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
               >
                 <Plus className="w-5 h-5" />
                 Begin Your Story
@@ -84,15 +86,15 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-[#C8A96A]/50 bg-black/40 backdrop-blur-md hover:bg-[#C8A96A]/20 hover:border-[#C8A96A] text-white hover:text-[#F6E5B3] font-medium text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer transition-all active:scale-95"
+                className="w-full sm:w-auto h-13 px-7 rounded-2xl border-gold-400/50 bg-black/40 backdrop-blur-md hover:bg-gold-400/20 hover:border-gold-400 text-white hover:text-[#F6E5B3] font-medium text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer transition-all active:scale-95"
               >
-                <Play className="w-4 h-4 fill-current text-[#C8A96A]" />
+                <Play className="w-4 h-4 fill-current text-gold-400" />
                 Lihat Demo Tema
               </Button>
             </Link>
 
           </div>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );

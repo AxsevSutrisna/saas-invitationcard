@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { invitationFormSchema } from "@/lib/validations/invitation.schema";
-import { createInvitationAction } from "@/server/actions/invitation.actions";
+import { invitationFormSchema } from "@/features/invitation/schema";
+import { createInvitationAction } from "@/features/invitation/actions";
 import { OnboardingGuideModal } from "./OnboardingGuideModal";
 import { LivePhonePreview } from "./LivePhonePreview";
 import { Step1InfoTheme } from "./Step1InfoTheme";
@@ -14,6 +14,7 @@ import { Step3Events } from "./Step3Events";
 import { Step4GiftsStories } from "./Step4GiftsStories";
 import { Step5ReviewPublish } from "./Step5ReviewPublish";
 import { Button } from "@/components/ui/button";
+import { Surface } from "@/components/ui/Surface";
 import { BookOpen, ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 const STEPS = [
@@ -186,74 +187,82 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
       />
 
       {/* Top Header Controls & Guide Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-        <div>
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">
+      <div className="flex flex-col gap-4 border-b border-border/40 pb-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
             Buat Undangan Baru
           </h1>
-          <p className="text-xs text-muted-foreground font-light">
+          <p className="text-xs font-light text-muted-foreground">
             Isi informasi di bawah untuk membuat undangan pernikahan digital Anda
           </p>
         </div>
 
-        <Button
-          type="button"
-          onClick={() => setShowGuideModal(true)}
-          className="rounded-xl text-xs flex items-center gap-1.5 bg-gradient-to-r from-[#C8A96A] to-[#b39150] hover:from-[#b39150] hover:to-[#9e7e40] text-white font-semibold shadow-md shadow-[#C8A96A]/20 border-none transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-        >
-          <BookOpen className="w-3.5 h-3.5" />
+        <Button type="button" size="sm" onClick={() => setShowGuideModal(true)}>
+          <BookOpen aria-hidden="true" />
           <span>Panduan Petunjuk</span>
         </Button>
       </div>
 
       {/* Stepper Progress Bar */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-[#1A1A1A] border border-border/60 shadow-sm overflow-x-auto">
-        <div className="flex items-center justify-between min-w-[500px]">
+      <nav
+        aria-label="Langkah pembuatan undangan"
+        className="overflow-x-auto rounded-2xl border border-border/60 bg-card p-4 shadow-(--shadow-gold-sm)"
+      >
+        <ol className="flex min-w-125 items-center justify-between">
           {STEPS.map((step) => {
             const isCompleted = currentStep > step.id;
             const isCurrent = currentStep === step.id;
 
             return (
-              <div
-                key={step.id}
-                onClick={() => isCompleted && setCurrentStep(step.id)}
-                className={`flex items-center gap-2 cursor-pointer ${
-                  isCurrent
-                    ? "text-[#C8A96A] font-bold"
-                    : isCompleted
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground"
-                }`}
-              >
-                <div
-                  className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition-all ${
+              <li key={step.id}>
+                <button
+                  type="button"
+                  disabled={!isCompleted}
+                  aria-current={isCurrent ? "step" : undefined}
+                  onClick={() => isCompleted && setCurrentStep(step.id)}
+                  className={`flex items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 disabled:cursor-default ${
+                    isCompleted ? "cursor-pointer" : ""
+                  } ${
                     isCurrent
-                      ? "bg-[#C8A96A] text-white shadow-md shadow-[#C8A96A]/30"
+                      ? "font-bold text-gold-500"
                       : isCompleted
-                      ? "bg-emerald-500 text-white"
-                      : "bg-zinc-200 dark:bg-zinc-800 text-muted-foreground"
+                      ? "font-medium text-foreground"
+                      : "text-muted-foreground"
                   }`}
                 >
-                  {isCompleted ? <Check className="w-3.5 h-3.5" /> : step.id}
-                </div>
-                <span className="text-xs whitespace-nowrap">{step.title}</span>
-              </div>
+                  <span
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
+                      isCurrent
+                        ? "bg-gold-400 text-white shadow-md shadow-gold-400/30"
+                        : isCompleted
+                        ? "border border-gold-400/40 bg-gold-400/15 text-gold-500"
+                        : "bg-zinc-200 text-muted-foreground dark:bg-zinc-800"
+                    }`}
+                  >
+                    {isCompleted ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : step.id}
+                  </span>
+                  <span className="whitespace-nowrap text-xs">{step.title}</span>
+                </button>
+              </li>
             );
           })}
-        </div>
-      </div>
+        </ol>
+      </nav>
 
       {/* Server Error Alert */}
       {serverError && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 text-xs font-medium">
+        <div
+          role="alert"
+          className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-xs font-medium text-destructive"
+        >
           {serverError}
         </div>
       )}
 
       {/* Split-Screen Container: Left Form (60%) + Right Live Preview (40%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         {/* Left Column: Form Editor (7 Cols) */}
-        <div className="lg:col-span-7 bg-white dark:bg-[#1A1A1A] p-6 sm:p-8 rounded-3xl border border-border/60 shadow-sm space-y-8">
+        <Surface padding="none" className="space-y-8 p-6 sm:p-8 lg:col-span-7">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {currentStep === 1 && (
               <Step1InfoTheme
@@ -295,15 +304,15 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
             )}
 
             {/* Stepper Navigation Buttons */}
-            <div className="flex items-center justify-between pt-6 border-t border-border/40">
+            <div className="flex flex-col-reverse gap-3 border-t border-border/40 pt-6 sm:flex-row sm:items-center sm:justify-between">
               <Button
                 type="button"
                 onClick={handlePrevStep}
                 disabled={currentStep === 1}
                 variant="outline"
-                className="rounded-xl text-xs flex items-center gap-1.5"
+                className="w-full sm:w-auto"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft aria-hidden="true" />
                 <span>Sebelumnya</span>
               </Button>
 
@@ -311,18 +320,18 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
                 <Button
                   type="button"
                   onClick={handleNextStep}
-                  className="rounded-xl bg-[#C8A96A] hover:bg-[#b39150] text-white text-xs flex items-center gap-1.5"
+                  className="w-full sm:w-auto"
                 >
                   <span>Lanjutkan</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight aria-hidden="true" />
                 </Button>
               )}
             </div>
           </form>
-        </div>
+        </Surface>
 
         {/* Right Column: Sticky Live Phone Preview (5 Cols) */}
-        <div className="hidden lg:block lg:col-span-5">
+        <div className="hidden lg:col-span-5 lg:block">
           <LivePhonePreview formData={formData} themes={themes} />
         </div>
       </div>

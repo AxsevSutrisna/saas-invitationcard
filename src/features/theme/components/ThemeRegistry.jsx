@@ -1,10 +1,9 @@
 "use client";
 
-import { ClassicEleganceTheme } from "@/themes/classic-elegance";
-import { FloralBlossomTheme } from "@/themes/floral-blossom";
-import { ModernMinimalistTheme } from "@/themes/modern-minimalist";
-import { FloralBlueTheme } from "@/themes/floral-blue";
-import { NatureHarmonyTheme } from "@/themes/nature-harmony";
+import { TraditionalLayout } from "@/features/theme/layouts/TraditionalLayout";
+import { ModernMinimalistTheme } from "@/features/theme/designs/modern-minimalist";
+import { NatureHarmonyTheme } from "@/features/theme/designs/nature-harmony";
+import { getThemeConfig } from "@/features/theme/theme-config";
 
 export function ThemeRegistry({ invitation, rsvps, guestName, onRsvpSuccess, isPreview, guest, isMuted, setIsMuted }) {
   const themeSlug = invitation?.theme?.slug || "classic-elegance";
@@ -22,16 +21,14 @@ export function ThemeRegistry({ invitation, rsvps, guestName, onRsvpSuccess, isP
 
   switch (themeSlug) {
     case "classic-elegance":
-      return <ClassicEleganceTheme {...props} />;
     case "floral-blossom":
-      return <FloralBlossomTheme {...props} />;
+    case "floral-blue":
+      return <TraditionalLayout config={getThemeConfig(themeSlug)} {...props} />;
     case "modern-minimalist":
       return <ModernMinimalistTheme {...props} />;
-    case "floral-blue":
-      return <FloralBlueTheme {...props} />;
     case "nature-harmony":
       return <NatureHarmonyTheme {...props} />;
     default:
-      return <ClassicEleganceTheme {...props} />;
+      return <TraditionalLayout config={getThemeConfig("classic-elegance")} {...props} />;
   }
 }

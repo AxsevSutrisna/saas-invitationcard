@@ -1,0 +1,43 @@
+import "server-only";
+import bcrypt from "bcryptjs";
+import {
+  findUserByEmail,
+  createUser,
+} from "@/features/auth/repository";
+
+
+export async function registerUser(data) {
+  const existingUser = await findUserByEmail(data.email);
+  if (existingUser) {
+    return { success: false, error: "Email is already registered." };
+  }
+
+  const hashedPassword = await bcrypt.hash(data.password, 12);
+
+  const newUser = await createUser({
+    name: data.name,
+    email: data.email,
+    password: hashedPassword,
+  });
+
+  const { password: _, ...safeUser } = newUser;
+
+  return { success: true, user: safeUser };
+}
+
+export async function validateUserCredentials(credentials) {
+  if (!credentials?.email || !credentials?.password) return null;
+
+  const user = await findUserByEmail(credentials.email);
+
+  if (!user || !user.password) return null;
+
+  const isPasswordValid = await bcrypt.compare(
+    credentials.password,
+    user.password
+  );
+
+  if (!isPasswordValid) return null;
+
+  return user;
+}

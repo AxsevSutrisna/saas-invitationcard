@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { authConfig } from "@/config/auth.config";
-import { validateUserCredentials } from "@/server/services/auth.service";
+import { validateUserCredentials } from "@/features/auth/service";
 import { db } from "@/lib/db";
 
 /**

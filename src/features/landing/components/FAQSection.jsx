@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { Reveal } from "@/components/ui/Reveal";
 import { ChevronDown, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -32,68 +32,63 @@ export function FAQSection({ faqs = [] }) {
       ];
 
   return (
-    <section id="faq" className="py-20 md:py-28 bg-[#F8F6F2]">
+    <section id="faq" className="scroll-mt-28 py-20 md:py-28 bg-[#F8F6F2]">
       <div className="max-w-4xl mx-auto px-6 space-y-16">
         {/* Header FAQ */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <Reveal
+          direction="up"
+          duration={0.5}
           className="text-center space-y-3"
         >
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-gold-400">
             Pertanyaan Umum
           </span>
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#1F1F1F] dark:text-zinc-50">
             Sering Ditanyakan (FAQ)
           </h2>
-        </motion.div>
+        </Reveal>
 
         {/* Accordion FAQ */}
         <div className="space-y-4">
           {displayFaqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <motion.div
+              <Reveal
                 key={idx}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                direction="up"
+                duration={0.4}
+                delay={idx * 0.1}
                 className={`rounded-3xl border transition-all duration-300 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md hover:bg-white/60 dark:hover:bg-zinc-800/60 shadow-sm ${
                   isOpen
-                    ? "border-[#C8A96A]/80 shadow-[0_6px_25px_rgba(200,169,106,0.08)] bg-white/60 dark:bg-zinc-900/60"
-                    : "border-[#C8A96A]/15"
+                    ? "border-gold-400/80 shadow-[0_6px_25px_rgba(200,169,106,0.08)] bg-white/60 dark:bg-zinc-900/60"
+                    : "border-gold-400/15"
                 }`}
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? -1 : idx)}
-                  className="w-full p-6 text-left flex items-center justify-between font-semibold text-foreground text-sm sm:text-base hover:text-[#C8A96A] transition-colors cursor-pointer"
+                  className="w-full p-6 text-left flex items-center justify-between font-semibold text-foreground text-sm sm:text-base hover:text-gold-400 transition-colors cursor-pointer"
                 >
                   <span className="font-poppins">{faq.q}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-[#C8A96A] shrink-0 transition-transform duration-300 ${
+                    className={`w-5 h-5 text-gold-400 shrink-0 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-6 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed border-t border-[#C8A96A]/10 pt-4 font-normal">
+                  <div className="px-6 pb-6 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed border-t border-gold-400/10 pt-4 font-normal">
                     {faq.a}
                   </div>
                 )}
-              </motion.div>
+              </Reveal>
             );
           })}
         </div>
 
         {/* Closing Conversion CTA Banner */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="rounded-[32px] bg-[#2C2723] text-white p-10 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden border border-[#C8A96A]/40"
+        <Reveal
+          direction="none"
+          className="rounded-[32px] bg-[#2C2723] text-white p-10 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden border border-gold-400/40"
         >
 
           <div className="space-y-3 relative z-10">
@@ -109,13 +104,13 @@ export function FAQSection({ faqs = [] }) {
             <Link href={ROUTES.LOGIN}>
               <Button
                 size="lg"
-                className="h-13 px-8 rounded-2xl bg-[#C8A96A] hover:bg-[#b39150] text-white font-medium text-base flex items-center gap-2 mx-auto cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
+                className="h-13 px-8 rounded-2xl bg-gold-400 hover:bg-gold-500 text-white font-medium text-base flex items-center gap-2 mx-auto cursor-pointer shadow-md hover:shadow-lg transition-all active:scale-95"
               >
                 Begin Your Story <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
           </div>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );
