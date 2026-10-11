@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { LayoutGrid, Link as LinkIcon, Sparkles, RefreshCw, Search, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/Modal";
+import { Field } from "@/components/ui/Field";
 
 const CATEGORIES = ["Semua", "Elegant", "Floral", "Sunda", "Blue", "Nature"];
 
@@ -60,14 +62,19 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
       </div>
 
       {/* Input Judul Undangan */}
-      <div className="space-y-2">
-        <label
-          htmlFor="invitation-title"
-          className="flex items-center gap-1.5 text-sm font-semibold text-foreground"
-        >
-          <span>Judul Undangan</span>
-          <span className="text-destructive">*</span>
-        </label>
+      <Field
+        htmlFor="invitation-title"
+        className="space-y-2"
+        labelClassName="flex items-center gap-1.5 text-sm font-semibold text-foreground"
+        label={
+          <>
+            <span>Judul Undangan</span>
+            <span className="text-destructive">*</span>
+          </>
+        }
+        error={errors.title?.message}
+        errorClassName="text-xs text-destructive"
+      >
         <input
           id="invitation-title"
           type="text"
@@ -75,21 +82,23 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
           {...register("title")}
           className="w-full rounded-xl border border-border bg-zinc-50 px-4 py-3 text-sm transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
         />
-        {errors.title && (
-          <p className="text-xs text-destructive">{errors.title.message}</p>
-        )}
-      </div>
+      </Field>
 
       {/* Input Slug URL */}
-      <div className="space-y-2">
-        <label
-          htmlFor="invitation-slug"
-          className="flex items-center gap-1.5 text-sm font-semibold text-foreground"
-        >
-          <LinkIcon className="h-3.5 w-3.5 text-gold-500" aria-hidden="true" />
-          <span>Alamat URL Publik (Slug)</span>
-          <span className="text-destructive">*</span>
-        </label>
+      <Field
+        htmlFor="invitation-slug"
+        className="space-y-2"
+        labelClassName="flex items-center gap-1.5 text-sm font-semibold text-foreground"
+        label={
+          <>
+            <LinkIcon className="h-3.5 w-3.5 text-gold-500" aria-hidden="true" />
+            <span>Alamat URL Publik (Slug)</span>
+            <span className="text-destructive">*</span>
+          </>
+        }
+        error={errors.slug?.message}
+        errorClassName="text-xs text-destructive"
+      >
         <div className="flex items-center overflow-hidden rounded-xl border border-border bg-zinc-50 transition-all focus-within:border-gold-400 focus-within:ring-2 focus-within:ring-gold-400/30 dark:bg-zinc-900">
           <span className="select-none border-r border-border/50 bg-zinc-100 px-4 py-3 text-xs font-medium text-muted-foreground dark:bg-zinc-800">
             ikara.id/
@@ -102,20 +111,16 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
             className="w-full bg-transparent px-4 py-3 text-sm focus:outline-none"
           />
         </div>
-        {errors.slug && (
-          <p className="text-xs text-destructive">{errors.slug.message}</p>
-        )}
-      </div>
+      </Field>
 
       {/* Modal Popup Pilih Tema Undangan (Screenshot Referensi 2) */}
-      {showThemeModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="theme-modal-title"
-          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200"
-        >
-          <div className="max-h-[90vh] w-full max-w-2xl space-y-5 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl">
+      <Modal
+        open={showThemeModal}
+        onClose={() => setShowThemeModal(false)}
+        labelledBy="theme-modal-title"
+        overlayClassName="animate-in fade-in bg-black/60 backdrop-blur-sm duration-200"
+        panelClassName="max-h-[90vh] w-full max-w-2xl space-y-5 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl"
+      >
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-border/40 pb-3">
               <div className="flex items-center gap-2">
@@ -227,9 +232,7 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
                 );
               })}
             </div>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

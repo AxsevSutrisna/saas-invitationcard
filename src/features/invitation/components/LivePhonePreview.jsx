@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Sparkles, Calendar, MapPin, Heart, Link as LinkIcon, Music, Gift, CreditCard, Image as ImageIcon, BookOpen, Volume2, VolumeX } from "lucide-react";
+import { Sparkles, Link as LinkIcon } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { ThemeRegistry } from "@/features/theme/components/ThemeRegistry";
 import { EnvelopeCover } from "@/features/theme/components/EnvelopeCover";

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { s3Client, R2_BUCKET_NAME, buildPublicUrl } from "@/lib/r2";
+import { s3Client, R2_BUCKET_NAME, buildPublicUrl, buildUserObjectKey } from "@/lib/r2";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -78,14 +78,14 @@ export async function POST(req) {
       );
     }
 
-    // 4. Generate Unique Key untuk S3/R2
+    // 4. Generate Unique Key untuk S3/R2 (builder bersama — prefix & konvensi
+    //    terpusat di r2.js agar selaras dengan guard penghapusan).
     const fileExtension = filename.split(".").pop() || "";
-    const cleanExtension = fileExtension.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(2, 10);
-    const folder = isImage ? "images" : "audio";
-    
-    const uniqueKey = `invitations/${session.user.id}/${folder}/${timestamp}-${randomStr}.${cleanExtension}`;
+    const uniqueKey = buildUserObjectKey({
+      userId: session.user.id,
+      folder: isImage ? "images" : "audio",
+      ext: fileExtension,
+    });
 
     // 5. Generate Presigned URL (PUT)
     const command = new PutObjectCommand({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { UploadCloud, File, Trash2, Music, Check, X, AlertCircle } from "lucide-react";
+import { UploadCloud, Trash2, Music, Check, AlertCircle } from "lucide-react";
 
 export function FileUploader({
   value,

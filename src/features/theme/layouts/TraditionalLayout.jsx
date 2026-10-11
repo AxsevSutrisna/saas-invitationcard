@@ -13,8 +13,7 @@ import { ParticleField } from "@/features/theme/components/ParticleField";
 import { BankCard } from "@/features/theme/components/BankCard";
 import { MusicToggle } from "@/features/theme/components/MusicToggle";
 import { SectionHeading } from "@/features/theme/components/SectionHeading";
-import { useCarousel } from "@/features/theme/hooks/useCarousel";
-import { useClipboard } from "@/features/theme/hooks/useClipboard";
+import { useInvitationView } from "@/features/theme/hooks/useInvitationView";
 import { formatEventDate } from "@/lib/format";
 import { getThemeConfig } from "@/features/theme/theme-config";
 
@@ -28,23 +27,16 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
   const { accent } = cfg;
   const { hero, fonts, copy, layout: surfaces } = cfg;
 
-  // Bayangan premium ber-tint aksen (kedalaman lembut & berlapis) + kelas
-  // hover-lift halus — dipakai konsisten lintas kartu agar terasa mewah.
+  // Bayangan premium ber-tint aksen (kedalaman lembut & berlapis).
   const cardShadow = `0 2px 8px ${accent}0c, 0 24px 48px -14px ${accent}22`;
-  const cardHover = "transition-all duration-500 hover:-translate-y-1";
 
-  const groom     = invitation?.groomNickname || "Pria";
-  const bride     = invitation?.brideNickname  || "Wanita";
-  const groomFull = invitation?.groomFullName  || "Nama Pria Lengkap";
-  const brideFull = invitation?.brideFullName  || "Nama Wanita Lengkap";
-  const galleries = invitation?.galleries      || [];
-  const galleryLayout = invitation?.galleryLayout || "CAROUSEL";
-
-  const { index: carouselIndex, setIndex: setIdx, next, prev } = useCarousel(
-    galleries.length,
-    galleryLayout === "CAROUSEL" ? 4500 : 0
-  );
-  const { copiedId, copy: onCopy } = useClipboard();
+  // Prelude bersama (default nama/galeri, carousel, clipboard, cardHover).
+  const {
+    groom, bride, groomFull, brideFull,
+    galleries, galleryLayout, carousel, clipboard, cardHover,
+  } = useInvitationView(invitation);
+  const { index: carouselIndex, setIndex: setIdx, next, prev } = carousel;
+  const { copiedId, copy: onCopy } = clipboard;
 
   return (
     <main

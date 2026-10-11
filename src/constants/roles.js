@@ -21,19 +21,6 @@ export const ROLES = {
 export const ROLE_VALUES = Object.values(ROLES);
 
 /**
- * Predikat murni: apakah `role` sama persis dengan `target`.
- * Sengaja TIDAK memakai hirarki index — peran seperti AGENCY bersifat
- * lateral (bukan superset USER), jadi pencocokan eksplisit lebih aman
- * dari kebocoran akses.
- * @param {string | undefined | null} role
- * @param {string} target
- * @returns {boolean}
- */
-export function isRole(role, target) {
-  return role === target;
-}
-
-/**
  * Apakah role adalah SUPER_ADMIN.
  * @param {string | undefined | null} role
  * @returns {boolean}

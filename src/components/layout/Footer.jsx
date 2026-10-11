@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Heart } from "lucide-react";
 import { siteConfig } from "@/config/site.config";
 import { ROUTES } from "@/constants/routes";
 

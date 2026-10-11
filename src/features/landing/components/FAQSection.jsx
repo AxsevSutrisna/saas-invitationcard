@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
-import { ChevronDown, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronDown, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";

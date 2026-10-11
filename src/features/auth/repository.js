@@ -38,8 +38,3 @@ export async function createPasswordResetToken({ email, token, expires }) {
 export async function findPasswordResetToken(tokenHash) {
   return db.passwordResetToken.findUnique({ where: { token: tokenHash } });
 }
-
-/** Hapus satu token reset berdasarkan hash (dipakai setelah dipakai/expired). */
-export async function deletePasswordResetToken(tokenHash) {
-  return db.passwordResetToken.deleteMany({ where: { token: tokenHash } });
-}

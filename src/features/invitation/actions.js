@@ -7,8 +7,7 @@ import {
   updateInvitation,
   deleteInvitation,
   checkSlugAvailability,
-  getInvitationOwner,
-  getInvitationMediaUrls,
+  getInvitationOwnerWithMedia,
 } from "@/features/invitation/repository";
 import { db } from "@/lib/db";
 import { deleteObjectsByUrls } from "@/lib/r2";
@@ -95,12 +94,10 @@ export async function updateInvitationAction(invitationId, payload) {
     // Validasi Zod
     const validatedData = invitationFormSchema.parse(payload);
 
-    // Otorisasi: hanya pemilik undangan yang boleh mengedit.
-    const owner = await getInvitationOwner(invitationId);
-    const user = await authorize("invitation:update", owner);
-
-    // Simpan URL media LAMA sebelum diperbarui (untuk pembersihan objek yatim).
-    const oldMedia = await getInvitationMediaUrls(invitationId);
+    // Satu baca: pemilik (untuk otorisasi) + URL media LAMA (untuk pembersihan
+    // objek R2 yatim). Menggantikan dua baca terpisah atas baris yang sama.
+    const existing = await getInvitationOwnerWithMedia(invitationId);
+    const user = await authorize("invitation:update", existing);
 
     // Cek keunikan slug — izinkan slug yang sama bila masih milik undangan ini.
     const slugOwner = await db.invitation.findUnique({
@@ -135,7 +132,7 @@ export async function updateInvitationAction(invitationId, payload) {
     // Best-effort & aman: deleteObjectsByUrls mengabaikan URL non-R2 (Unsplash,
     // dsb) dan hanya menghapus key ber-prefix `invitations/{userId}/`, sehingga
     // berkas template milik bersama tidak akan terhapus.
-    const oldUrls = collectMediaUrls(oldMedia);
+    const oldUrls = collectMediaUrls(existing);
     const newUrls = new Set(collectMediaUrls(validatedData));
     const orphanedUrls = oldUrls.filter((url) => !newUrls.has(url));
     if (orphanedUrls.length > 0) {
@@ -163,20 +160,16 @@ export async function updateInvitationAction(invitationId, payload) {
  */
 export async function deleteInvitationAction(invitationId) {
   try {
-    // Otorisasi: hanya pemilik undangan yang boleh menghapus.
-    const owner = await getInvitationOwner(invitationId);
-    const user = await authorize("invitation:delete", owner);
-
-    // Kumpulkan seluruh URL media R2 milik undangan SEBELUM dihapus dari DB.
-    // (Ownership sudah dijamin oleh authorize di atas; relasi ikut terhapus via
-    // cascade DB.)
-    const media = await getInvitationMediaUrls(invitationId);
+    // Satu baca: pemilik (untuk otorisasi) + seluruh URL media R2 milik undangan
+    // SEBELUM dihapus dari DB. (Relasi anak ikut terhapus via cascade DB.)
+    const existing = await getInvitationOwnerWithMedia(invitationId);
+    const user = await authorize("invitation:delete", existing);
 
     await deleteInvitation(invitationId, user.id);
 
     // Bersihkan objek R2 setelah DB sukses — best-effort (tak menggagalkan
     // operasi), hanya key milik user & URL non-R2 diabaikan otomatis.
-    await deleteObjectsByUrls(collectMediaUrls(media), { userId: user.id });
+    await deleteObjectsByUrls(collectMediaUrls(existing), { userId: user.id });
 
     revalidatePath("/dashboard");
 

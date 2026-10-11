@@ -43,6 +43,27 @@ export function buildPublicUrl(key) {
 }
 
 /**
+ * Susun object key R2 ter-namespace per pengguna — SATU-SATUNYA sumber konvensi
+ * key upload. SELALU berawalan `invitations/{userId}/` agar guard penghapusan
+ * (lihat deleteObjectByUrl dengan opts.userId) & pembersihan objek yatim tetap
+ * konsisten. JANGAN ubah prefix ini tanpa menyesuaikan guard tersebut.
+ *
+ * @param {{ userId: string, folder?: string, ext?: string }} opts
+ *   folder & ext di-sanitasi (huruf kecil, buang karakter non-aman).
+ * @returns {string} mis. "invitations/abc/images/1700000000000-x7k2.webp"
+ */
+export function buildUserObjectKey({ userId, folder = "images", ext = "webp" } = {}) {
+  if (!userId) throw new Error("buildUserObjectKey: userId wajib diisi.");
+  const safeFolder =
+    String(folder || "images").toLowerCase().replace(/[^a-z0-9-]/g, "") || "images";
+  const safeExt =
+    String(ext || "bin").toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
+  const ts = Date.now();
+  const rand = Math.random().toString(36).slice(2, 10);
+  return `invitations/${userId}/${safeFolder}/${ts}-${rand}.${safeExt}`;
+}
+
+/**
  * Unggah buffer ke R2 dan kembalikan public URL-nya.
  * @param {string} key Object key tujuan.
  * @param {Buffer|Uint8Array} body Isi berkas.

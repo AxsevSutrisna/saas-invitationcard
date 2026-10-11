@@ -11,8 +11,7 @@ import { Divider } from "@/features/theme/components/Divider";
 import { GeometricFrame } from "@/features/theme/components/frames";
 import { BankCard } from "@/features/theme/components/BankCard";
 import { MusicToggle } from "@/features/theme/components/MusicToggle";
-import { useCarousel } from "@/features/theme/hooks/useCarousel";
-import { useClipboard } from "@/features/theme/hooks/useClipboard";
+import { useInvitationView } from "@/features/theme/hooks/useInvitationView";
 import { formatEventDate } from "@/lib/format";
 import { getThemeConfig } from "@/features/theme/theme-config";
 
@@ -35,23 +34,16 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
   const cfg = getThemeConfig("modern-minimalist");
   const DARK = cfg.accent; // #0F172A
 
-  // Depth halus khas minimalis (bayangan tipis ber-tint navy, bukan emas) +
-  // hover-lift lembut. Menjaga karakter flat/tajam tema.
+  // Depth halus khas minimalis (bayangan tipis ber-tint navy, bukan emas).
   const cardShadow = `0 1px 3px ${DARK}0a, 0 18px 36px -18px ${DARK}20`;
-  const cardHover = "transition-all duration-500 hover:-translate-y-1";
 
-  const groom     = invitation?.groomNickname || "Pria";
-  const bride     = invitation?.brideNickname  || "Wanita";
-  const groomFull = invitation?.groomFullName  || "Nama Pria Lengkap";
-  const brideFull = invitation?.brideFullName  || "Nama Wanita Lengkap";
-  const galleries = invitation?.galleries      || [];
-  const layout    = invitation?.galleryLayout  || "CAROUSEL";
-
-  const { index: carouselIndex, setIndex: setIdx, next, prev } = useCarousel(
-    galleries.length,
-    layout === "CAROUSEL" ? 4500 : 0
-  );
-  const { copiedId, copy: handleCopy } = useClipboard();
+  // Prelude bersama (default nama/galeri, carousel, clipboard, cardHover).
+  const {
+    groom, bride, groomFull, brideFull,
+    galleries, galleryLayout: layout, carousel, clipboard, cardHover,
+  } = useInvitationView(invitation);
+  const { index: carouselIndex, setIndex: setIdx, next, prev } = carousel;
+  const { copiedId, copy: handleCopy } = clipboard;
 
   return (
     <main

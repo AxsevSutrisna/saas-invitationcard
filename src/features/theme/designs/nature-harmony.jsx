@@ -12,8 +12,7 @@ import { BlobFrame } from "@/features/theme/components/frames";
 import { BankCard } from "@/features/theme/components/BankCard";
 import { MusicToggle } from "@/features/theme/components/MusicToggle";
 import { ParticleField } from "@/features/theme/components/ParticleField";
-import { useCarousel } from "@/features/theme/hooks/useCarousel";
-import { useClipboard } from "@/features/theme/hooks/useClipboard";
+import { useInvitationView } from "@/features/theme/hooks/useInvitationView";
 import { formatEventDate } from "@/lib/format";
 import { getThemeConfig } from "@/features/theme/theme-config";
 
@@ -46,22 +45,16 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
   const SAGE   = "#8FA980";
   const CREAM  = "#F7F5EE";
 
-  // Depth premium ber-tint hutan (organik & hangat) + hover-lift lembut.
+  // Depth premium ber-tint hutan (organik & hangat).
   const cardShadow = `0 2px 8px ${FOREST}0c, 0 24px 48px -14px ${FOREST}22`;
-  const cardHover = "transition-all duration-500 hover:-translate-y-1";
 
-  const groom     = invitation?.groomNickname || "Pria";
-  const bride     = invitation?.brideNickname  || "Wanita";
-  const groomFull = invitation?.groomFullName  || "Nama Pria Lengkap";
-  const brideFull = invitation?.brideFullName  || "Nama Wanita Lengkap";
-  const galleries = invitation?.galleries      || [];
-  const layout    = invitation?.galleryLayout  || "CAROUSEL";
-
-  const { index: carouselIndex, setIndex: setCarouselIndex, next, prev } = useCarousel(
-    galleries.length,
-    layout === "CAROUSEL" ? 4500 : 0
-  );
-  const { copiedId, copy: handleCopy } = useClipboard();
+  // Prelude bersama (default nama/galeri, carousel, clipboard, cardHover).
+  const {
+    groom, bride, groomFull, brideFull,
+    galleries, galleryLayout: layout, carousel, clipboard, cardHover,
+  } = useInvitationView(invitation);
+  const { index: carouselIndex, setIndex: setCarouselIndex, next, prev } = carousel;
+  const { copiedId, copy: handleCopy } = clipboard;
 
   return (
     <main

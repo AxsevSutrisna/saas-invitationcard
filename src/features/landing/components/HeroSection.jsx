@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { Reveal } from "@/components/ui/Reveal";
-import { Plus, Play, Sparkles, Heart } from "lucide-react";
+import { Plus, Play } from "lucide-react";
 
 export function HeroSection() {
   return (

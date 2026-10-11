@@ -24,8 +24,14 @@ import { Button } from "@/components/ui/button";
 export function InteractiveScrollSection() {
   const scrollRef = useRef(null);
   const [scrolling, setScrolling] = useState(false);
+  const [opened, setOpened] = useState(false);
 
   const handleSimulateScroll = () => {
+    // Belum dibuka → buka amplop dulu (cover naik, isi undangan baru muncul).
+    if (!opened) {
+      setOpened(true);
+      return;
+    }
     if (!scrollRef.current) return;
     setScrolling(true);
     const container = scrollRef.current;
@@ -83,8 +89,12 @@ export function InteractiveScrollSection() {
               onClick={handleSimulateScroll}
               className="flex h-13 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-gold-400 px-7 text-base font-medium text-white shadow-md transition-all hover:bg-gold-500 hover:shadow-lg active:scale-95"
             >
-              <MousePointer className="h-4 w-4" />
-              {scrolling ? "Sedang Menggulung..." : "Coba Scroll Simulasi HP"}
+              {opened ? <MousePointer className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
+              {!opened
+                ? "Buka Simulasi Undangan"
+                : scrolling
+                ? "Sedang Menggulung..."
+                : "Coba Scroll Simulasi HP"}
             </Button>
           </div>
         </Reveal>
@@ -112,60 +122,9 @@ export function InteractiveScrollSection() {
                     ref={scrollRef}
                     className="h-full w-full overflow-y-auto px-5 pb-16 pt-14 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   >
-                    {/* ===== INVITATION PREVIEW ===== */}
+                    {/* ===== INVITATION PREVIEW (isi; tampil setelah cover dibuka) ===== */}
                     <div className="flex flex-col items-center text-center">
-                      {/* Cover */}
-                      <div className="flex flex-col items-center space-y-6 pb-4">
-                        <div className="space-y-1">
-                          <p className="text-[8px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
-                            The Wedding Of
-                          </p>
-                          <p className="pt-2 font-greatvibes text-[40px] leading-none text-gold-500">
-                            William
-                          </p>
-                          <p className="font-greatvibes text-2xl leading-none text-gold-400">&amp;</p>
-                          <p className="font-greatvibes text-[40px] leading-none text-gold-500">
-                            Eleanor
-                          </p>
-                        </div>
-
-                        {/* Photo + guest card */}
-                        <div className="flex w-full flex-col items-center">
-                          <div className="relative h-[210px] w-[150px] rounded-sm bg-white p-1 shadow-md">
-                            <div className="relative h-full w-full overflow-hidden rounded-sm border border-dashed border-gold-400/50">
-                              <Image
-                                src="/ikara-hero-section-potrait.webp"
-                                alt="Preview foto pasangan pengantin pada tema undangan IKARA"
-                                fill
-                                sizes="150px"
-                                className="object-cover p-0.5"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="relative -mt-10 flex w-full max-w-[210px] flex-col items-center rounded-2xl border border-zinc-100 bg-white px-5 pb-8 pt-6 text-center shadow-xl">
-                            <p className="mb-1.5 text-[7px] font-bold uppercase tracking-[0.2em] text-zinc-400">
-                              Kepada Yth.
-                            </p>
-                            <p className="mb-2.5 font-poppins text-sm font-bold text-zinc-900">
-                              Renold
-                            </p>
-                            <p className="text-[8.5px] leading-[1.6] text-zinc-500">
-                              Tanpa mengurangi rasa hormat, kami mengundang Anda
-                              untuk hadir di hari bahagia kami.
-                            </p>
-                            <span className="absolute -bottom-5 flex h-10 w-10 items-center justify-center rounded-full bg-gold-400 text-white shadow-(--shadow-gold-md)">
-                              <Mail className="h-4 w-4 fill-current" />
-                            </span>
-                          </div>
-
-                          <p className="mt-8 text-[8px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
-                            Buka
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Scrollable body: konsisten space-y untuk kerapian */}
+                      {/* Body undangan: konsisten space-y untuk kerapian */}
                       <div className="w-full space-y-12 pt-8">
                         {/* Divider */}
                         <SectionDivider />
@@ -332,6 +291,60 @@ export function InteractiveScrollSection() {
                     {/* ===== END PREVIEW ===== */}
                   </div>
 
+                  {/* ===== COVER AMPLOP (tampil dulu; naik mulus saat dibuka) ===== */}
+                  <div
+                    className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 overflow-hidden bg-background px-5 pb-6 pt-14 text-center transition-all duration-900 ease-[cubic-bezier(0.77,0,0.175,1)] ${
+                      opened ? "pointer-events-none -translate-y-full opacity-0" : ""
+                    }`}
+                  >
+                    <div className="space-y-0.5">
+                      <p className="text-[8px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
+                        The Wedding Of
+                      </p>
+                      <p className="pt-1 font-greatvibes text-[32px] leading-tight text-gold-500">William</p>
+                      <p className="font-greatvibes text-xl leading-none text-gold-400">&amp;</p>
+                      <p className="font-greatvibes text-[32px] leading-tight text-gold-500">Eleanor</p>
+                    </div>
+
+                    <div className="flex w-full flex-col items-center">
+                      <div className="relative h-42 w-30 rounded-sm bg-white p-1 shadow-md">
+                        <div className="relative h-full w-full overflow-hidden rounded-sm border border-dashed border-gold-400/50">
+                          <Image
+                            src="/ikara-hero-section-potrait.webp"
+                            alt="Preview foto pasangan pengantin pada tema undangan IKARA"
+                            fill
+                            sizes="120px"
+                            className="object-cover p-0.5"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative -mt-8 flex w-full max-w-50 flex-col items-center rounded-2xl border border-zinc-100 bg-white px-4 pb-4 pt-5 text-center shadow-xl">
+                        <p className="mb-1 text-[7px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+                          Kepada Yth.
+                        </p>
+                        <p className="mb-2 font-poppins text-sm font-bold text-zinc-900">Renold</p>
+                        <p className="text-[8px] leading-[1.6] text-zinc-500">
+                          Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setOpened(true)}
+                      className="group flex cursor-pointer flex-col items-center gap-1"
+                      aria-label="Buka undangan simulasi"
+                    >
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-400 text-white shadow-(--shadow-gold-md) transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
+                        <Mail className="h-4 w-4 fill-current" />
+                      </span>
+                      <span className="text-[8px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
+                        Buka Undangan
+                      </span>
+                    </button>
+                  </div>
+
                   {/* Dynamic Island */}
                   <div className="pointer-events-none absolute left-1/2 top-2.5 z-30 flex h-7 w-[92px] -translate-x-1/2 items-center justify-center gap-2 rounded-full bg-black shadow-md">
                     <span className="h-1.5 w-7 rounded-full bg-zinc-800" />
@@ -344,16 +357,18 @@ export function InteractiveScrollSection() {
               </div>
             </div>
 
-            {/* Floating scroll CTA */}
-            <div className="absolute bottom-6 left-1/2 z-40 -translate-x-1/2">
-              <button
-                onClick={handleSimulateScroll}
-                className="flex cursor-pointer items-center gap-1.5 rounded-full border border-gold-400/40 bg-white/95 px-4 py-2 text-xs font-semibold text-gold-600 shadow-xl transition-all hover:scale-105 active:scale-95 dark:bg-zinc-900/95"
-              >
-                <Smartphone className="h-3.5 w-3.5" />
-                {scrolling ? "Menggulung..." : "Coba Scroll"}
-              </button>
-            </div>
+            {/* Floating scroll CTA — muncul setelah dibuka (cover punya tombolnya sendiri) */}
+            {opened && (
+              <div className="absolute bottom-6 left-1/2 z-40 -translate-x-1/2">
+                <button
+                  onClick={handleSimulateScroll}
+                  className="flex cursor-pointer items-center gap-1.5 rounded-full border border-gold-400/40 bg-white/95 px-4 py-2 text-xs font-semibold text-gold-600 shadow-xl transition-all hover:scale-105 active:scale-95 dark:bg-zinc-900/95"
+                >
+                  <Smartphone className="h-3.5 w-3.5" />
+                  {scrolling ? "Menggulung..." : "Coba Scroll"}
+                </button>
+              </div>
+            )}
           </div>
         </Reveal>
       </div>

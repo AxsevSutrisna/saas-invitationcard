@@ -5,6 +5,8 @@ import { useFieldArray } from "react-hook-form";
 import { Heart, Plus, Trash2, LayoutGrid, Quote, Image as ImageIcon, Sparkles, BookOpen, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FileUploader } from "@/components/shared/FileUploader";
+import { Modal } from "@/components/ui/Modal";
+import { Field } from "@/components/ui/Field";
 
 const QUOTES_PRESETS = [
   {
@@ -121,8 +123,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="space-y-1">
-                  <label htmlFor={`loveStories-${index}-date`} className="text-[11px] font-semibold text-muted-foreground">Tahun / Tanggal</label>
+                <Field label="Tahun / Tanggal" htmlFor={`loveStories-${index}-date`} className="space-y-1">
                   <input
                     id={`loveStories-${index}-date`}
                     type="text"
@@ -130,10 +131,9 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                     {...register(`loveStories.${index}.date`)}
                     className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
-                </div>
+                </Field>
 
-                <div className="space-y-1 sm:col-span-2">
-                  <label htmlFor={`loveStories-${index}-title`} className="text-[11px] font-semibold text-muted-foreground">Judul Momen</label>
+                <Field label="Judul Momen" htmlFor={`loveStories-${index}-title`} className="space-y-1 sm:col-span-2">
                   <input
                     id={`loveStories-${index}-title`}
                     type="text"
@@ -141,11 +141,10 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                     {...register(`loveStories.${index}.title`)}
                     className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
-                </div>
+                </Field>
               </div>
 
-              <div className="space-y-1">
-                <label htmlFor={`loveStories-${index}-description`} className="text-[11px] font-semibold text-muted-foreground">Deskripsi Cerita</label>
+              <Field label="Deskripsi Cerita" htmlFor={`loveStories-${index}-description`} className="space-y-1">
                 <textarea
                   id={`loveStories-${index}-description`}
                   rows={2}
@@ -153,7 +152,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                   {...register(`loveStories.${index}.description`)}
                   className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs leading-relaxed focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                 />
-              </div>
+              </Field>
             </div>
           ))}
         </div>
@@ -336,14 +335,13 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
       </div>
 
       {/* Modal Popup Preset Kutipan / Ayat */}
-      {showQuotesModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="quotes-modal-title"
-          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200"
-        >
-          <div className="max-h-[85vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl">
+      <Modal
+        open={showQuotesModal}
+        onClose={() => setShowQuotesModal(false)}
+        labelledBy="quotes-modal-title"
+        overlayClassName="animate-in fade-in bg-black/60 backdrop-blur-sm duration-200"
+        panelClassName="max-h-[85vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl"
+      >
             <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <h3 id="quotes-modal-title" className="font-heading text-base font-bold text-foreground">
                 Pilihan Template Ayat &amp; Kutipan
@@ -376,9 +374,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

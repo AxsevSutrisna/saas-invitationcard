@@ -2,6 +2,7 @@
 
 import { User, Image as ImageIcon, Info } from "lucide-react";
 import { FileUploader } from "@/components/shared/FileUploader";
+import { Field, DASHBOARD_INPUT } from "@/components/ui/Field";
 
 export function Step2Couple({ register, errors, watch, setValue }) {
   const groomPhotoUrl = watch("groomPhotoUrl");
@@ -47,63 +48,45 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomNickname" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Panggilan <span className="text-destructive">*</span>
-            </label>
+          <Field label="Nama Panggilan" htmlFor="groomNickname" required error={errors.groomNickname?.message}>
             <input
               id="groomNickname"
               type="text"
               placeholder="Contoh: William"
               {...register("groomNickname")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-            {errors.groomNickname && (
-              <p className="text-[10px] text-destructive">{errors.groomNickname.message}</p>
-            )}
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomFullName" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Lengkap <span className="text-destructive">*</span>
-            </label>
+          <Field label="Nama Lengkap" htmlFor="groomFullName" required error={errors.groomFullName?.message}>
             <input
               id="groomFullName"
               type="text"
               placeholder="Contoh: William Jonathan Tanuwijaya"
               {...register("groomFullName")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-            {errors.groomFullName && (
-              <p className="text-[10px] text-destructive">{errors.groomFullName.message}</p>
-            )}
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomFather" className="text-[11px] font-semibold text-muted-foreground">
-              Putra dari Bapak
-            </label>
+          <Field label="Putra dari Bapak" htmlFor="groomFather">
             <input
               id="groomFather"
               type="text"
               placeholder="Contoh: Bapak William Jonathan"
               {...register("groomFather")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomMother" className="text-[11px] font-semibold text-muted-foreground">
-              dan Ibu
-            </label>
+          <Field label="dan Ibu" htmlFor="groomMother">
             <input
               id="groomMother"
               type="text"
               placeholder="Contoh: Ibu William Jonathan"
               {...register("groomMother")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-          </div>
+          </Field>
         </div>
 
         {/* Kolom Mempelai Wanita */}
@@ -124,63 +107,45 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideNickname" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Panggilan <span className="text-destructive">*</span>
-            </label>
+          <Field label="Nama Panggilan" htmlFor="brideNickname" required error={errors.brideNickname?.message}>
             <input
               id="brideNickname"
               type="text"
               placeholder="Contoh: Eleanor"
               {...register("brideNickname")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-            {errors.brideNickname && (
-              <p className="text-[10px] text-destructive">{errors.brideNickname.message}</p>
-            )}
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideFullName" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Lengkap <span className="text-destructive">*</span>
-            </label>
+          <Field label="Nama Lengkap" htmlFor="brideFullName" required error={errors.brideFullName?.message}>
             <input
               id="brideFullName"
               type="text"
               placeholder="Contoh: Eleanor Grace Tanuwidjaja"
               {...register("brideFullName")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-            {errors.brideFullName && (
-              <p className="text-[10px] text-destructive">{errors.brideFullName.message}</p>
-            )}
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideFather" className="text-[11px] font-semibold text-muted-foreground">
-              Putri dari Bapak
-            </label>
+          <Field label="Putri dari Bapak" htmlFor="brideFather">
             <input
               id="brideFather"
               type="text"
               placeholder="Contoh: Bapak William Jonathan"
               {...register("brideFather")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-          </div>
+          </Field>
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideMother" className="text-[11px] font-semibold text-muted-foreground">
-              dan Ibu
-            </label>
+          <Field label="dan Ibu" htmlFor="brideMother">
             <input
               id="brideMother"
               type="text"
               placeholder="Contoh: Ibu William Jonathan"
               {...register("brideMother")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              className={DASHBOARD_INPUT}
             />
-          </div>
+          </Field>
         </div>
       </div>
 

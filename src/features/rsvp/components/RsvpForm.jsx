@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { submitRsvpAction } from "@/features/rsvp/actions";
-import { Check, Send, AlertCircle, Sparkles } from "lucide-react";
+import { Check, Send, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const clientRsvpSchema = z.object({

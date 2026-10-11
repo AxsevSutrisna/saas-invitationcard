@@ -47,17 +47,20 @@ export async function createInvitation(userId, data) {
  * Mengambil semua undangan milik pengguna aktif
  */
 export async function getInvitationsByUserId(userId) {
+  // Hanya field yang dipakai halaman daftar (dashboard + kelola tamu) — TIDAK
+  // memuat pohon relasi berat (events/loveStories/galleries/gifts) yang dulu
+  // ikut ter-fetch & ter-serialize sia-sia untuk setiap kartu undangan.
   return db.invitation.findMany({
     where: { userId },
-    include: {
-      ...invitationRelations,
-      _count: {
-        select: {
-          guests: true,
-          rsvps: true,
-          visitorLogs: true,
-        },
-      },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      groomNickname: true,
+      brideNickname: true,
+      isPublished: true,
+      theme: { select: { name: true } },
+      _count: { select: { rsvps: true, visitorLogs: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -125,15 +128,19 @@ export async function getInvitationOwner(invitationId) {
 }
 
 /**
- * Mengambil seluruh URL media milik sebuah undangan (cover, foto mempelai,
- * musik, galeri, foto cerita) — dipakai untuk pembersihan objek R2 yatim
- * saat undangan diperbarui/dihapus.
+ * Mengambil identitas pemilik (id+userId, untuk cek otorisasi) SEKALIGUS seluruh
+ * URL media undangan (cover, foto mempelai, musik, galeri, cerita, QR hadiah)
+ * untuk pembersihan objek R2 yatim — dalam SATU query. Menggantikan pemanggilan
+ * terpisah getInvitationOwner + getInvitationMediaUrls pada aksi update/delete
+ * (menghindari 2 baca baris yang sama).
  * @param {string} invitationId
  */
-export async function getInvitationMediaUrls(invitationId) {
+export async function getInvitationOwnerWithMedia(invitationId) {
   return db.invitation.findUnique({
     where: { id: invitationId },
     select: {
+      id: true,
+      userId: true,
       coverUrl: true,
       groomPhotoUrl: true,
       bridePhotoUrl: true,

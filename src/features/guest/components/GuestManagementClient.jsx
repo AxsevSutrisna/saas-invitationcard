@@ -15,7 +15,6 @@ import {
   X,
   UserPlus,
   Eye,
-  Calendar,
   Clock,
   Sparkles,
   Printer
@@ -25,6 +24,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
+import { Modal } from "@/components/ui/Modal";
 import {
   createGuestAction,
   createGuestsBulkAction,
@@ -32,6 +32,17 @@ import {
   deleteGuestAction
 } from "@/features/guest/actions";
 import { buildWhatsAppUrl, formatEventDate, formatShortDateTime } from "@/lib/format";
+
+/**
+ * Bangun tautan undangan personal seorang tamu. SATU-SATUNYA tempat kontrak
+ * query-param (?to=<nama>&code=<kode>) didefinisikan — ubah di sini saja.
+ * @param {string} baseUrl origin (mis. https://ikara.id)
+ * @param {string} slug slug undangan
+ * @param {{ name: string, uniqueCode: string }} guest
+ */
+function buildGuestLink(baseUrl, slug, guest) {
+  return `${baseUrl}/${slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+}
 
 export function GuestManagementClient({ invitations, selectedInvitation, initialGuests }) {
   const router = useRouter();
@@ -154,7 +165,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
   // Copy invitation link to clipboard
   const handleCopyLink = (guest) => {
-    const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+    const link = buildGuestLink(baseUrl, selectedInvitation.slug, guest);
     navigator.clipboard.writeText(link);
     setCopiedId(guest.id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -162,7 +173,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
   // Generate WA share URL
   const getWaShareUrl = (guest) => {
-    const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+    const link = buildGuestLink(baseUrl, selectedInvitation.slug, guest);
     const message = `Halo ${guest.name}, tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami. Berikut adalah tautan undangan digital kami:\n\n${link}`;
     return buildWhatsAppUrl(guest.whatsapp, message);
   };
@@ -199,7 +210,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       rsvpLabel(g),
       g.rsvp?.pax ?? "",
       g.rsvp?.message || "",
-      `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(g.name)}&code=${g.uniqueCode}`,
+      buildGuestLink(baseUrl, selectedInvitation.slug, g),
     ]);
 
     const csv = [header, ...rows]
@@ -656,7 +667,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                 </tr>
               ) : (
                 filteredGuests.map((guest) => {
-                  const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+                  const link = buildGuestLink(baseUrl, selectedInvitation.slug, guest);
                   
                   return (
                     <tr key={guest.id} className="hover:bg-gold-400/5 transition-colors">
@@ -791,14 +802,13 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       </Surface>
 
       {/* modal A: Single Guest (Create / Edit) */}
-      {showSingleModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="single-guest-title"
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-        >
-          <div className="bg-card w-full max-w-md rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
+      <Modal
+        open={showSingleModal}
+        onClose={() => setShowSingleModal(false)}
+        labelledBy="single-guest-title"
+        overlayClassName="bg-black/60 backdrop-blur-sm"
+        panelClassName="bg-card w-full max-w-md rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4"
+      >
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
               <h2 id="single-guest-title" className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-gold-400" aria-hidden="true" />
@@ -861,19 +871,16 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                 </Button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
 
       {/* modal B: Bulk Guests (Textarea generator) */}
-      {showBulkModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="bulk-guest-title"
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-        >
-          <div className="bg-card w-full max-w-lg rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
+      <Modal
+        open={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        labelledBy="bulk-guest-title"
+        overlayClassName="bg-black/60 backdrop-blur-sm"
+        panelClassName="bg-card w-full max-w-lg rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4"
+      >
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
               <h2 id="bulk-guest-title" className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
                 <UserPlus className="w-4 h-4 text-gold-400" aria-hidden="true" />
@@ -924,9 +931,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                 </Button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

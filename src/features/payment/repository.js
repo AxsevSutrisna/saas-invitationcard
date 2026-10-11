@@ -32,10 +32,9 @@ export async function createTransaction({
 export async function findTransactionByOrderId(midtransOrderId) {
   return db.transaction.findUnique({
     where: { midtransOrderId },
-    include: {
-      package: true,
-      user: true,
-    },
+    // `user` tak dipakai handler webhook (hanya userId/packageId/amount/status +
+    // package.durationDays) → jangan ikut tarik baris user penuh.
+    include: { package: true },
   });
 }
 

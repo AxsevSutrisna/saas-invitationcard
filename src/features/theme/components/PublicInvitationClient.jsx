@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Volume2, VolumeX } from "lucide-react";
 import { EnvelopeCover } from "./EnvelopeCover";
 import { ThemeRegistry } from "./ThemeRegistry";
 import { trackGuestOpenAction, getGuestByCodeAction } from "@/features/guest/actions";

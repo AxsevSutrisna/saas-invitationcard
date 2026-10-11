@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Modal } from "@/components/ui/Modal";
 import {
   Users as UsersIcon,
   CreditCard as CreditCardIcon,
@@ -1024,14 +1025,13 @@ export function AdminClient({
       </Surface>
 
       {/* ==================================== GLOBAL CRUD MODALS ==================================== */}
-      {modalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="admin-modal-title"
-        >
-          <div className="relative w-full max-w-lg space-y-6 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8">
+      <Modal
+        open={modalOpen}
+        onClose={closeModal}
+        labelledBy="admin-modal-title"
+        overlayClassName="bg-zinc-950/60 backdrop-blur-sm"
+        panelClassName="relative w-full max-w-lg space-y-6 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8"
+      >
 
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-border/40 pb-4">
@@ -1490,9 +1490,7 @@ export function AdminClient({
               </form>
             )}
 
-          </div>
-        </div>
-      )}
+      </Modal>
 
     </div>
   );

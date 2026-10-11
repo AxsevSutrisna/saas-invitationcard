@@ -8,35 +8,18 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
-import {
-  getThemeCatalog,
-  THEME_FILTERS,
-  DEFAULT_THUMBNAILS,
-} from "@/features/theme/theme-catalog";
+import { useThemeGallery } from "@/features/theme/hooks/useThemeGallery";
 
 export function ThemesListClient({ initialThemes = [] }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Semua");
-
-  const categories = THEME_FILTERS;
-
-  // Mapping data tema database dengan meta-style visual (dari katalog terpusat)
-  const themes = initialThemes.map((theme) => {
-    const meta = getThemeCatalog(theme);
-    const previewUrl = theme.thumbnailUrl || DEFAULT_THUMBNAILS[theme.slug] || null;
-    return {
-      ...theme,
-      ...meta,
-      previewUrl,
-    };
-  });
-
-  const filteredThemes = themes.filter((t) => {
-    const matchesCategory =
-      selectedCategory === "Semua" || t.category === selectedCategory;
-    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const {
+    searchQuery,
+    setSearchQuery,
+    selectedCategory,
+    setSelectedCategory,
+    categories,
+    themes,
+    filteredThemes,
+  } = useThemeGallery(initialThemes);
 
   return (
     <div className="space-y-8">

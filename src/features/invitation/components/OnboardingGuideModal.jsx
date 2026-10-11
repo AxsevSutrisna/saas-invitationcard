@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { BookOpen, X, Check, Lightbulb } from "lucide-react";
+import { BookOpen, Check, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/Modal";
 
 const STORAGE_KEY = "ikara_guide_dismissed";
 
@@ -54,26 +55,16 @@ export function OnboardingGuideModal({ forceOpen = false, onClose }) {
     if (onClose) onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="onboarding-guide-title"
-      className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 p-4 backdrop-blur-sm duration-200"
+    <Modal
+      open={isOpen}
+      onClose={handleClose}
+      labelledBy="onboarding-guide-title"
+      overlayClassName="animate-in fade-in bg-zinc-950/60 backdrop-blur-sm duration-200"
+      panelClassName="max-h-[90vh] w-full max-w-xl space-y-6 overflow-hidden overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8"
+      showClose
+      closeLabel="Tutup panduan"
     >
-      <div className="relative max-h-[90vh] w-full max-w-xl space-y-6 overflow-hidden overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8">
-        {/* Close Icon */}
-        <button
-          type="button"
-          onClick={handleClose}
-          aria-label="Tutup panduan"
-          className="absolute right-5 top-5 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-zinc-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 dark:hover:bg-zinc-800"
-        >
-          <X className="h-5 w-5" aria-hidden="true" />
-        </button>
-
         {/* Modal Header */}
         <div className="space-y-2 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-400/15 text-gold-500 shadow-inner">
@@ -169,7 +160,6 @@ export function OnboardingGuideModal({ forceOpen = false, onClose }) {
           <Check aria-hidden="true" />
           Oke, Saya Paham
         </Button>
-      </div>
-    </div>
+    </Modal>
   );
 }
