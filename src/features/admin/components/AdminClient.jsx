@@ -17,6 +17,7 @@ import {
   Music,
   HelpCircle,
   Settings,
+  Package as PackageIcon,
   Plus,
   Trash2,
   Edit,
@@ -47,6 +48,7 @@ import {
   deleteFaqAction,
   updateSystemSettingAction
 } from "@/features/admin/actions";
+import { PackageManager } from "@/features/admin/components/PackageManager";
 import { formatRupiah, formatShortDate, formatDateTime } from "@/lib/format";
 import { ROLES } from "@/constants/roles";
 import { THEME_CATEGORIES } from "@/features/theme/theme-catalog";
@@ -80,6 +82,10 @@ const TAB_TITLES = {
     title: "Setelan WhatsApp Support",
     description: "Kelola nomor kontak WhatsApp bantuan pelanggan untuk tombol chat melayang di landing page.",
   },
+  packages: {
+    title: "Kelola Paket & Fitur",
+    description: "Atur harga, kuota, masa aktif, dan fitur tiap paket/bundle. Semua bisa diubah tanpa deploy ulang.",
+  },
 };
 
 const TAB_ICONS = {
@@ -90,6 +96,7 @@ const TAB_ICONS = {
   musics: Music,
   faqs: HelpCircle,
   settings: Settings,
+  packages: PackageIcon,
 };
 
 // Kelas field seragam (rule desain: rounded-xl + border-border + fokus emas).
@@ -107,7 +114,9 @@ export function AdminClient({
   initialMusics,
   initialFaqs,
   initialSettings,
-  packages
+  packages,
+  allPackages = [],
+  features = []
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -1020,6 +1029,10 @@ export function AdminClient({
               </form>
             </div>
           </div>
+        )}
+
+        {activeTab === "packages" && (
+          <PackageManager packages={allPackages} features={features} />
         )}
 
       </Surface>

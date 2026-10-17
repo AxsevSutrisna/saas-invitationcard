@@ -11,6 +11,9 @@ import {
   upsertActiveSubscription,
   revokeActiveSubscription,
 } from "@/features/subscription/repository";
+import { grantEntitlementFromPackage } from "@/features/entitlement/service";
+import { revokeEntitlementsByTransactionId } from "@/features/entitlement/repository";
+import { createResellerCredit } from "@/features/reseller/repository";
 
 /**
  * Memetakan (transaction_status, fraud_status) Midtrans ke status internal.
@@ -153,22 +156,57 @@ export async function POST(request) {
       paymentType: authPaymentType,
     });
 
-    // 8. Efek samping pada langganan sesuai status akhir
+    // 8. Efek samping sesuai status akhir. Mode ditentukan oleh transaksi:
+    //    - invitationId ada      → ECERAN: terbitkan/cabut Entitlement per-undangan.
+    //    - paket saleType RESELLER → tambah batch kredit ResellerCredit.
+    //    - selain itu            → LANGGANAN: aktifkan/cabut Subscription.
+    const pkg = transaction.package;
+    const isPerInvitation = !!transaction.invitationId;
+    const isReseller = pkg?.saleType === "RESELLER";
+
     if (finalStatus === "SUCCESS") {
-      const pkg = transaction.package;
-      await upsertActiveSubscription({
-        userId: transaction.userId,
-        packageId: transaction.packageId,
-        durationDays: pkg.durationDays,
-      });
-      console.log(`[SUCCESS] Subscription activated for User ID: ${transaction.userId} (Order ID: ${orderId})`);
+      if (isPerInvitation) {
+        await grantEntitlementFromPackage({
+          invitationId: transaction.invitationId,
+          ownerUserId: transaction.userId,
+          packageId: transaction.packageId,
+          source: "PURCHASE",
+          durationDays: pkg.durationDays,
+          transactionId: transaction.id,
+        });
+        console.log(`[SUCCESS] Entitlement eceran diterbitkan untuk Undangan ID: ${transaction.invitationId} (Order ID: ${orderId})`);
+      } else if (isReseller) {
+        await createResellerCredit({
+          agencyUserId: transaction.userId,
+          packageId: transaction.packageId,
+          quantityTotal: transaction.quantity,
+          transactionId: transaction.id,
+        });
+        console.log(`[SUCCESS] ${transaction.quantity} kredit reseller ditambahkan untuk User ID: ${transaction.userId} (Order ID: ${orderId})`);
+      } else {
+        await upsertActiveSubscription({
+          userId: transaction.userId,
+          packageId: transaction.packageId,
+          durationDays: pkg.durationDays,
+        });
+        console.log(`[SUCCESS] Subscription activated for User ID: ${transaction.userId} (Order ID: ${orderId})`);
+      }
     } else if (finalStatus === "REFUNDED") {
-      // Refund/chargeback -> cabut langganan yang sebelumnya aktif untuk paket ini
-      const revokedCount = await revokeActiveSubscription({
-        userId: transaction.userId,
-        packageId: transaction.packageId,
-      });
-      console.log(`[REFUNDED] ${revokedCount} langganan dicabut untuk User ID: ${transaction.userId} (Order ID: ${orderId})`);
+      if (isPerInvitation) {
+        const revokedCount = await revokeEntitlementsByTransactionId(transaction.id);
+        console.log(`[REFUNDED] ${revokedCount} entitlement dicabut untuk Undangan ID: ${transaction.invitationId} (Order ID: ${orderId})`);
+      } else if (isReseller) {
+        // Kredit reseller yang sudah diterbitkan tidak dicabut otomatis di sini
+        // (bisa jadi sudah dialokasikan). Penanganan refund reseller = manual.
+        console.log(`[REFUNDED] Pembelian kredit reseller di-refund (Order ID: ${orderId}) — perlu peninjauan manual.`);
+      } else {
+        // Refund/chargeback -> cabut langganan yang sebelumnya aktif untuk paket ini
+        const revokedCount = await revokeActiveSubscription({
+          userId: transaction.userId,
+          packageId: transaction.packageId,
+        });
+        console.log(`[REFUNDED] ${revokedCount} langganan dicabut untuk User ID: ${transaction.userId} (Order ID: ${orderId})`);
+      }
     }
 
     // 9. Kembalikan HTTP 200 OK agar Midtrans menghentikan pengiriman notifikasi ulang

@@ -60,6 +60,14 @@ export async function getInvitationsByUserId(userId) {
       brideNickname: true,
       isPublished: true,
       theme: { select: { name: true } },
+      // Entitlement AKTIF (bila ada) untuk menandai undangan sudah "premium"
+      // dan menyembunyikan tombol upgrade eceran.
+      entitlements: {
+        where: { status: "ACTIVE", validUntil: { gt: new Date() } },
+        select: { id: true, validUntil: true, source: true },
+        orderBy: { validUntil: "desc" },
+        take: 1,
+      },
       _count: { select: { rsvps: true, visitorLogs: true } },
     },
     orderBy: { createdAt: "desc" },

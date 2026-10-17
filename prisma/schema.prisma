@@ -31,10 +31,12 @@ model User {
   sessions Session[]
 
   // Business relations
-  invitations   Invitation[]
-  subscriptions Subscription[]
-  transactions  Transaction[]
-  posts         Post[]
+  invitations     Invitation[]
+  subscriptions   Subscription[]
+  transactions    Transaction[]
+  entitlements    Entitlement[]
+  resellerCredits ResellerCredit[]
+  posts           Post[]
 }
 
 model Account {
@@ -88,22 +90,113 @@ model PasswordResetToken {
 // DOMAIN 2: MONETIZATION
 // =============================================================================
 
-/// Paket langganan yang tersedia di platform
+/// Paket yang dijual di platform. Bisa berupa PLAN (paket utama), ADDON (fitur
+/// tambahan a la carte), atau BUNDLE (gabungan beberapa item). Semua tier
+/// (FREE/BASIC/PRO/dll) adalah DATA, bukan enum, sehingga harga & isinya bisa
+/// diubah dari panel admin tanpa deploy ulang.
 model Package {
   id             String      @id @default(uuid(7))
   name           String
   slug           String      @unique
-  type           PackageType @default(ONE_TIME)
-  price          Int // Dalam satuan Rupiah
-  features       Json // Array of feature string
-  maxInvitations Int         @default(1)
+  description    String? // Deskripsi singkat (ditampilkan di kartu harga)
+  kind           PackageKind @default(PLAN) // PLAN | ADDON | BUNDLE
+  saleType       SaleType    @default(ONE_TIME) // ONE_TIME | SUBSCRIPTION | RESELLER
+  price          Int // Harga retail dalam satuan Rupiah
+  wholesalePrice Int? // Harga grosir untuk reseller/agency (opsional)
+  features       Json // Daftar bullet fitur untuk TAMPILAN (marketing). Gating nyata lewat PackageFeature.
+  maxInvitations Int         @default(1) // Kuota undangan (relevan utk SUBSCRIPTION/RESELLER)
   durationDays   Int         @default(180) // Masa aktif dalam hari
+  sortOrder      Int         @default(0)
+  isHighlighted  Boolean     @default(false) // Tandai sebagai paket "paling populer"
   isActive       Boolean     @default(true)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
-  subscriptions Subscription[]
-  transactions  Transaction[]
+  packageFeatures PackageFeature[]
+  entitlements    Entitlement[]
+  subscriptions   Subscription[]
+  transactions    Transaction[]
+  resellerCredits ResellerCredit[]
+
+  // Relasi bundling (self-relation): sebuah BUNDLE memuat beberapa item paket/add-on.
+  bundleItems BundleItem[] @relation("BundleParent") // isi bila paket ini BUNDLE
+  inBundles   BundleItem[] @relation("BundleChild") // bundle yang memuat paket ini
+}
+
+/// Katalog fitur yang bisa diaktifkan / di-set kuotanya per paket. Menggantikan
+/// array string bebas sebagai sumber gating yang machine-readable.
+model Feature {
+  id          String      @id @default(uuid(7))
+  key         String      @unique // Pengenal stabil dipakai di kode, mis. "NO_WATERMARK", "MAX_GUESTS"
+  name        String // Nama tampilan, mis. "Tanpa Watermark"
+  description String?
+  type        FeatureType @default(BOOLEAN) // BOOLEAN = on/off, QUOTA = berangka
+  unit        String? // Satuan untuk QUOTA, mis. "tamu", "foto"
+  category    String? // Pengelompokan di UI admin
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  packageFeatures PackageFeature[]
+}
+
+/// Penghubung Package <-> Feature: fitur apa yang dibawa sebuah paket beserta
+/// nilainya (enabled untuk BOOLEAN, limitValue untuk QUOTA).
+model PackageFeature {
+  id         String  @id @default(uuid(7))
+  packageId  String
+  featureId  String
+  enabled    Boolean @default(true) // Untuk fitur BOOLEAN
+  limitValue Int? // Untuk fitur QUOTA (null = tak terbatas)
+
+  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  feature Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, featureId])
+  @@index([featureId])
+}
+
+/// Isi dari sebuah paket BUNDLE: referensi ke paket/add-on lain yang digabung.
+model BundleItem {
+  id       String @id @default(uuid(7))
+  bundleId String // Paket ber-kind BUNDLE
+  itemId   String // Paket (PLAN/ADDON) yang termasuk di dalam bundle
+  quantity Int    @default(1)
+
+  bundle Package @relation("BundleParent", fields: [bundleId], references: [id], onDelete: Cascade)
+  item   Package @relation("BundleChild", fields: [itemId], references: [id])
+
+  @@unique([bundleId, itemId])
+  @@index([itemId])
+}
+
+/// Hak akses (entitlement) yang menempel pada SATU undangan — sumber kebenaran
+/// gating per-undangan, menggantikan pengecekan "apakah user punya langganan
+/// aktif". Bisa lahir dari pembelian eceran, langganan, alokasi reseller, atau
+/// pemberian manual admin. `featuresSnapshot` menyimpan salinan fitur+kuota saat
+/// hak diberikan agar tahan terhadap perubahan paket di kemudian hari.
+model Entitlement {
+  id               String            @id @default(uuid(7))
+  invitationId     String
+  ownerUserId      String // Pemilik hak (pasangan utk eceran, agency utk reseller)
+  packageId        String? // Referensi paket sumber (nullable agar tahan bila paket dihapus)
+  source           EntitlementSource @default(PURCHASE)
+  status           EntitlementStatus @default(ACTIVE)
+  validUntil       DateTime
+  featuresSnapshot Json // Salinan fitur+kuota saat hak diberikan
+  subscriptionId   String? // Diisi bila source = SUBSCRIPTION (soft ref)
+  transactionId    String? // Diisi bila berasal dari pembayaran (soft ref)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  owner      User       @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  package    Package?   @relation(fields: [packageId], references: [id])
+
+  @@index([invitationId, status, validUntil])
+  @@index([ownerUserId, status])
+  @@index([packageId])
 }
 
 /// Status langganan aktif user
@@ -128,11 +221,13 @@ model Subscription {
 
 /// Riwayat transaksi pembayaran
 model Transaction {
-  id        String @id @default(uuid(7))
-  userId    String
-  packageId String
-  amount    Int // Dalam satuan Rupiah
-  currency  String @default("IDR")
+  id           String  @id @default(uuid(7))
+  userId       String
+  packageId    String
+  invitationId String? // Diisi bila pembelian untuk SATU undangan (eceran); null = langganan
+  amount       Int // Dalam satuan Rupiah (total = harga satuan x quantity)
+  currency     String  @default("IDR")
+  quantity     Int     @default(1) // Jumlah lisensi (pembelian reseller); 1 utk pembelian biasa
 
   // Identitas pembayaran
   midtransOrderId       String  @unique // Order ID sisi merchant (ref utama)
@@ -146,13 +241,36 @@ model Transaction {
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  package Package @relation(fields: [packageId], references: [id])
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package    Package     @relation(fields: [packageId], references: [id])
+  // Undangan dipertahankan bila dihapus → SetNull (riwayat pembayaran tetap utuh).
+  invitation Invitation? @relation(fields: [invitationId], references: [id], onDelete: SetNull)
 
   // midtransOrderId & midtransTransactionId sudah otomatis ter-index oleh @unique
   @@index([userId, createdAt]) // riwayat transaksi user terurut terbaru
   @@index([packageId])
+  @@index([invitationId])
   @@index([status])
+}
+
+/// Saldo kredit/lisensi reseller milik AGENCY. Satu baris = satu batch pembelian
+/// paket (harga grosir). Agency "mengalokasikan" 1 kredit ke undangan klien →
+/// menerbitkan Entitlement(RESELLER) & menaikkan quantityUsed.
+model ResellerCredit {
+  id            String   @id @default(uuid(7))
+  agencyUserId  String // Pemilik kredit (role AGENCY)
+  packageId     String // Paket yang direpresentasikan kredit ini
+  quantityTotal Int // Jumlah lisensi dibeli
+  quantityUsed  Int      @default(0) // Lisensi yang sudah dialokasikan
+  transactionId String? // Asal pembayaran (soft ref)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  agency  User    @relation(fields: [agencyUserId], references: [id], onDelete: Cascade)
+  package Package @relation(fields: [packageId], references: [id])
+
+  // Query "batch yang masih punya sisa" per agency+paket, terlama dulu
+  @@index([agencyUserId, packageId])
 }
 
 // =============================================================================
@@ -228,9 +346,11 @@ model Invitation {
   loveStories LoveStory[]
   galleries   Gallery[]
   gifts       Gift[]
-  guests      Guest[]
-  rsvps       RSVP[]
-  visitorLogs VisitorLog[]
+  guests       Guest[]
+  rsvps        RSVP[]
+  visitorLogs  VisitorLog[]
+  entitlements Entitlement[]
+  transactions Transaction[]
 
   // slug sudah ter-index oleh @unique
   @@index([userId, createdAt]) // daftar undangan user terurut terbaru
@@ -413,9 +533,34 @@ enum GalleryLayout {
   MASONRY
 }
 
-enum PackageType {
-  ONE_TIME // Pembayaran sekali untuk akses terbatas waktu
-  RECURRING // Berlangganan bulanan/tahunan
+enum PackageKind {
+  PLAN // Paket utama
+  ADDON // Fitur tambahan a la carte
+  BUNDLE // Gabungan beberapa paket/add-on
+}
+
+enum SaleType {
+  ONE_TIME // Bayar sekali (eceran per undangan)
+  SUBSCRIPTION // Langganan berkala (bulanan/tahunan)
+  RESELLER // Dijual ke agency dengan harga grosir
+}
+
+enum FeatureType {
+  BOOLEAN // Fitur on/off
+  QUOTA // Fitur berangka (punya limitValue)
+}
+
+enum EntitlementSource {
+  PURCHASE // Pembelian eceran satu kali
+  SUBSCRIPTION // Berasal dari langganan aktif
+  RESELLER // Dialokasikan oleh agency/reseller
+  ADMIN // Diberikan manual oleh super admin
+}
+
+enum EntitlementStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
 }
 
 enum SubscriptionStatus {

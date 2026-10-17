@@ -21,6 +21,7 @@ export const ROUTES = {
   INVITATION_NEW: "/dashboard/invitations/new",
   INVITATION_EDIT: (id) => `/dashboard/invitations/${id}/edit`,
   SUBSCRIPTION: "/dashboard/subscription",
+  RESELLER: "/dashboard/reseller",
   SETTINGS: "/dashboard/settings",
   GUESTS: "/dashboard/guests",
 

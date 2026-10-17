@@ -35,7 +35,7 @@ export function PricingSection({ packages = [] }) {
           const periodText =
             pkg.slug === "free"
               ? "selamanya"
-              : pkg.type === "RECURRING"
+              : pkg.saleType === "SUBSCRIPTION"
               ? "/ bulan"
               : "sekali bayar";
 

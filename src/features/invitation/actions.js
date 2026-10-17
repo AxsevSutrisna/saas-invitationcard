@@ -11,7 +11,14 @@ import {
 } from "@/features/invitation/repository";
 import { db } from "@/lib/db";
 import { deleteObjectsByUrls } from "@/lib/r2";
-import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
+import { incrementSubscriptionQuota } from "@/features/subscription/repository";
+import {
+  getGrantableFeaturesForUser,
+  checkInvitationQuota,
+  mintEntitlementFromSubscription,
+} from "@/features/entitlement/service";
+import { hasFeature } from "@/features/entitlement/featureMap";
+import { FEATURE_KEYS } from "@/features/entitlement/constants";
 import { authorize } from "@/features/auth/guard";
 
 /**
@@ -50,23 +57,53 @@ export async function createInvitationAction(payload) {
       };
     }
 
-    // Cek Akses Tema Premium (Security Check)
+    // Resolusi fitur yang bisa diberikan ke user + langganan aktifnya (satu baca).
+    const { map: grantableFeatures, subscription } =
+      await getGrantableFeaturesForUser(user.id);
+
+    // Cek Akses Tema Premium (Security Check) — kini berbasis feature flag.
     const selectedTheme = await db.theme.findUnique({
       where: { id: validatedData.themeId },
+      select: { isPremium: true },
     });
+    if (
+      selectedTheme?.isPremium &&
+      !hasFeature(grantableFeatures, FEATURE_KEYS.PREMIUM_THEME)
+    ) {
+      return {
+        success: false,
+        error: "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade paket Anda terlebih dahulu di menu Langganan.",
+      };
+    }
 
-    if (selectedTheme?.isPremium) {
-      const activeSub = await findActiveSubscriptionByUserId(user.id);
-      if (!activeSub) {
-        return {
-          success: false,
-          error: "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade akun Anda ke Premium terlebih dahulu di menu Langganan.",
-        };
-      }
+    // Penegakan kuota pembuatan undangan (MAX_INVITATIONS).
+    const quota = await checkInvitationQuota(user.id, grantableFeatures);
+    if (!quota.allowed) {
+      const limitLabel = quota.limit === Infinity ? "∞" : quota.limit;
+      return {
+        success: false,
+        error: `Kuota undangan Anda sudah penuh (${quota.used}/${limitLabel}). Silakan upgrade paket untuk membuat undangan baru.`,
+      };
     }
 
     // Eksekusi Simpan di PostgreSQL
     const newInvitation = await createInvitation(user.id, validatedData);
+
+    // Bila dibuat di bawah langganan aktif: ikat hak akses ke undangan ini
+    // (entitlement per-undangan) & catat pemakaian kuota. Best-effort — kegagalan
+    // di sini tidak membatalkan undangan yang sudah tersimpan.
+    if (subscription) {
+      try {
+        await mintEntitlementFromSubscription({
+          invitationId: newInvitation.id,
+          userId: user.id,
+          subscription,
+        });
+        await incrementSubscriptionQuota(subscription.id);
+      } catch (e) {
+        console.error("Gagal mencatat entitlement/kuota untuk undangan baru:", e);
+      }
+    }
 
     revalidatePath("/dashboard");
 
@@ -111,17 +148,19 @@ export async function updateInvitationAction(invitationId, payload) {
       };
     }
 
-    // Cek Akses Tema Premium (Security Check) — sama seperti saat membuat.
+    // Cek Akses Tema Premium (Security Check) — sama seperti saat membuat,
+    // berbasis feature flag PREMIUM_THEME.
     const selectedTheme = await db.theme.findUnique({
       where: { id: validatedData.themeId },
+      select: { isPremium: true },
     });
     if (selectedTheme?.isPremium) {
-      const activeSub = await findActiveSubscriptionByUserId(user.id);
-      if (!activeSub) {
+      const { map: grantableFeatures } = await getGrantableFeaturesForUser(user.id);
+      if (!hasFeature(grantableFeatures, FEATURE_KEYS.PREMIUM_THEME)) {
         return {
           success: false,
           error:
-            "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade akun Anda ke Premium terlebih dahulu di menu Langganan.",
+            "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade paket Anda terlebih dahulu di menu Langganan.",
         };
       }
     }

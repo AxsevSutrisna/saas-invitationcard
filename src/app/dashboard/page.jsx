@@ -1,14 +1,28 @@
 import Link from "next/link";
+import Script from "next/script";
 import { auth } from "@/lib/auth";
 import { getInvitationsByUserId } from "@/features/invitation/repository";
+import {
+  findActiveSubscriptionByUserId,
+  findEceranPackages,
+} from "@/features/subscription/repository";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
 import { ROUTES } from "@/constants/routes";
-import { Mail, Plus, ExternalLink, Edit3, Eye, Trash2, Heart } from "lucide-react";
+import { Mail, Plus, ExternalLink, Edit3, Eye, Trash2, Heart, Sparkles } from "lucide-react";
 import { deleteInvitationAction } from "@/features/invitation/actions";
+import { InvitationUpgradeButton } from "@/features/invitation/components/InvitationUpgradeButton";
+import { formatLongDate } from "@/lib/format";
+import { serialize } from "@/lib/utils";
+
+const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
+const SNAP_SCRIPT_URL =
+  process.env.MIDTRANS_IS_PRODUCTION === "true"
+    ? "https://app.midtrans.com/snap/snap.js"
+    : "https://app.sandbox.midtrans.com/snap/snap.js";
 
 export const metadata = {
   title: "Undangan Saya — IKARA Dashboard",
@@ -23,12 +37,28 @@ export const metadata = {
  */
 export default async function DashboardPage() {
   const session = await auth();
-  const invitations = session?.user?.id
-    ? await getInvitationsByUserId(session.user.id)
-    : [];
+  const userId = session?.user?.id;
+
+  const [invitations, activeSub, eceranPackages] = userId
+    ? await Promise.all([
+        getInvitationsByUserId(userId),
+        findActiveSubscriptionByUserId(userId),
+        findEceranPackages(),
+      ])
+    : [[], null, []];
+
+  // Langganan aktif membuka seluruh undangan user → tombol upgrade eceran
+  // disembunyikan. Tanpa langganan, upgrade ditawarkan per undangan.
+  const hasActiveSub = !!activeSub;
+  const serializedEceranPackages = serialize(eceranPackages);
 
   return (
     <div className="space-y-8">
+      {/* SDK Midtrans Snap — dimuat sekali untuk seluruh tombol upgrade di halaman */}
+      {!hasActiveSub && eceranPackages.length > 0 && (
+        <Script src={SNAP_SCRIPT_URL} data-client-key={midtransClientKey} strategy="lazyOnload" />
+      )}
+
       <PageHeader
         title="Undangan Saya"
         description="Kelola detail undangan, daftar tamu, dan ucapan untuk hari bahagia Anda."
@@ -60,7 +90,10 @@ export default async function DashboardPage() {
         />
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {invitations.map((invitation) => (
+          {invitations.map((invitation) => {
+            const activeEntitlement = invitation.entitlements?.[0];
+            const isPremium = hasActiveSub || !!activeEntitlement;
+            return (
             <Surface
               key={invitation.id}
               as="article"
@@ -130,6 +163,25 @@ export default async function DashboardPage() {
                   </div>
                 </div>
 
+                {/* Status Premium / Upgrade eceran per-undangan */}
+                {isPremium ? (
+                  <div className="flex items-center justify-center gap-1.5 rounded-xl border border-gold-400/40 bg-gold-400/10 px-3 py-2 text-[11px] font-semibold text-gold-700 dark:text-gold-300">
+                    <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>
+                      Premium Aktif
+                      {activeEntitlement?.validUntil
+                        ? ` · s.d. ${formatLongDate(activeEntitlement.validUntil)}`
+                        : ""}
+                    </span>
+                  </div>
+                ) : (
+                  <InvitationUpgradeButton
+                    invitationId={invitation.id}
+                    invitationTitle={invitation.title}
+                    packages={serializedEceranPackages}
+                  />
+                )}
+
                 {/* Actions */}
                 <div className="grid grid-cols-3 gap-2 border-t border-border/40 pt-3">
                   <a
@@ -169,7 +221,8 @@ export default async function DashboardPage() {
                 </div>
               </div>
             </Surface>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

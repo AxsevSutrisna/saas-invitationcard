@@ -7,7 +7,9 @@ import { db } from "@/lib/db";
 export async function createTransaction({
   userId,
   packageId,
+  invitationId = null,
   amount,
+  quantity = 1,
   midtransOrderId,
   midtransToken,
   paymentUrl,
@@ -17,7 +19,9 @@ export async function createTransaction({
     data: {
       userId,
       packageId,
+      invitationId,
       amount,
+      quantity,
       midtransOrderId,
       midtransToken,
       paymentUrl,

@@ -4,8 +4,48 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { deleteObjectByUrl, deleteObjectsByUrls } from "@/lib/r2";
 import { upsertActiveSubscription } from "@/features/subscription/repository";
+import { grantEntitlementFromPackage } from "@/features/entitlement/service";
 import { requireSuperAdmin } from "@/features/auth/guard";
 import { ROLE_VALUES } from "@/constants/roles";
+
+// Nilai enum yang sah untuk validasi input paket/fitur (cegah nilai liar ke DB).
+const PACKAGE_KINDS = ["PLAN", "ADDON", "BUNDLE"];
+const SALE_TYPES = ["ONE_TIME", "SUBSCRIPTION", "RESELLER"];
+const FEATURE_TYPES = ["BOOLEAN", "QUOTA"];
+
+/**
+ * Normalisasi daftar penugasan fitur ke paket (featureAssignments) dari form.
+ * @param {Array<{featureId: string, enabled?: boolean, limitValue?: number|string|null}>} assignments
+ */
+function normalizeFeatureAssignments(assignments) {
+  if (!Array.isArray(assignments)) return [];
+  return assignments
+    .filter((a) => a && a.featureId)
+    .map((a) => ({
+      featureId: a.featureId,
+      enabled: a.enabled ?? true,
+      limitValue:
+        a.limitValue === "" || a.limitValue == null
+          ? null
+          : Math.max(0, parseInt(a.limitValue) || 0),
+    }));
+}
+
+/**
+ * Normalisasi isi bundle (bundleItems) dari form: buang item kosong, duplikat,
+ * dan referensi ke diri sendiri (selfId) agar bundle tidak memuat dirinya.
+ */
+function normalizeBundleItems(bundleItems, selfId) {
+  if (!Array.isArray(bundleItems)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const b of bundleItems) {
+    if (!b || !b.itemId || b.itemId === selfId || seen.has(b.itemId)) continue;
+    seen.add(b.itemId);
+    out.push({ itemId: b.itemId, quantity: Math.max(1, parseInt(b.quantity) || 1) });
+  }
+  return out;
+}
 
 /**
  * Menentukan urutan (sortOrder) FAQ: pakai nilai yang diberikan bila valid,
@@ -421,6 +461,315 @@ export async function updateSystemSettingAction(key, value) {
     revalidatePath("/dashboard/admin");
     revalidatePath("/");
     return { success: true, message: "Pengaturan berhasil diperbarui." };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+// =============================================================================
+// 7. KELOLA PAKET & BUNDLING (PACKAGES CRUD)
+// =============================================================================
+// Membuat harga, kuota, masa aktif, dan fitur paket bisa diubah dari panel admin
+// TANPA edit seed / deploy ulang. `features` = bullet marketing (tampilan);
+// gating nyata ditentukan oleh penugasan fitur (PackageFeature).
+
+/** Rakit objek data scalar Package dari payload form (dipakai create & update). */
+function buildPackageScalarData(data) {
+  const {
+    name,
+    slug,
+    description,
+    kind,
+    saleType,
+    price,
+    wholesalePrice,
+    features,
+    maxInvitations,
+    durationDays,
+    sortOrder,
+    isHighlighted,
+    isActive,
+  } = data;
+
+  return {
+    name,
+    slug,
+    description: description || null,
+    kind: PACKAGE_KINDS.includes(kind) ? kind : "PLAN",
+    saleType: SALE_TYPES.includes(saleType) ? saleType : "ONE_TIME",
+    price: Math.max(0, parseInt(price) || 0),
+    wholesalePrice:
+      wholesalePrice === "" || wholesalePrice == null
+        ? null
+        : Math.max(0, parseInt(wholesalePrice) || 0),
+    features: Array.isArray(features) ? features.filter(Boolean) : [],
+    maxInvitations: Math.max(1, parseInt(maxInvitations) || 1),
+    durationDays: Math.max(1, parseInt(durationDays) || 180),
+    sortOrder: parseInt(sortOrder) || 0,
+    isHighlighted: !!isHighlighted,
+    isActive: isActive ?? true,
+  };
+}
+
+export async function createPackageAction(data) {
+  try {
+    await requireSuperAdmin();
+
+    if (!data?.name || !data?.slug) {
+      return { success: false, error: "Nama dan slug paket wajib diisi." };
+    }
+
+    const exists = await db.package.findUnique({ where: { slug: data.slug } });
+    if (exists) {
+      return { success: false, error: "Paket dengan slug tersebut sudah terdaftar." };
+    }
+
+    const assignments = normalizeFeatureAssignments(data.featureAssignments);
+    const bundleItems =
+      data.kind === "BUNDLE" ? normalizeBundleItems(data.bundleItems, null) : [];
+
+    const created = await db.package.create({
+      data: {
+        ...buildPackageScalarData(data),
+        ...(assignments.length
+          ? { packageFeatures: { create: assignments } }
+          : {}),
+        ...(bundleItems.length ? { bundleItems: { create: bundleItems } } : {}),
+      },
+    });
+
+    revalidatePath("/dashboard/admin");
+    revalidatePath("/");
+    revalidatePath("/dashboard/subscription");
+    return { success: true, message: "Paket baru berhasil ditambahkan.", data: created };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updatePackageAction(packageId, data) {
+  try {
+    await requireSuperAdmin();
+
+    if (!data?.name || !data?.slug) {
+      return { success: false, error: "Nama dan slug paket wajib diisi." };
+    }
+
+    // Cek keunikan slug — izinkan slug yang sama bila masih milik paket ini.
+    const slugOwner = await db.package.findUnique({
+      where: { slug: data.slug },
+      select: { id: true },
+    });
+    if (slugOwner && slugOwner.id !== packageId) {
+      return { success: false, error: "Slug sudah digunakan oleh paket lain." };
+    }
+
+    const assignments = normalizeFeatureAssignments(data.featureAssignments);
+    const bundleItems = normalizeBundleItems(data.bundleItems, packageId);
+
+    await db.$transaction(async (tx) => {
+      await tx.package.update({
+        where: { id: packageId },
+        data: buildPackageScalarData(data),
+      });
+
+      // Ganti seluruh penugasan fitur hanya bila field dikirim form.
+      if (data.featureAssignments !== undefined) {
+        await tx.packageFeature.deleteMany({ where: { packageId } });
+        if (assignments.length) {
+          await tx.packageFeature.createMany({
+            data: assignments.map((a) => ({ ...a, packageId })),
+          });
+        }
+      }
+
+      // Ganti seluruh isi bundle hanya bila field dikirim form. Bila kind bukan
+      // BUNDLE, isi bundle dikosongkan (pembersihan).
+      if (data.bundleItems !== undefined) {
+        await tx.bundleItem.deleteMany({ where: { bundleId: packageId } });
+        if (bundleItems.length && data.kind === "BUNDLE") {
+          await tx.bundleItem.createMany({
+            data: bundleItems.map((b) => ({ ...b, bundleId: packageId })),
+          });
+        }
+      }
+    });
+
+    revalidatePath("/dashboard/admin");
+    revalidatePath("/");
+    revalidatePath("/dashboard/subscription");
+    return { success: true, message: "Paket berhasil diperbarui." };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deletePackageAction(packageId) {
+  try {
+    await requireSuperAdmin();
+
+    // Jaga integritas: paket yang sudah dipakai langganan/transaksi/entitlement
+    // tidak boleh dihapus (riwayat & hak akses bisa rusak). Sarankan nonaktifkan.
+    const [subCount, txCount, entCount] = await Promise.all([
+      db.subscription.count({ where: { packageId } }),
+      db.transaction.count({ where: { packageId } }),
+      db.entitlement.count({ where: { packageId } }),
+    ]);
+
+    if (subCount + txCount + entCount > 0) {
+      return {
+        success: false,
+        error:
+          "Paket tidak bisa dihapus karena sudah dipakai langganan/transaksi/entitlement. Nonaktifkan saja paket ini (set tidak aktif).",
+      };
+    }
+
+    // Cascade menghapus PackageFeature & BundleItem terkait.
+    await db.package.delete({ where: { id: packageId } });
+
+    revalidatePath("/dashboard/admin");
+    revalidatePath("/");
+    revalidatePath("/dashboard/subscription");
+    return { success: true, message: "Paket berhasil dihapus." };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+// =============================================================================
+// 8. KATALOG FITUR (FEATURES CRUD)
+// =============================================================================
+
+/** Normalisasi key fitur: huruf besar, spasi → underscore. */
+function normalizeFeatureKey(key) {
+  return String(key || "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "_");
+}
+
+export async function createFeatureAction(data) {
+  try {
+    await requireSuperAdmin();
+    const { key, name, description, type, unit, category, sortOrder, isActive } = data;
+
+    const normalizedKey = normalizeFeatureKey(key);
+    if (!normalizedKey || !name) {
+      return { success: false, error: "Key dan nama fitur wajib diisi." };
+    }
+
+    const exists = await db.feature.findUnique({ where: { key: normalizedKey } });
+    if (exists) {
+      return { success: false, error: "Fitur dengan key tersebut sudah ada." };
+    }
+
+    const created = await db.feature.create({
+      data: {
+        key: normalizedKey,
+        name,
+        description: description || null,
+        type: FEATURE_TYPES.includes(type) ? type : "BOOLEAN",
+        unit: unit || null,
+        category: category || null,
+        sortOrder: parseInt(sortOrder) || 0,
+        isActive: isActive ?? true,
+      },
+    });
+
+    revalidatePath("/dashboard/admin");
+    return { success: true, message: "Fitur baru berhasil ditambahkan.", data: created };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateFeatureAction(featureId, data) {
+  try {
+    await requireSuperAdmin();
+    const { key, name, description, type, unit, category, sortOrder, isActive } = data;
+
+    const normalizedKey = normalizeFeatureKey(key);
+    if (!normalizedKey || !name) {
+      return { success: false, error: "Key dan nama fitur wajib diisi." };
+    }
+
+    // Cek keunikan key — izinkan key sama bila masih milik fitur ini.
+    const keyOwner = await db.feature.findUnique({
+      where: { key: normalizedKey },
+      select: { id: true },
+    });
+    if (keyOwner && keyOwner.id !== featureId) {
+      return { success: false, error: "Key sudah digunakan oleh fitur lain." };
+    }
+
+    await db.feature.update({
+      where: { id: featureId },
+      data: {
+        key: normalizedKey,
+        name,
+        description: description || null,
+        type: FEATURE_TYPES.includes(type) ? type : "BOOLEAN",
+        unit: unit || null,
+        category: category || null,
+        sortOrder: parseInt(sortOrder) || 0,
+        isActive: isActive ?? true,
+      },
+    });
+
+    revalidatePath("/dashboard/admin");
+    return { success: true, message: "Fitur berhasil diperbarui." };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteFeatureAction(featureId) {
+  try {
+    await requireSuperAdmin();
+
+    // Cascade menghapus baris PackageFeature yang mereferensikan fitur ini.
+    // Snapshot fitur pada entitlement lama (JSON) tidak terpengaruh.
+    await db.feature.delete({ where: { id: featureId } });
+
+    revalidatePath("/dashboard/admin");
+    return { success: true, message: "Fitur berhasil dihapus." };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+// =============================================================================
+// 9. PEMBERIAN ENTITLEMENT MANUAL (ADMIN GRANT)
+// =============================================================================
+// Mengikat hak akses sebuah paket ke SATU undangan (mis. kompensasi, bonus,
+// atau aktivasi manual tanpa pembayaran).
+
+export async function grantEntitlementAction({ invitationId, packageId, durationDays }) {
+  try {
+    await requireSuperAdmin();
+
+    if (!invitationId || !packageId) {
+      return { success: false, error: "Undangan dan paket wajib dipilih." };
+    }
+
+    const invitation = await db.invitation.findUnique({
+      where: { id: invitationId },
+      select: { id: true, userId: true },
+    });
+    if (!invitation) {
+      return { success: false, error: "Undangan tidak ditemukan." };
+    }
+
+    await grantEntitlementFromPackage({
+      invitationId,
+      ownerUserId: invitation.userId,
+      packageId,
+      source: "ADMIN",
+      durationDays: durationDays ? parseInt(durationDays) : undefined,
+    });
+
+    revalidatePath("/dashboard/admin");
+    return { success: true, message: "Entitlement berhasil diberikan ke undangan." };
   } catch (error) {
     return { success: false, error: error.message };
   }

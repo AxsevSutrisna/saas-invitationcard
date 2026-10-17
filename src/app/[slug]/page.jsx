@@ -2,7 +2,9 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { getInvitationBySlug } from "@/features/invitation/repository";
 import { getRsvpsByInvitationId } from "@/features/rsvp/repository";
-import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
+import { getFeaturesForInvitation } from "@/features/entitlement/service";
+import { hasFeature } from "@/features/entitlement/featureMap";
+import { FEATURE_KEYS } from "@/features/entitlement/constants";
 import { PublicInvitationClient } from "@/features/theme/components/PublicInvitationClient";
 import { siteConfig } from "@/config/site.config";
 
@@ -74,12 +76,15 @@ export default async function PublicInvitationPage({ params, searchParams }) {
     notFound();
   }
 
-  // Kedua query di bawah independen -> jalankan paralel
-  const [activeSub, rsvps] = await Promise.all([
-    findActiveSubscriptionByUserId(invitation.userId),
+  // Kedua query di bawah independen -> jalankan paralel.
+  // Gating premium kini per-UNDANGAN: diturunkan dari entitlement undangan ini
+  // (fallback ke langganan pemilik untuk undangan lama), bukan sekadar "user
+  // punya langganan aktif".
+  const [featureMap, rsvps] = await Promise.all([
+    getFeaturesForInvitation(invitation),
     getRsvpsByInvitationId(invitation.id),
   ]);
-  const isPremium = !!activeSub;
+  const isPremium = hasFeature(featureMap, FEATURE_KEYS.NO_WATERMARK);
 
   const guestName = resolvedSearchParams.to || "";
   const guestCode = resolvedSearchParams.code || "";

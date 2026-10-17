@@ -24,9 +24,19 @@ export default async function AdminPage() {
     redirect("/dashboard");
   }
 
-  // 2. Ambil Semua Data Riil dari Database secara paralel (8 query independen)
-  const [users, transactions, themes, quotes, musics, faqs, settings, packages] =
-    await Promise.all([
+  // 2. Ambil Semua Data Riil dari Database secara paralel (query independen)
+  const [
+    users,
+    transactions,
+    themes,
+    quotes,
+    musics,
+    faqs,
+    settings,
+    packages,
+    allPackages,
+    features,
+  ] = await Promise.all([
       // Hanya field yang ditampilkan — JANGAN sertakan kolom `password` (hash)
       // yang akan ikut ter-serialize ke client bila memakai include/row penuh.
       db.user.findMany({
@@ -61,7 +71,15 @@ export default async function AdminPage() {
       db.musicTemplate.findMany({ orderBy: { createdAt: "desc" } }),
       db.fAQ.findMany({ orderBy: { sortOrder: "asc" } }),
       db.systemSetting.findMany(),
-      db.package.findMany({ where: { isActive: true } }),
+      // Paket aktif untuk dropdown upgrade manual pengguna.
+      db.package.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } }),
+      // Seluruh paket (termasuk nonaktif) + penugasan fitur + isi bundle untuk panel kelola paket.
+      db.package.findMany({
+        orderBy: { sortOrder: "asc" },
+        include: { packageFeatures: true, bundleItems: true },
+      }),
+      // Katalog fitur untuk panel kelola paket & fitur.
+      db.feature.findMany({ orderBy: { sortOrder: "asc" } }),
     ]);
 
   // 3. Serialisasi Tanggal untuk Mencegah Next.js SSR Serialization Warnings
@@ -73,6 +91,8 @@ export default async function AdminPage() {
   const serializedFaqs = serialize(faqs);
   const serializedSettings = serialize(settings);
   const serializedPackages = serialize(packages);
+  const serializedAllPackages = serialize(allPackages);
+  const serializedFeatures = serialize(features);
 
   return (
     <AdminClient
@@ -84,6 +104,8 @@ export default async function AdminPage() {
       initialFaqs={serializedFaqs}
       initialSettings={serializedSettings}
       packages={serializedPackages}
+      allPackages={serializedAllPackages}
+      features={serializedFeatures}
     />
   );
 }
