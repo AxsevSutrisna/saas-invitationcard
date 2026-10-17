@@ -6,7 +6,7 @@ lewat URL/slug personal, mengelola tamu & RSVP, dan memonetisasi lewat paket
 (eceran, langganan, reseller). Dibangun dengan **Next.js (App Router)** dan
 **PostgreSQL (Prisma)**.
 
-> Dokumentasi modul monetisasi lengkap: [`docs/packet-bundling-management.md`](docs/packet-bundling-management.md).
+> 📚 Indeks dokumentasi lengkap: [`docs/`](docs/README.md) · Modul monetisasi: [`docs/packet-bundling-management.md`](docs/packet-bundling-management.md).
 
 ---
 
@@ -111,7 +111,7 @@ src/
   config/                  # site, auth, navigation config
   constants/               # routes, roles
   generated/prisma/        # Prisma Client ter-generate (output kustom)
-docs/                      # dokumentasi
+docs/                      # dokumentasi (indeks: docs/README.md)
 scripts/                   # skrip util & test (mis. e2e-packet-bundling.cjs)
 ```
 

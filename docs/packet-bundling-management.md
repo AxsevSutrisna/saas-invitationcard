@@ -5,7 +5,7 @@ reseller, dan bundling/add-on. Semua bersifat **data-driven** — harga, kuota,
 masa aktif, dan fitur paket diatur dari panel admin tanpa deploy ulang.
 
 > Status: **Fase 1 & 2 selesai & teruji** (25/25 integration test PASS).
-> Referensi teknis ringkas ada di [`src/features/entitlement/README.md`](../src/features/entitlement/README.md).
+> Referensi teknis ringkas ada di [`entitlement-module.md`](./entitlement-module.md).
 
 ---
 
@@ -197,11 +197,38 @@ di-rollback** (tanpa residu). Cakupan (25 assertion):
 > round-trip pembayaran Midtrans sandbox dan rendering FE di browser — uji ini
 > dilakukan manual dengan menjalankan aplikasi.
 
+### Test payment gateway (Midtrans)
+
+```bash
+node -r dotenv/config scripts/test-midtrans-payment.cjs
+```
+
+[`scripts/test-midtrans-payment.cjs`](../scripts/test-midtrans-payment.cjs)
+menguji integrasi Midtrans (15 assertion):
+
+- **Offline**: verifikasi signature webhook (SHA-512; valid diterima, diubah/acak
+  ditolak) + pemetaan status Midtrans → internal.
+- **Live (sandbox)**: `createSnapTransaction` nyata ke Midtrans Sandbox untuk
+  **eceran (BASIC)**, **bundle (Paket Komplit)**, dan **reseller (Vendor ×3,
+  harga grosir)** → mengembalikan Snap `token` + `redirect_url`; lalu Get Status
+  membuktikan endpoint re-verifikasi terjangkau & ter-autentikasi.
+- Mode **production otomatis dilewati** untuk uji live (tidak membuat order nyata).
+
+**Hasil terakhir: 15/15 PASS** (SANDBOX). Belum tercakup otomatis: round-trip
+pembayaran sungguhan (user bayar di Snap → Midtrans kirim webhook → entitlement
+terbit) — perlu app jalan + URL webhook publik; lihat verifikasi manual di bawah.
+
 ### Verifikasi manual yang disarankan
 1. Jalankan app; sebagai user biasa, buka Dashboard → kartu undangan non-premium
    → "Upgrade undangan ini" → bayar via Midtrans sandbox → cek badge "Premium".
 2. Sebagai AGENCY, buka `/dashboard/reseller` → beli kredit → alokasikan.
 3. Sebagai SUPER_ADMIN, buka Admin → Paket & Fitur → buat BUNDLE & ADDON.
+4. **Round-trip webhook**: agar notifikasi Midtrans sampai ke
+   `/api/v1/payments/webhook`, ekspos app ke URL publik (mis. `ngrok`) lalu set
+   URL itu di **Midtrans Dashboard → Settings → Configuration → Payment
+   Notification URL**. Selesaikan pembayaran dengan kartu uji sandbox
+   (mis. `4811 1111 1111 1114`) atau pakai **Transaction Simulator** Midtrans;
+   verifikasi transaksi jadi `SUCCESS` dan entitlement/langganan/kredit terbit.
 
 ---
 
