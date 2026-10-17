@@ -281,9 +281,11 @@ Dipanggil langsung dari komponen (dengan guard otorisasi di server).
 ## 10. Autentikasi & RBAC
 
 - **Auth.js (NextAuth v5)** dengan **Credentials provider** (email/password,
-  hash `bcryptjs`) + Prisma Adapter. Konfigurasi: [`src/lib/auth.js`](src/lib/auth.js),
-  edge-safe config di [`src/config/auth.config.js`](src/config/auth.config.js)
-  (env Google OAuth tersedia untuk pengembangan lanjutan).
+  hash `bcryptjs`) **dan Google OAuth** + Prisma Adapter. Konfigurasi:
+  [`src/lib/auth.js`](src/lib/auth.js), edge-safe config di
+  [`src/config/auth.config.js`](src/config/auth.config.js). Google OAuth sudah
+  terpasang penuh di kode (provider + tombol login/daftar); tinggal mengisi
+  `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` agar aktif.
 - **RBAC berbasis ability** ([`src/lib/ability.js`](src/lib/ability.js)):
   `can(user, action, resource)` dengan pola `"<resource>:<verb>"` dan cek
   kepemilikan (mis. `invitation:update` hanya pemilik).
@@ -317,7 +319,7 @@ Dipanggil langsung dari komponen (dengan guard otorisasi di server).
 | `MIDTRANS_IS_PRODUCTION` | ✅ | `"true"` = produksi, selain itu sandbox |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_DOMAIN` | ✅ | Kredensial & domain publik Cloudflare R2 |
 | `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | ✅ | Pengiriman email (Resend) |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | ⛔ opsional | OAuth Google (belum diaktifkan penuh) |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | ⛔ opsional | OAuth Google (kode sudah terpasang; isi untuk mengaktifkan login Google) |
 
 Letakkan di `.env` / `.env.local` (tidak di-commit).
 

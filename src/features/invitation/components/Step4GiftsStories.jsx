@@ -334,6 +334,29 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
         </div>
       </div>
 
+      {/* Modul D: Teks Pembuka Undangan */}
+      <div className="space-y-3 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
+        <div className="space-y-0.5">
+          <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+            <Quote className="h-4 w-4 text-gold-500" aria-hidden="true" />
+            <span>Teks Pembuka</span>
+          </h4>
+          <p className="text-xs font-light text-muted-foreground">
+            Kalimat sambutan/pembuka undangan (mis. ajakan untuk hadir). Kosongkan jika tidak diperlukan.
+          </p>
+        </div>
+        <label htmlFor="openingText" className="sr-only">
+          Teks pembuka undangan
+        </label>
+        <textarea
+          id="openingText"
+          rows={3}
+          placeholder="Contoh: Dengan memohon rahmat dan ridho Tuhan Yang Maha Esa, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami."
+          {...register("openingText")}
+          className="w-full rounded-xl border border-border bg-white px-4 py-3 text-xs leading-relaxed transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+        />
+      </div>
+
       {/* Modal Popup Preset Kutipan / Ayat */}
       <Modal
         open={showQuotesModal}

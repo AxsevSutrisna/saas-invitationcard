@@ -6,7 +6,6 @@
 export const ROUTES = {
   // Public
   HOME: "/",
-  PRICING: "/pricing",
 
   // Auth
   LOGIN: "/login",
@@ -17,28 +16,10 @@ export const ROUTES = {
   DASHBOARD: "/dashboard",
   ANALYTICS: "/dashboard/analytics",
   THEMES: "/dashboard/themes",
-  INVITATIONS: "/dashboard/invitations",
   INVITATION_NEW: "/dashboard/invitations/new",
   INVITATION_EDIT: (id) => `/dashboard/invitations/${id}/edit`,
   SUBSCRIPTION: "/dashboard/subscription",
   RESELLER: "/dashboard/reseller",
   SETTINGS: "/dashboard/settings",
   GUESTS: "/dashboard/guests",
-
-  // Admin (super admin only)
-  ADMIN: "/admin",
-  ADMIN_USERS: "/admin/users",
-  ADMIN_TRANSACTIONS: "/admin/transactions",
-  ADMIN_THEMES: "/admin/themes",
-
-  // API (register, analytics/visit & payments/checkout kini via Server Actions)
-  API: {
-    AUTH: {
-      NEXTAUTH: "/api/auth",
-    },
-    PAYMENTS: {
-      WEBHOOK: "/api/v1/payments/webhook",
-    },
-    UPLOAD: "/api/v1/upload/presigned-url",
-  },
 };

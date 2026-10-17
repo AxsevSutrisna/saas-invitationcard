@@ -54,91 +54,60 @@ export function InvitationWizard({
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(invitationFormSchema),
+    // Mode CREATE memakai nilai KOSONG (bukan data contoh) agar user tidak
+    // sengaja mempublikasikan undangan berisi data dummy. Mode EDIT memakai
+    // initialData dari DB. Placeholder di tiap input memandu pengisian.
     defaultValues: initialData || {
-      title: "Pernikahan William & Eleanor",
-      slug: "william-eleanor",
+      title: "",
+      slug: "",
       themeId: defaultThemeId,
 
       // Mempelai Pria
-      groomNickname: "William",
-      groomFullName: "William Jonathan Tanuwijaya",
-      groomFather: "Bapak William Jonathan",
-      groomMother: "Ibu William Jonathan",
+      groomNickname: "",
+      groomFullName: "",
+      groomFather: "",
+      groomMother: "",
       groomPhotoUrl: "",
 
       // Mempelai Wanita
-      brideNickname: "Eleanor",
-      brideFullName: "Eleanor Grace Tanuwidjaja",
-      brideFather: "Bapak Eleanor Grace",
-      brideMother: "Ibu Eleanor Grace",
+      brideNickname: "",
+      brideFullName: "",
+      brideFather: "",
+      brideMother: "",
       bridePhotoUrl: "",
 
       // Foto Sampul & Konten
-      coverUrl: "https://images.unsplash.com/photo-1519741497674-611481863552",
-      quotes:
-        "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang. (QS. Ar-Rum: 21)",
-      openingText: "Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami.",
-      musicUrl: "https://pub-c48bd7eade8944c1bbc28a03f43c23f7.r2.dev/Beautiful_In_White.mp3",
-      musicTitle: "Beautiful In White",
-      isMusicEnabled: true,
+      coverUrl: "",
+      quotes: "",
+      openingText: "",
 
-      // Acara
+      // Acara (minimal 1 baris kosong — wajib diisi user)
       events: [
         {
-          name: "Akad Nikah",
-          date: "2026-08-08",
-          startTime: "09:00",
-          endTime: "10:30",
-          locationName: "Masjid Raya Al-A'zham",
-          address: "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
-          mapUrl: "https://maps.app.goo.gl/kX31s3V4F6T7U8W9",
-        },
-        {
-          name: "Resepsi Pernikahan",
-          date: "2026-08-08",
-          startTime: "11:00",
-          endTime: "14:00",
-          locationName: "Grand Ballroom Al-A'zham",
-          address: "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
-          mapUrl: "https://maps.app.goo.gl/kX31s3V4F6T7U8W9",
+          name: "",
+          date: "",
+          startTime: "",
+          endTime: "",
+          locationName: "",
+          address: "",
+          mapUrl: "",
         },
       ],
-      loveStories: [
-        {
-          title: "Pertama Bertemu",
-          date: "2020",
-          description: "Awal mula takdir mempertemukan kami di sebuah acara kampus.",
-        },
-        {
-          title: "Menuju Pelaminan",
-          date: "2025",
-          description: "Setelah melewati banyak cerita bersama, kami memantapkan hati untuk melangkah ke jenjang pernikahan.",
-        },
-      ],
+      loveStories: [],
 
       // Galeri
       galleryLayout: "CAROUSEL",
-      galleries: [
-        { mediaUrl: "https://images.unsplash.com/photo-1519741497674-611481863552", type: "PHOTO" },
-        { mediaUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc", type: "PHOTO" },
-      ],
+      galleries: [],
 
       // Gifts & Finalisasi
-      gifts: [
-        {
-          type: "BANK",
-          providerName: "BCA",
-          accountName: "William Jonathan Tanuwijaya",
-          accountNumber: "1234567890",
-        },
-      ],
-      physicalGiftAddress: "Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)",
-      physicalGiftReceiver: "William & Eleanor",
-      physicalGiftPhone: "081234567890",
+      gifts: [],
+      physicalGiftAddress: "",
+      physicalGiftReceiver: "",
+      physicalGiftPhone: "",
 
       // Musik
-      musicTitle: "Nadhif Basalamah - Bergema Sampai Selamanya",
-      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      musicTitle: "",
+      musicUrl: "",
       isMusicEnabled: true,
       isPublished: true,
     },

@@ -27,11 +27,12 @@ export function Step3Events({ register, errors, control }) {
           type="button"
           onClick={() =>
             append({
-              name: "Resepsi Pernikahan",
-              date: new Date().toISOString().split("T")[0],
-              startTime: "11:00",
-              locationName: "Grand Ballroom",
-              address: "Jl. Jend. Sudirman No. 1, Jakarta",
+              name: "",
+              date: "",
+              startTime: "",
+              endTime: "",
+              locationName: "",
+              address: "",
               mapUrl: "",
             })
           }
@@ -69,7 +70,7 @@ export function Step3Events({ register, errors, control }) {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {/* Nama Acara */}
               <Field label="Nama Acara" htmlFor={`events-${index}-name`} required className="space-y-1">
                 <input
@@ -97,6 +98,16 @@ export function Step3Events({ register, errors, control }) {
                   id={`events-${index}-startTime`}
                   type="time"
                   {...register(`events.${index}.startTime`)}
+                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+                />
+              </Field>
+
+              {/* Jam Selesai (opsional) */}
+              <Field label="Jam Selesai (opsional)" htmlFor={`events-${index}-endTime`} className="space-y-1">
+                <input
+                  id={`events-${index}-endTime`}
+                  type="time"
+                  {...register(`events.${index}.endTime`)}
                   className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
                 />
               </Field>

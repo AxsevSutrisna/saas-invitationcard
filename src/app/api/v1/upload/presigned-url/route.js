@@ -4,11 +4,9 @@ import { s3Client, R2_BUCKET_NAME, buildPublicUrl, buildUserObjectKey } from "@/
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// Batasan tipe & ukuran berkas
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+// Endpoint ini KHUSUS AUDIO (unggah langsung ke R2 via presigned PUT).
+// Gambar selalu lewat POST /api/v1/upload (dikompres sharp → WebP).
 const MAX_AUDIO_SIZE = 10 * 1024 * 1024; // 10MB
-
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const ALLOWED_AUDIO_TYPES = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg", "audio/x-m4a"];
 
 export async function POST(req) {
@@ -41,33 +39,19 @@ export async function POST(req) {
       );
     }
 
-    // 3. Klasifikasi & Validasi Tipe & Ukuran File
-    const isImage = ALLOWED_IMAGE_TYPES.includes(fileType);
-    const isAudio = ALLOWED_AUDIO_TYPES.includes(fileType);
-
-    if (!isImage && !isAudio) {
+    // 3. Validasi Tipe & Ukuran File (audio saja)
+    if (!ALLOWED_AUDIO_TYPES.includes(fileType)) {
       return NextResponse.json(
         {
           success: false,
           message: "Tipe berkas tidak didukung.",
-          error: { code: "INVALID_FILE_TYPE", details: ["Hanya mendukung gambar (JPEG, PNG, WEBP) atau audio (MP3, WAV, M4A)."] },
+          error: { code: "INVALID_FILE_TYPE", details: ["Endpoint ini hanya untuk audio (MP3, WAV, OGG, M4A)."] },
         },
         { status: 400 }
       );
     }
 
-    if (isImage && fileSize > MAX_IMAGE_SIZE) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Ukuran berkas melebihi batas.",
-          error: { code: "FILE_TOO_LARGE", details: ["Ukuran gambar maksimal 5MB."] },
-        },
-        { status: 400 }
-      );
-    }
-
-    if (isAudio && fileSize > MAX_AUDIO_SIZE) {
+    if (fileSize > MAX_AUDIO_SIZE) {
       return NextResponse.json(
         {
           success: false,
@@ -83,7 +67,7 @@ export async function POST(req) {
     const fileExtension = filename.split(".").pop() || "";
     const uniqueKey = buildUserObjectKey({
       userId: session.user.id,
-      folder: isImage ? "images" : "audio",
+      folder: "audio",
       ext: fileExtension,
     });
 

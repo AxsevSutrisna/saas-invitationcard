@@ -31,7 +31,7 @@ export async function createGuestAction(payload) {
 
     const newGuest = await createGuest(validatedData);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true, data: newGuest };
   } catch (error) {
     console.error("Error createGuestAction:", error);
@@ -79,7 +79,7 @@ export async function createGuestsBulkAction(payload) {
 
     await createGuestsBulk(invitationId, guestsList);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true };
   } catch (error) {
     console.error("Error createGuestsBulkAction:", error);
@@ -103,7 +103,7 @@ export async function updateGuestAction(guestId, payload) {
 
     const updated = await updateGuest(guestId, validatedData);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true, data: updated };
   } catch (error) {
     console.error("Error updateGuestAction:", error);
@@ -125,7 +125,7 @@ export async function deleteGuestAction(guestId) {
 
     await deleteGuest(guestId);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true };
   } catch (error) {
     console.error("Error deleteGuestAction:", error);
