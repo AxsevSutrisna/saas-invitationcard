@@ -1,6 +1,7 @@
 const { PrismaClient } = require('../src/generated/prisma');
 const { Pool } = require('pg');
 const { PrismaPg } = require('@prisma/adapter-pg');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const connectionString = (process.env.DATABASE_URL || "").replace(/^["']|["']$/g, "");
@@ -300,6 +301,28 @@ async function main() {
       create: theme,
     });
   }
+
+  // Seed Super Admin (idempotent, akun berkredensial email+password).
+  // Kredensial default bisa dioverride lewat env (SUPER_ADMIN_EMAIL/PASSWORD/NAME).
+  // CATATAN: password diset ulang setiap kali seed dijalankan agar kredensial
+  // default selalu valid — ganti password dari halaman Pengaturan setelah login
+  // jika ingin kata sandi permanen yang tidak ter-reset oleh seeder.
+  console.log("Seeding Super Admin...");
+  const ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || "ikaraadmin@gmail.com";
+  const ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || "ikara2026!";
+  const ADMIN_NAME = process.env.SUPER_ADMIN_NAME || "IKARA Super Admin";
+  const hashedAdminPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
+  await prisma.user.upsert({
+    where: { email: ADMIN_EMAIL },
+    update: { role: "SUPER_ADMIN", password: hashedAdminPassword, name: ADMIN_NAME },
+    create: {
+      email: ADMIN_EMAIL,
+      name: ADMIN_NAME,
+      password: hashedAdminPassword,
+      role: "SUPER_ADMIN",
+    },
+  });
+  console.log(`Super Admin siap: ${ADMIN_EMAIL}`);
 
   console.log("Seeding finished successfully!");
 }

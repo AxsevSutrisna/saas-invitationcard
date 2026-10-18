@@ -116,99 +116,113 @@ export function LivePhonePreview({ formData, themes = [] }) {
     <div className="sticky top-20 flex flex-col items-center justify-center p-4">
       {/* Badge Indicator Tema Aktif */}
       <div
-        className={`mb-3 px-3.5 py-1 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 shadow-sm transition-all duration-300 ${themeStyle.accentBg}`}
+        className={`mb-4 px-3.5 py-1 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 shadow-sm transition-all duration-300 ${themeStyle.accentBg}`}
       >
         <Sparkles className="w-3.5 h-3.5 fill-current" />
         <span>Live Preview: {selectedTheme.name}</span>
       </div>
 
-      {/* 3D Photorealistic iPhone 15 Pro Frame */}
-      <div className="relative w-[285px] sm:w-[310px] h-[600px] bg-[#1C1C1E] rounded-[44px] border-[10px] border-[#1C1C1E] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col items-center text-center">
-        {/* Side Power & Volume Buttons Accent Lines */}
-        <div className="absolute -left-[12px] top-24 w-[3px] h-8 bg-zinc-700 rounded-l-md" />
-        <div className="absolute -left-[12px] top-36 w-[3px] h-12 bg-zinc-700 rounded-l-md" />
-        <div className="absolute -left-[12px] top-52 w-[3px] h-12 bg-zinc-700 rounded-l-md" />
-        <div className="absolute -right-[12px] top-32 w-[3px] h-14 bg-zinc-700 rounded-r-md" />
+      {/* Mockup smartphone premium — rangka titanium + dynamic island */}
+      <div className="relative">
+        {/* Glow lembut di belakang perangkat */}
+        <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[60px] bg-gold-400/10 blur-2xl" />
 
-        {/* Dynamic Island Notch Top Pill */}
-        <div className="absolute top-2 w-24 h-4 bg-black rounded-full z-40 flex items-center justify-end px-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#0a0a0f] border border-zinc-800" />
-        </div>
+        {/* Rangka titanium (chamfered metallic edge) */}
+        <div className="relative h-155 w-72.5 rounded-[54px] bg-linear-to-b from-zinc-300 via-zinc-600 to-zinc-500 p-0.75 shadow-[0_35px_70px_-20px_rgba(0,0,0,0.55)] ring-1 ring-white/20 sm:h-160 sm:w-79">
+          {/* Tombol samping metalik */}
+          <div className="absolute -left-0.75 top-26 h-7 w-0.75 rounded-l-md bg-linear-to-b from-zinc-200 via-zinc-500 to-zinc-200" />
+          <div className="absolute -left-0.75 top-37.5 h-12 w-0.75 rounded-l-md bg-linear-to-b from-zinc-200 via-zinc-500 to-zinc-200" />
+          <div className="absolute -left-0.75 top-52 h-12 w-0.75 rounded-l-md bg-linear-to-b from-zinc-200 via-zinc-500 to-zinc-200" />
+          <div className="absolute -right-0.75 top-45 h-16 w-0.75 rounded-r-md bg-linear-to-b from-zinc-200 via-zinc-500 to-zinc-200" />
 
-        {/* Glass Reflection Overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-tr from-transparent via-white/5 to-white/10 z-30" />
+          {/* Bezel hitam */}
+          <div className="relative h-full w-full rounded-[51px] bg-black p-2.75">
+            {/* Layar */}
+            <div className="relative h-full w-full overflow-hidden rounded-[41px] bg-[#0b0b0d] text-center">
+              {/* Dynamic Island */}
+              <div className="absolute left-1/2 top-2.5 z-50 flex h-6.5 w-24 -translate-x-1/2 items-center justify-end gap-2 rounded-full bg-black px-3 shadow-[inset_0_0_2px_rgba(255,255,255,0.15)]">
+                <div className="h-2.5 w-2.5 rounded-full bg-[#0a0a0f] ring-1 ring-zinc-700" />
+              </div>
 
-        {/* Screen Viewport Scrollable Content Area */}
-        <div className={`w-full h-full ${isCoverOpen ? "overflow-y-auto" : "overflow-hidden"} [&::-webkit-scrollbar]:hidden relative text-left`}>
-          {/* Floating URL Badge Preview on top of phone preview */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/10 dark:bg-white/15 text-[9px] text-zinc-600 dark:text-zinc-300 backdrop-blur-sm">
-            <LinkIcon className="w-2.5 h-2.5" />
-            <span>ikara.id/{slug}</span>
+              {/* Refleksi kaca */}
+              <div className="pointer-events-none absolute inset-0 z-30 bg-linear-to-tr from-transparent via-white/5 to-white/10" />
+
+              {/* Area konten layar (scrollable) */}
+              <div
+                className={`w-full h-full ${isCoverOpen ? "overflow-y-auto" : "overflow-hidden"} [&::-webkit-scrollbar]:hidden relative text-left`}
+              >
+                <AnimatePresence>
+                  {!isCoverOpen && (
+                    <EnvelopeCover
+                      invitation={{
+                        title,
+                        slug,
+                        theme: selectedTheme,
+                        coverUrl,
+                        groomNickname,
+                        brideNickname,
+                      }}
+                      guestName="Tamu Undangan"
+                      onOpen={() => {
+                        setIsCoverOpen(true);
+                        setIsMuted(false);
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
+
+                {isCoverOpen && (
+                  <ThemeRegistry
+                    invitation={{
+                      title,
+                      slug,
+                      theme: selectedTheme,
+                      groomNickname,
+                      groomFullName,
+                      groomFather,
+                      groomMother,
+                      groomPhotoUrl,
+                      brideNickname,
+                      brideFullName,
+                      brideFather,
+                      brideMother,
+                      bridePhotoUrl,
+                      coverUrl,
+                      galleryLayout,
+                      quotes,
+                      openingText: formData?.openingText || "",
+                      physicalGiftAddress: formData?.physicalGiftAddress || "",
+                      physicalGiftReceiver: formData?.physicalGiftReceiver || "",
+                      physicalGiftPhone: formData?.physicalGiftPhone || "",
+                      musicUrl: formData?.musicUrl || "",
+                      musicTitle: formData?.musicTitle || "",
+                      isMusicEnabled: formData?.isMusicEnabled !== false,
+                      events: eventsList.map((e, idx) => ({ ...e, id: String(idx) })),
+                      loveStories: loveStories.map((s, idx) => ({ ...s, id: String(idx) })),
+                      galleries: galleries.map((g, idx) => ({ ...g, id: String(idx) })),
+                      gifts: gifts.map((g, idx) => ({ ...g, id: String(idx) })),
+                    }}
+                    rsvps={[]}
+                    guestName="Tamu Undangan"
+                    onRsvpSuccess={() => {}}
+                    isPreview={true}
+                    isMuted={isMuted}
+                    setIsMuted={setIsMuted}
+                  />
+                )}
+              </div>
+
+              {/* Elemen audio HTML5 (tersembunyi) */}
+              <audio ref={audioRef} loop />
+            </div>
           </div>
-
-          <AnimatePresence>
-            {!isCoverOpen && (
-              <EnvelopeCover
-                invitation={{
-                  title,
-                  slug,
-                  theme: selectedTheme,
-                  coverUrl,
-                  groomNickname,
-                  brideNickname,
-                }}
-                guestName="Tamu Undangan"
-                onOpen={() => {
-                  setIsCoverOpen(true);
-                  setIsMuted(false);
-                }}
-              />
-            )}
-          </AnimatePresence>
-
-          {isCoverOpen && (
-            <ThemeRegistry
-              invitation={{
-                title,
-                slug,
-                theme: selectedTheme,
-                groomNickname,
-                groomFullName,
-                groomFather,
-                groomMother,
-                groomPhotoUrl,
-                brideNickname,
-                brideFullName,
-                brideFather,
-                brideMother,
-                bridePhotoUrl,
-                coverUrl,
-                galleryLayout,
-                quotes,
-                openingText: formData?.openingText || "",
-                physicalGiftAddress: formData?.physicalGiftAddress || "",
-                physicalGiftReceiver: formData?.physicalGiftReceiver || "",
-                physicalGiftPhone: formData?.physicalGiftPhone || "",
-                musicUrl: formData?.musicUrl || "",
-                musicTitle: formData?.musicTitle || "",
-                isMusicEnabled: formData?.isMusicEnabled !== false,
-                events: eventsList.map((e, idx) => ({ ...e, id: String(idx) })),
-                loveStories: loveStories.map((s, idx) => ({ ...s, id: String(idx) })),
-                galleries: galleries.map((g, idx) => ({ ...g, id: String(idx) })),
-                gifts: gifts.map((g, idx) => ({ ...g, id: String(idx) })),
-              }}
-              rsvps={[]}
-              guestName="Tamu Undangan"
-              onRsvpSuccess={() => {}}
-              isPreview={true}
-              isMuted={isMuted}
-              setIsMuted={setIsMuted}
-            />
-          )}
         </div>
+      </div>
 
-        {/* Hidden HTML5 Audio Element */}
-        <audio ref={audioRef} loop />
+      {/* URL publik — caption di bawah perangkat */}
+      <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-card/70 px-3 py-1 text-[10px] font-medium text-muted-foreground shadow-sm backdrop-blur-sm">
+        <LinkIcon className="h-3 w-3" aria-hidden="true" />
+        <span>ikara.id/{slug}</span>
       </div>
     </div>
   );

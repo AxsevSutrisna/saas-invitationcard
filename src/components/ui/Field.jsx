@@ -61,8 +61,13 @@ export const DASHBOARD_INPUT_GHOST =
   "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
 
 // Props Field yang di-"forward" oleh wrapper di bawah.
-function splitFieldProps({ label, htmlFor, required, error, hint, className, labelClassName, ...rest }) {
-  return { fieldProps: { label, htmlFor, required, error, hint, className, labelClassName }, rest };
+// PENTING: setiap prop milik Field harus ikut didestrukturisasi di sini agar
+// tidak "bocor" ke elemen DOM (mis. errorClassName → warning React unknown prop).
+function splitFieldProps({ label, htmlFor, required, error, hint, className, labelClassName, errorClassName, ...rest }) {
+  return {
+    fieldProps: { label, htmlFor, required, error, hint, className, labelClassName, errorClassName },
+    rest,
+  };
 }
 
 /**

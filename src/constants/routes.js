@@ -22,4 +22,8 @@ export const ROUTES = {
   RESELLER: "/dashboard/reseller",
   SETTINGS: "/dashboard/settings",
   GUESTS: "/dashboard/guests",
+
+  // Pembayaran (Core API custom checkout)
+  PAYMENT_CHECKOUT: "/payment/checkout",
+  PAYMENT_ORDER: (orderId) => `/payment/${orderId}`,
 };

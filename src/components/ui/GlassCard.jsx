@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 
 export function GlassCard({
+  as: Tag = "div",
   className,
   children,
   variant = "card",
@@ -10,11 +11,11 @@ export function GlassCard({
   const baseClass = "bg-[#36302B] border border-[#4A433A] rounded-3xl shadow-lg relative overflow-hidden"
 
   return (
-    <div
+    <Tag
       className={cn(baseClass, className)}
       {...props}
     >
       {children}
-    </div>
+    </Tag>
   )
 }

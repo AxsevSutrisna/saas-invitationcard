@@ -235,6 +235,7 @@ model Transaction {
   midtransTransactionId String? @unique // transaction_id dari Midtrans (untuk rekonsiliasi)
   paymentType           String? // gopay | bank_transfer | qris | credit_card | ...
   paymentUrl            String?
+  paymentMeta           Json? // Detail instruksi Core API (VA/QR/biller/expiry) utk ditampilkan ulang di halaman pembayaran
 
   status    TransactionStatus @default(PENDING)
   paidAt    DateTime?

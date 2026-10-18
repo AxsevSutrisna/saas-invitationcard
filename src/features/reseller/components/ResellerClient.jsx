@@ -11,14 +11,13 @@ import { Alert } from "@/components/ui/Alert";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { formatRupiah } from "@/lib/format";
 import { useFeedback } from "@/hooks/useFeedback";
-import { SnapScript } from "@/features/payment/components/SnapScript";
-import { useMidtransSnap } from "@/features/payment/useMidtransSnap";
+import { ROUTES } from "@/constants/routes";
 import { allocateResellerCreditAction } from "@/features/reseller/actions";
 
 export function ResellerClient({ credits = [], summary = {}, resellerPackages = [], invitations = [] }) {
   const router = useRouter();
-  const { feedback, notify } = useFeedback();
-  const { pay, loadingId } = useMidtransSnap();
+  const { feedback, notify, clear } = useFeedback();
+  const [navigatingId, setNavigatingId] = useState(null);
   const [qtyMap, setQtyMap] = useState({});
   const [allocating, setAllocating] = useState(false);
   const [allocPackageId, setAllocPackageId] = useState("");
@@ -45,7 +44,8 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
 
   const handleBuy = (pkg) => {
     const quantity = Math.max(1, parseInt(qtyMap[pkg.id]) || 1);
-    pay(pkg.id, { quantity, onError: (m) => notify("error", m) });
+    setNavigatingId(pkg.id);
+    router.push(`${ROUTES.PAYMENT_CHECKOUT}?package=${pkg.id}&qty=${quantity}`);
   };
 
   const handleAllocate = async () => {
@@ -54,7 +54,7 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
       return;
     }
     setAllocating(true);
-    setFeedback({ type: "", message: "" });
+    clear();
     const res = await allocateResellerCreditAction({
       invitationId: allocInvitationId,
       packageId: allocPackageId,
@@ -72,8 +72,6 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
 
   return (
     <div className="space-y-8 pb-12">
-      <SnapScript />
-
       <PageHeader
         title={
           <span className="flex items-center gap-2">
@@ -207,8 +205,8 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
                         className="w-20 rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none focus:border-gold-400"
                       />
                     </div>
-                    <Button onClick={() => handleBuy(pkg)} disabled={loadingId !== null} className="flex-1">
-                      {loadingId === pkg.id ? (
+                    <Button onClick={() => handleBuy(pkg)} disabled={navigatingId !== null} className="flex-1">
+                      {navigatingId === pkg.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                       ) : (
                         <ShoppingCart className="h-4 w-4" aria-hidden="true" />

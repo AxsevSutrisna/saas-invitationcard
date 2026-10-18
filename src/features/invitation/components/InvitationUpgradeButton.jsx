@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
-import { Alert } from "@/components/ui/Alert";
 import { PackageCard } from "@/components/ui/PackageCard";
 import { Sparkles, TrendingUp, Loader2 } from "lucide-react";
-import { useMidtransSnap } from "@/features/payment/useMidtransSnap";
+import { ROUTES } from "@/constants/routes";
 
 const KIND_BADGE = { BUNDLE: "Bundle", ADDON: "Add-on" };
 
@@ -21,13 +21,14 @@ const KIND_BADGE = { BUNDLE: "Bundle", ADDON: "Add-on" };
  * @param {{ invitationId: string, invitationTitle?: string, packages: Array }} props
  */
 export function InvitationUpgradeButton({ invitationId, invitationTitle, packages = [] }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState("");
-  const { pay, loadingId } = useMidtransSnap();
+  const [navigatingId, setNavigatingId] = useState(null);
 
+  // Checkout eceran per-undangan → halaman pembayaran custom (Core API).
   const handlePay = (packageId) => {
-    setError("");
-    pay(packageId, { invitationId, onError: setError, onSuccess: () => setOpen(false) });
+    setNavigatingId(packageId);
+    router.push(`${ROUTES.PAYMENT_CHECKOUT}?package=${packageId}&invitation=${invitationId}`);
   };
 
   if (packages.length === 0) return null;
@@ -38,10 +39,7 @@ export function InvitationUpgradeButton({ invitationId, invitationTitle, package
         size="sm"
         variant="secondary"
         className="w-full"
-        onClick={() => {
-          setError("");
-          setOpen(true);
-        }}
+        onClick={() => setOpen(true)}
       >
         <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
         <span>Upgrade undangan ini</span>
@@ -65,8 +63,6 @@ export function InvitationUpgradeButton({ invitationId, invitationTitle, package
             Pilih paket untuk membuka fitur premium &amp; menghilangkan watermark pada undangan ini.
           </p>
         </div>
-
-        {error && <Alert variant="error">{error}</Alert>}
 
         <div className="space-y-3">
           {packages.map((pkg) => {
@@ -97,8 +93,8 @@ export function InvitationUpgradeButton({ invitationId, invitationTitle, package
                 featuresMax={6}
                 featuresClassName="grid grid-cols-1 gap-1.5 sm:grid-cols-2"
                 headerRight={
-                  <Button size="sm" onClick={() => handlePay(pkg.id)} disabled={loadingId !== null}>
-                    {loadingId === pkg.id ? (
+                  <Button size="sm" onClick={() => handlePay(pkg.id)} disabled={navigatingId !== null}>
+                    {navigatingId === pkg.id ? (
                       <>
                         <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
                         <span>Memproses</span>

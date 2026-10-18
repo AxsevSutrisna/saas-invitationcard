@@ -14,7 +14,6 @@ import { ROUTES } from "@/constants/routes";
 import { Mail, Plus, ExternalLink, Edit3, Eye, Trash2, Heart, Sparkles } from "lucide-react";
 import { deleteInvitationAction } from "@/features/invitation/actions";
 import { InvitationUpgradeButton } from "@/features/invitation/components/InvitationUpgradeButton";
-import { SnapScript } from "@/features/payment/components/SnapScript";
 import { formatLongDate } from "@/lib/format";
 import { serialize } from "@/lib/utils";
 
@@ -48,9 +47,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* SDK Midtrans Snap — dimuat sekali untuk seluruh tombol upgrade di halaman */}
-      {!hasActiveSub && eceranPackages.length > 0 && <SnapScript />}
-
       <PageHeader
         title="Undangan Saya"
         description="Kelola detail undangan, daftar tamu, dan ucapan untuk hari bahagia Anda."

@@ -1,50 +1,17 @@
 import { NextResponse } from "next/server";
-import {
-  verifyWebhookSignature,
-  getTransactionStatus,
-} from "@/features/payment/services/midtrans";
-import {
-  findTransactionByOrderId,
-  updateTransactionStatus,
-} from "@/features/payment/repository";
-import {
-  upsertActiveSubscription,
-  revokeActiveSubscription,
-} from "@/features/subscription/repository";
-import { grantEntitlementFromPackage } from "@/features/entitlement/service";
-import { revokeEntitlementsByTransactionId } from "@/features/entitlement/repository";
-import { createResellerCredit } from "@/features/reseller/repository";
+import { verifyWebhookSignature } from "@/features/payment/services/midtrans";
+import { reconcilePaymentByOrderId } from "@/features/payment/reconcile";
 
 /**
- * Memetakan (transaction_status, fraud_status) Midtrans ke status internal.
- * @returns {"SUCCESS"|"FAILED"|"REFUNDED"|"PENDING"}
+ * Webhook notifikasi Midtrans (server-to-server).
+ *
+ * Alur: validasi payload → verifikasi signature (anti-palsu) → delegasikan ke
+ * `reconcilePaymentByOrderId` yang mengambil status OTORITATIF dari Get Status
+ * API lalu memenuhi langganan/entitlement/kredit secara exactly-once.
+ *
+ * Logika pemetaan status & pemenuhan sengaja TIDAK di sini agar dipakai bersama
+ * dengan polling status di halaman pembayaran (Core API custom).
  */
-function mapMidtransStatus(transactionStatus, fraudStatus) {
-  if (
-    transactionStatus === "settlement" ||
-    (transactionStatus === "capture" && fraudStatus === "accept")
-  ) {
-    return "SUCCESS";
-  }
-  if (
-    transactionStatus === "refund" ||
-    transactionStatus === "partial_refund" ||
-    transactionStatus === "chargeback" ||
-    transactionStatus === "partial_chargeback"
-  ) {
-    return "REFUNDED";
-  }
-  if (
-    transactionStatus === "deny" ||
-    transactionStatus === "cancel" ||
-    transactionStatus === "expire" ||
-    transactionStatus === "failure"
-  ) {
-    return "FAILED";
-  }
-  return "PENDING"; // pending / capture(challenge) / authorize
-}
-
 export async function POST(request) {
   try {
     const payload = await request.json().catch(() => ({}));
@@ -54,13 +21,9 @@ export async function POST(request) {
       status_code: statusCode,
       gross_amount: grossAmount,
       signature_key: signatureKey,
-      transaction_status: transactionStatus,
-      fraud_status: fraudStatus,
-      transaction_id: transactionId,
-      payment_type: paymentType,
     } = payload;
 
-    // 1. Validasi Keberadaan Payload Utama
+    // 1. Validasi keberadaan payload utama
     if (!orderId || !statusCode || !grossAmount || !signatureKey) {
       return NextResponse.json(
         { success: false, message: "Payload notifikasi tidak lengkap." },
@@ -68,14 +31,13 @@ export async function POST(request) {
       );
     }
 
-    // 2. Verifikasi Keamanan Signature Key (Mencegah Webhook Palsu)
+    // 2. Verifikasi signature (mencegah webhook palsu)
     const isSignatureValid = verifyWebhookSignature({
       signatureKey,
       orderId,
       statusCode,
       grossAmount,
     });
-
     if (!isSignatureValid) {
       console.warn(`[WARNING] Webhook Signature Mismatch for Order ID: ${orderId}`);
       return NextResponse.json(
@@ -84,135 +46,27 @@ export async function POST(request) {
       );
     }
 
-    // 3. Cari Data Transaksi Terkait di Database Neon
-    const transaction = await findTransactionByOrderId(orderId);
-    if (!transaction) {
+    // 3. Rekonsiliasi otoritatif + pemenuhan (exactly-once)
+    const result = await reconcilePaymentByOrderId(orderId);
+
+    if (result.notFound) {
       console.warn(`[WARNING] Webhook Transaction Not Found for Order ID: ${orderId}`);
       return NextResponse.json(
         { success: false, message: "Data transaksi tidak ditemukan." },
         { status: 404 }
       );
     }
-
-    // REFUNDED bersifat terminal — refund tidak bisa dibatalkan lagi.
-    // (SUCCESS TIDAK di-early-return agar transisi SUCCESS -> REFUNDED tetap diproses.)
-    if (transaction.status === "REFUNDED") {
-      return NextResponse.json({
-        success: true,
-        message: "Transaksi ini sudah di-refund sebelumnya.",
-      });
-    }
-
-    // 4. RE-VERIFIKASI OTORITATIF: jangan percaya body notifikasi, ambil status
-    //    langsung dari Get Status API. Fallback ke body bila API gagal dihubungi.
-    let authStatus = transactionStatus;
-    let authFraud = fraudStatus;
-    let authStatusCode = statusCode;
-    let authGrossAmount = grossAmount;
-    let authTransactionId = transactionId;
-    let authPaymentType = paymentType;
-    try {
-      const verified = await getTransactionStatus(orderId);
-      if (verified && verified.transaction_status) {
-        authStatus = verified.transaction_status;
-        authFraud = verified.fraud_status ?? authFraud;
-        authStatusCode = verified.status_code ?? authStatusCode;
-        authGrossAmount = verified.gross_amount ?? authGrossAmount;
-        authTransactionId = verified.transaction_id ?? authTransactionId;
-        authPaymentType = verified.payment_type ?? authPaymentType;
-      }
-    } catch (verifyError) {
-      console.warn(`[WARNING] Get Status gagal untuk ${orderId}, fallback ke body notifikasi:`, verifyError.message);
-    }
-
-    // 5. Validasi nominal sesuai catatan transaksi (proteksi tambahan)
-    if (Math.round(parseFloat(authGrossAmount)) !== transaction.amount) {
-      console.warn(`[WARNING] Gross amount mismatch untuk ${orderId}: notif=${authGrossAmount} vs db=${transaction.amount}`);
+    if (result.mismatch) {
+      // 200 agar Midtrans berhenti retry; transaksi tidak diaktifkan.
       return NextResponse.json(
         { success: false, message: "Nominal transaksi tidak cocok." },
-        { status: 200 } // 200 agar Midtrans berhenti retry; transaksi tidak diaktifkan
+        { status: 200 }
       );
     }
 
-    // 6. Petakan status. SUCCESS hanya bila status_code Midtrans "200".
-    let finalStatus = mapMidtransStatus(authStatus, authFraud);
-    if (finalStatus === "SUCCESS" && String(authStatusCode) !== "200") {
-      finalStatus = "PENDING";
-    }
-
-    // Idempotensi: jika status tidak berubah, tidak perlu proses ulang.
-    if (finalStatus === transaction.status) {
-      return NextResponse.json({
-        success: true,
-        message: `Tidak ada perubahan status (${finalStatus}).`,
-      });
-    }
-
-    // 7. Update Status Transaksi di Database (+ metadata pembayaran)
-    const paidAt = finalStatus === "SUCCESS" ? new Date() : null;
-    await updateTransactionStatus(orderId, finalStatus, {
-      paidAt,
-      midtransTransactionId: authTransactionId,
-      paymentType: authPaymentType,
-    });
-
-    // 8. Efek samping sesuai status akhir. Mode ditentukan oleh transaksi:
-    //    - invitationId ada      → ECERAN: terbitkan/cabut Entitlement per-undangan.
-    //    - paket saleType RESELLER → tambah batch kredit ResellerCredit.
-    //    - selain itu            → LANGGANAN: aktifkan/cabut Subscription.
-    const pkg = transaction.package;
-    const isPerInvitation = !!transaction.invitationId;
-    const isReseller = pkg?.saleType === "RESELLER";
-
-    if (finalStatus === "SUCCESS") {
-      if (isPerInvitation) {
-        await grantEntitlementFromPackage({
-          invitationId: transaction.invitationId,
-          ownerUserId: transaction.userId,
-          packageId: transaction.packageId,
-          source: "PURCHASE",
-          durationDays: pkg.durationDays,
-          transactionId: transaction.id,
-        });
-        console.log(`[SUCCESS] Entitlement eceran diterbitkan untuk Undangan ID: ${transaction.invitationId} (Order ID: ${orderId})`);
-      } else if (isReseller) {
-        await createResellerCredit({
-          agencyUserId: transaction.userId,
-          packageId: transaction.packageId,
-          quantityTotal: transaction.quantity,
-          transactionId: transaction.id,
-        });
-        console.log(`[SUCCESS] ${transaction.quantity} kredit reseller ditambahkan untuk User ID: ${transaction.userId} (Order ID: ${orderId})`);
-      } else {
-        await upsertActiveSubscription({
-          userId: transaction.userId,
-          packageId: transaction.packageId,
-          durationDays: pkg.durationDays,
-        });
-        console.log(`[SUCCESS] Subscription activated for User ID: ${transaction.userId} (Order ID: ${orderId})`);
-      }
-    } else if (finalStatus === "REFUNDED") {
-      if (isPerInvitation) {
-        const revokedCount = await revokeEntitlementsByTransactionId(transaction.id);
-        console.log(`[REFUNDED] ${revokedCount} entitlement dicabut untuk Undangan ID: ${transaction.invitationId} (Order ID: ${orderId})`);
-      } else if (isReseller) {
-        // Kredit reseller yang sudah diterbitkan tidak dicabut otomatis di sini
-        // (bisa jadi sudah dialokasikan). Penanganan refund reseller = manual.
-        console.log(`[REFUNDED] Pembelian kredit reseller di-refund (Order ID: ${orderId}) — perlu peninjauan manual.`);
-      } else {
-        // Refund/chargeback -> cabut langganan yang sebelumnya aktif untuk paket ini
-        const revokedCount = await revokeActiveSubscription({
-          userId: transaction.userId,
-          packageId: transaction.packageId,
-        });
-        console.log(`[REFUNDED] ${revokedCount} langganan dicabut untuk User ID: ${transaction.userId} (Order ID: ${orderId})`);
-      }
-    }
-
-    // 9. Kembalikan HTTP 200 OK agar Midtrans menghentikan pengiriman notifikasi ulang
     return NextResponse.json({
       success: true,
-      message: `Webhook berhasil diproses dengan status akhir: ${finalStatus}`,
+      message: `Webhook diproses. Status akhir: ${result.status}`,
     });
   } catch (error) {
     console.error("Payment Webhook Handler Error:", error);
