@@ -26,7 +26,7 @@ export async function POST(req) {
 
     // 2. Baca payload JSON
     const body = await req.json();
-    const { filename, fileType, fileSize } = body;
+    const { filename, fileType, fileSize, invitationId } = body;
 
     if (!filename || !fileType || !fileSize) {
       return NextResponse.json(
@@ -67,6 +67,7 @@ export async function POST(req) {
     const fileExtension = filename.split(".").pop() || "";
     const uniqueKey = buildUserObjectKey({
       userId: session.user.id,
+      invitationId: typeof invitationId === "string" && invitationId ? invitationId : undefined,
       folder: "audio",
       ext: fileExtension,
     });

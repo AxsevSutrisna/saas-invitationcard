@@ -252,7 +252,7 @@ export function InvitationWizard({
               />
             )}
             {currentStep === 2 && (
-              <Step2Couple register={register} errors={errors} watch={watch} setValue={setValue} />
+              <Step2Couple register={register} errors={errors} watch={watch} setValue={setValue} invitationId={invitationId} />
             )}
             {currentStep === 3 && (
               <Step3Events
@@ -268,6 +268,7 @@ export function InvitationWizard({
                 watch={watch}
                 setValue={setValue}
                 quoteTemplates={quoteTemplates}
+                invitationId={invitationId}
               />
             )}
             {currentStep === 5 && (
@@ -279,6 +280,7 @@ export function InvitationWizard({
                 isSubmitting={isSubmitting}
                 musicTemplates={musicTemplates}
                 isEdit={isEdit}
+                invitationId={invitationId}
               />
             )}
 

@@ -10,6 +10,8 @@ export function FileUploader({
   maxSize = 5 * 1024 * 1024, // Default 5MB
   label,
   helperText,
+  invitationId, // opsional: kelompokkan aset per-undangan (mode edit)
+  scope, // opsional: "theme" → simpan ke folder themes/ (khusus admin)
 }) {
   const [isDragActive, setIsDragActive] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -34,6 +36,8 @@ export function FileUploader({
     new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append("file", file);
+      if (invitationId) formData.append("invitationId", invitationId);
+      if (scope) formData.append("scope", scope);
 
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "/api/v1/upload", true);
@@ -76,6 +80,7 @@ export function FileUploader({
         filename: file.name,
         fileType: file.type || "audio/mpeg",
         fileSize: file.size,
+        ...(invitationId ? { invitationId } : {}),
       }),
     });
 

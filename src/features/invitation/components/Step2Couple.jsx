@@ -4,7 +4,7 @@ import { User, Image as ImageIcon, Info } from "lucide-react";
 import { FileUploader } from "@/components/shared/FileUploader";
 import { TextField } from "@/components/ui/Field";
 
-export function Step2Couple({ register, errors, watch, setValue }) {
+export function Step2Couple({ register, errors, watch, setValue, invitationId }) {
   const groomPhotoUrl = watch("groomPhotoUrl");
   const bridePhotoUrl = watch("bridePhotoUrl");
   const coverUrl = watch("coverUrl");
@@ -44,6 +44,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               onChange={(url) => setValue("groomPhotoUrl", url)}
               accept="image/*"
               maxSize={5 * 1024 * 1024}
+              invitationId={invitationId}
               helperText="Format JPG, PNG, atau WEBP (Maks 5MB)"
             />
           </div>
@@ -99,6 +100,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               onChange={(url) => setValue("bridePhotoUrl", url)}
               accept="image/*"
               maxSize={5 * 1024 * 1024}
+              invitationId={invitationId}
               helperText="Format JPG, PNG, atau WEBP (Maks 5MB)"
             />
           </div>
@@ -166,6 +168,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             onChange={(url) => setValue("coverUrl", url)}
             accept="image/*"
             maxSize={5 * 1024 * 1024}
+            invitationId={invitationId}
             helperText="Gunakan foto portrait (tegak) untuk hasil terbaik. Maks 5MB."
           />
         </div>

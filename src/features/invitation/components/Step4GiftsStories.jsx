@@ -33,7 +33,7 @@ const STORY_PRESETS = [
   { title: "Menuju Pelaminan", date: "2026", description: "Setelah melewati banyak cerita bersama, kami memantapkan hati untuk melangkah ke pernikahan." },
 ];
 
-export function Step4GiftsStories({ register, control, watch, setValue, quoteTemplates = [] }) {
+export function Step4GiftsStories({ register, control, watch, setValue, quoteTemplates = [], invitationId }) {
   const displayQuotes = quoteTemplates.length > 0
     ? quoteTemplates.map((q) => ({ title: q.title, text: q.content }))
     : QUOTES_PRESETS;
@@ -280,6 +280,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                   onChange={(url) => setValue(`galleries.${index}.mediaUrl`, url)}
                   accept="image/*"
                   maxSize={5 * 1024 * 1024}
+                  invitationId={invitationId}
                   helperText="Format JPG, PNG, atau WEBP (Maks 5MB)"
                 />
               </div>

@@ -15,7 +15,7 @@ const MUSIC_PRESETS = [
   { title: "Shane Filan - Beautiful in White", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
 ];
 
-export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting, musicTemplates = [], isEdit = false }) {
+export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting, musicTemplates = [], isEdit = false, invitationId }) {
   const displayMusics = musicTemplates.length > 0
     ? musicTemplates.map((m) => ({ title: m.title, url: m.url }))
     : MUSIC_PRESETS;
@@ -139,6 +139,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                       setValue(`gifts.${index}.qrCodeUrl`, url, { shouldDirty: true })
                     }
                     accept="image/*"
+                    invitationId={invitationId}
                     helperText="Unggah gambar QRIS agar tamu bisa langsung scan untuk mengirim hadiah."
                   />
                 </div>
@@ -245,6 +246,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
             }}
             accept="audio/*"
             maxSize={10 * 1024 * 1024} // 10MB
+            invitationId={invitationId}
             label="Unggah File Musik Latar (.mp3)"
             helperText="Mendukung format MP3 atau WAV, Maksimal 10MB."
           />

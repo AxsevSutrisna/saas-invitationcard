@@ -42,25 +42,54 @@ export function buildPublicUrl(key) {
   return `${normalizedDomain()}/${key}`;
 }
 
+// Sanitasi segmen folder (huruf kecil, hanya a-z0-9-).
+function sanitizeFolder(folder) {
+  return String(folder || "images").toLowerCase().replace(/[^a-z0-9-]/g, "") || "images";
+}
+// Sanitasi ekstensi.
+function sanitizeExt(ext) {
+  return String(ext || "bin").toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
+}
+// Nama berkas acak anti-collision (tanpa memakai nama asli).
+function randomFileName(ext) {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${sanitizeExt(ext)}`;
+}
+
 /**
  * Susun object key R2 ter-namespace per pengguna — SATU-SATUNYA sumber konvensi
- * key upload. SELALU berawalan `invitations/{userId}/` agar guard penghapusan
- * (lihat deleteObjectByUrl dengan opts.userId) & pembersihan objek yatim tetap
- * konsisten. JANGAN ubah prefix ini tanpa menyesuaikan guard tersebut.
+ * key upload undangan. SELALU berawalan `invitations/{userId}/` agar guard
+ * penghapusan (deleteObjectByUrl dengan opts.userId) & pembersihan objek yatim
+ * tetap konsisten. JANGAN ubah prefix ini tanpa menyesuaikan guard tersebut.
  *
- * @param {{ userId: string, folder?: string, ext?: string }} opts
- *   folder & ext di-sanitasi (huruf kecil, buang karakter non-aman).
- * @returns {string} mis. "invitations/abc/images/1700000000000-x7k2.webp"
+ * Bila `invitationId` diberikan (mis. saat mengedit undangan yang sudah ada),
+ * aset dikelompokkan per-undangan: `invitations/{userId}/{invitationId}/{folder}/…`.
+ * Tanpa `invitationId` (mis. membuat undangan baru yang belum punya id), aset
+ * jatuh ke level pengguna: `invitations/{userId}/{folder}/…`.
+ *
+ * @param {{ userId: string, invitationId?: string, folder?: string, ext?: string }} opts
+ * @returns {string} mis. "invitations/abc/inv123/images/1700000000000-x7k2.webp"
  */
-export function buildUserObjectKey({ userId, folder = "images", ext = "webp" } = {}) {
+export function buildUserObjectKey({ userId, invitationId, folder = "images", ext = "webp" } = {}) {
   if (!userId) throw new Error("buildUserObjectKey: userId wajib diisi.");
-  const safeFolder =
-    String(folder || "images").toLowerCase().replace(/[^a-z0-9-]/g, "") || "images";
-  const safeExt =
-    String(ext || "bin").toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
-  const ts = Date.now();
-  const rand = Math.random().toString(36).slice(2, 10);
-  return `invitations/${userId}/${safeFolder}/${ts}-${rand}.${safeExt}`;
+  const safeInv = invitationId
+    ? String(invitationId).replace(/[^a-zA-Z0-9_-]/g, "")
+    : "";
+  const base = safeInv
+    ? `invitations/${userId}/${safeInv}/${sanitizeFolder(folder)}`
+    : `invitations/${userId}/${sanitizeFolder(folder)}`;
+  return `${base}/${randomFileName(ext)}`;
+}
+
+/**
+ * Susun object key untuk aset milik PLATFORM (tema), terpisah dari namespace
+ * pengguna: `themes/{folder}/…`. Dipakai saat Super Admin mengunggah thumbnail/
+ * preview tema agar tidak bercampur dengan aset undangan pengguna.
+ *
+ * @param {{ folder?: string, ext?: string }} opts
+ * @returns {string} mis. "themes/images/1700000000000-x7k2.webp"
+ */
+export function buildThemeObjectKey({ folder = "images", ext = "webp" } = {}) {
+  return `themes/${sanitizeFolder(folder)}/${randomFileName(ext)}`;
 }
 
 /**
@@ -100,8 +129,9 @@ export function r2KeyFromUrl(url) {
  * agar tidak menggagalkan operasi utama (hapus undangan, dsb) bila R2 bermasalah.
  *
  * @param {string} url Public URL objek.
- * @param {{ userId?: string }} [opts] Bila `userId` diberikan, hanya key
- *   ber-prefix `invitations/{userId}/` yang dihapus (mode aman anti salah-hapus).
+ * @param {{ userId?: string, prefix?: string }} [opts] Guard anti salah-hapus:
+ *   - `userId` → hanya key ber-prefix `invitations/{userId}/` yang dihapus.
+ *   - `prefix` → hanya key ber-prefix tersebut (mis. `themes/`) yang dihapus.
  * @returns {Promise<boolean>} true bila perintah delete berhasil dikirim.
  */
 export async function deleteObjectByUrl(url, opts = {}) {
@@ -109,6 +139,7 @@ export async function deleteObjectByUrl(url, opts = {}) {
     const key = r2KeyFromUrl(url);
     if (!key) return false;
     if (opts.userId && !key.startsWith(`invitations/${opts.userId}/`)) return false;
+    if (opts.prefix && !key.startsWith(opts.prefix)) return false;
     if (!R2_BUCKET_NAME) return false;
 
     await s3Client.send(

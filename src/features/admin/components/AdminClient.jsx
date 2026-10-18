@@ -1165,10 +1165,11 @@ export function AdminClient({
                     <FileUploader
                       value={themeInput.thumbnailUrl}
                       onChange={(url) => setThemeInput({ ...themeInput, thumbnailUrl: url })}
-                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      accept="image/*"
                       maxSize={5 * 1024 * 1024} // 5MB
+                      scope="theme"
                       label="Seret & lepas gambar di sini"
-                      helperText="Format berkas JPG, PNG, WEBP, atau GIF (Maksimal 5MB)"
+                      helperText="Gambar format apa pun — otomatis dikonversi ke WebP (Maksimal 5MB)"
                     />
                     {themeInput.thumbnailUrl && (
                       <div className="flex flex-col gap-1.5 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-xs">
@@ -1236,9 +1237,10 @@ export function AdminClient({
                     onChange={(url) =>
                       setThemeInput((prev) => ({ ...prev, previewImages: [...prev.previewImages, url] }))
                     }
-                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    accept="image/*"
                     maxSize={5 * 1024 * 1024}
-                    helperText="Unggah screenshot tema (JPG/PNG/WEBP, maks 5MB). Ulangi untuk menambah beberapa."
+                    scope="theme"
+                    helperText="Unggah screenshot tema (format apa pun → WebP, maks 5MB). Ulangi untuk menambah beberapa."
                   />
                 </div>
                 <div className="flex items-center gap-6 pt-2">
