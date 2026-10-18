@@ -31,7 +31,7 @@ function CardOverlay({ overlay }) {
     case "glass":
       return (
         <>
-          <div className="absolute inset-0 opacity-10 bg-gradient-to-tr from-white/30 via-transparent to-white/10" />
+          <div className="absolute inset-0 opacity-10 bg-linear-to-tr from-white/30 via-transparent to-white/10" />
           <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full border border-white/10" />
           <div className="absolute -top-5 -right-5 w-32 h-32 rounded-full border border-white/10" />
           <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full border border-white/10" />
@@ -42,7 +42,7 @@ function CardOverlay({ overlay }) {
       return (
         <>
           <div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,white,white_1px,transparent_0,transparent_12px)]" />
-          <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/30 to-transparent" />
+          <div className="absolute inset-0 opacity-10 bg-linear-to-br from-white/30 to-transparent" />
           <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full border border-white/15" />
           <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full border border-white/10" />
           <div className="absolute -bottom-12 -left-12 w-44 h-44 rounded-full border border-white/10" />

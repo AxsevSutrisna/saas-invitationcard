@@ -13,22 +13,22 @@
 
 // ─── Chip specs untuk BankCard bersama ({ base, inner, cell }) ───
 const CHIP_GOLD = {
-  base: "bg-gradient-to-br from-yellow-100 via-yellow-300 to-amber-200",
+  base: "bg-linear-to-br from-yellow-100 via-yellow-300 to-amber-200",
   inner: "border-amber-400/60",
   cell: "bg-amber-300/60",
 };
 const CHIP_AMBER = {
-  base: "bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-600 opacity-90",
+  base: "bg-linear-to-br from-yellow-300 via-amber-400 to-yellow-600 opacity-90",
   inner: "border-amber-600/60",
   cell: "bg-amber-500/60",
 };
 const CHIP_BLUE = {
-  base: "bg-gradient-to-br from-cyan-200 via-sky-300 to-blue-200",
+  base: "bg-linear-to-br from-cyan-200 via-sky-300 to-blue-200",
   inner: "border-blue-400/50",
   cell: "bg-blue-200/60",
 };
 const CHIP_ZINC = {
-  base: "bg-gradient-to-br from-zinc-300 via-zinc-200 to-white",
+  base: "bg-linear-to-br from-zinc-300 via-zinc-200 to-white",
   inner: "border-zinc-400/60",
   cell: "bg-zinc-300/60",
 };

@@ -2,7 +2,7 @@
 
 import { User, Image as ImageIcon, Info } from "lucide-react";
 import { FileUploader } from "@/components/shared/FileUploader";
-import { Field, DASHBOARD_INPUT } from "@/components/ui/Field";
+import { TextField } from "@/components/ui/Field";
 
 export function Step2Couple({ register, errors, watch, setValue }) {
   const groomPhotoUrl = watch("groomPhotoUrl");
@@ -48,45 +48,41 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             />
           </div>
 
-          <Field label="Nama Panggilan" htmlFor="groomNickname" required error={errors.groomNickname?.message}>
-            <input
-              id="groomNickname"
-              type="text"
-              placeholder="Contoh: William"
-              {...register("groomNickname")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="Nama Panggilan"
+            htmlFor="groomNickname"
+            required
+            error={errors.groomNickname?.message}
+            type="text"
+            placeholder="Contoh: William"
+            {...register("groomNickname")}
+          />
 
-          <Field label="Nama Lengkap" htmlFor="groomFullName" required error={errors.groomFullName?.message}>
-            <input
-              id="groomFullName"
-              type="text"
-              placeholder="Contoh: William Jonathan Tanuwijaya"
-              {...register("groomFullName")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="Nama Lengkap"
+            htmlFor="groomFullName"
+            required
+            error={errors.groomFullName?.message}
+            type="text"
+            placeholder="Contoh: William Jonathan Tanuwijaya"
+            {...register("groomFullName")}
+          />
 
-          <Field label="Putra dari Bapak" htmlFor="groomFather">
-            <input
-              id="groomFather"
-              type="text"
-              placeholder="Contoh: Bapak William Jonathan"
-              {...register("groomFather")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="Putra dari Bapak"
+            htmlFor="groomFather"
+            type="text"
+            placeholder="Contoh: Bapak William Jonathan"
+            {...register("groomFather")}
+          />
 
-          <Field label="dan Ibu" htmlFor="groomMother">
-            <input
-              id="groomMother"
-              type="text"
-              placeholder="Contoh: Ibu William Jonathan"
-              {...register("groomMother")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="dan Ibu"
+            htmlFor="groomMother"
+            type="text"
+            placeholder="Contoh: Ibu William Jonathan"
+            {...register("groomMother")}
+          />
         </div>
 
         {/* Kolom Mempelai Wanita */}
@@ -107,45 +103,41 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             />
           </div>
 
-          <Field label="Nama Panggilan" htmlFor="brideNickname" required error={errors.brideNickname?.message}>
-            <input
-              id="brideNickname"
-              type="text"
-              placeholder="Contoh: Eleanor"
-              {...register("brideNickname")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="Nama Panggilan"
+            htmlFor="brideNickname"
+            required
+            error={errors.brideNickname?.message}
+            type="text"
+            placeholder="Contoh: Eleanor"
+            {...register("brideNickname")}
+          />
 
-          <Field label="Nama Lengkap" htmlFor="brideFullName" required error={errors.brideFullName?.message}>
-            <input
-              id="brideFullName"
-              type="text"
-              placeholder="Contoh: Eleanor Grace Tanuwidjaja"
-              {...register("brideFullName")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="Nama Lengkap"
+            htmlFor="brideFullName"
+            required
+            error={errors.brideFullName?.message}
+            type="text"
+            placeholder="Contoh: Eleanor Grace Tanuwidjaja"
+            {...register("brideFullName")}
+          />
 
-          <Field label="Putri dari Bapak" htmlFor="brideFather">
-            <input
-              id="brideFather"
-              type="text"
-              placeholder="Contoh: Bapak William Jonathan"
-              {...register("brideFather")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="Putri dari Bapak"
+            htmlFor="brideFather"
+            type="text"
+            placeholder="Contoh: Bapak William Jonathan"
+            {...register("brideFather")}
+          />
 
-          <Field label="dan Ibu" htmlFor="brideMother">
-            <input
-              id="brideMother"
-              type="text"
-              placeholder="Contoh: Ibu William Jonathan"
-              {...register("brideMother")}
-              className={DASHBOARD_INPUT}
-            />
-          </Field>
+          <TextField
+            label="dan Ibu"
+            htmlFor="brideMother"
+            type="text"
+            placeholder="Contoh: Ibu William Jonathan"
+            {...register("brideMother")}
+          />
         </div>
       </div>
 

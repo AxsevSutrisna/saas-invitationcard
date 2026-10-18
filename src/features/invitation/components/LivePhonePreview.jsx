@@ -136,7 +136,7 @@ export function LivePhonePreview({ formData, themes = [] }) {
         </div>
 
         {/* Glass Reflection Overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 z-30" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-tr from-transparent via-white/5 to-white/10 z-30" />
 
         {/* Screen Viewport Scrollable Content Area */}
         <div className={`w-full h-full ${isCoverOpen ? "overflow-y-auto" : "overflow-hidden"} [&::-webkit-scrollbar]:hidden relative text-left`}>

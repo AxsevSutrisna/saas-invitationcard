@@ -150,13 +150,13 @@ export function PricingSection({ packages = [] }) {
                 className={[
                   "p-7 sm:p-8 flex flex-col justify-between gap-6 h-full transition-transform duration-300",
                   plan.popular
-                    ? "!border-gold-400/80 shadow-[0_0_40px_rgba(200,169,106,0.25)] hover:scale-[1.02]"
+                    ? "border-gold-400/80! shadow-[0_0_40px_rgba(200,169,106,0.25)] hover:scale-[1.02]"
                     : "hover:scale-[1.02]",
                 ].join(" ")}
               >
                 {/* Popular Badge */}
                 {plan.popular && (
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-to-r from-gold-400 to-gold-500 text-white text-[12px] font-bold uppercase tracking-wider shadow-md flex items-center gap-1">
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-linear-to-r from-gold-400 to-gold-500 text-white text-[12px] font-bold uppercase tracking-wider shadow-md flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5 fill-current" /> Most Popular
                   </div>
                 )}

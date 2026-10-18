@@ -9,6 +9,9 @@ import { Surface } from "@/components/ui/Surface";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
+import { DASHBOARD_INPUT_GHOST } from "@/components/ui/Field";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import {
   Users as UsersIcon,
   CreditCard as CreditCardIcon,
@@ -99,9 +102,8 @@ const TAB_ICONS = {
   packages: PackageIcon,
 };
 
-// Kelas field seragam (rule desain: rounded-xl + border-border + fokus emas).
-const FIELD_CLASS =
-  "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
+// Kelas field seragam (ghost) — satu sumber via Field agar tidak drift.
+const FIELD_CLASS = DASHBOARD_INPUT_GHOST;
 
 // Kelas header sel tabel seragam.
 const TH_CLASS = "px-4 py-3 font-semibold";
@@ -656,17 +658,7 @@ export function AdminClient({
                           <td className="px-4 py-3.5 font-semibold text-gold-400">{t.package?.name}</td>
                           <td className="px-4 py-3.5">{formatRupiah(t.amount)}</td>
                           <td className="px-4 py-3.5">
-                            <Badge
-                              variant={
-                                t.status === "SUCCESS"
-                                  ? "success"
-                                  : t.status === "FAILED"
-                                  ? "danger"
-                                  : "neutral"
-                              }
-                            >
-                              {t.status}
-                            </Badge>
+                            <StatusBadge status={t.status} />
                           </td>
                           <td className="px-4 py-3.5 text-right font-light text-muted-foreground">
                             {formatDateTime(t.createdAt)}
@@ -1154,34 +1146,16 @@ export function AdminClient({
                 {/* Tab Switcher for Thumbnail Source Mode */}
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-foreground">Sumber Gambar Thumbnail</span>
-                  <div role="tablist" aria-label="Sumber gambar thumbnail" className="flex gap-2 rounded-xl bg-muted/60 p-1">
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={themeThumbnailSourceTab === "upload"}
-                      onClick={() => setThemeThumbnailSourceTab("upload")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        themeThumbnailSourceTab === "upload"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Unggah Gambar (R2/S3)
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={themeThumbnailSourceTab === "url"}
-                      onClick={() => setThemeThumbnailSourceTab("url")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        themeThumbnailSourceTab === "url"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Tautan URL Gambar
-                    </button>
-                  </div>
+                  <SegmentedControl
+                    fullWidth
+                    ariaLabel="Sumber gambar thumbnail"
+                    value={themeThumbnailSourceTab}
+                    onChange={setThemeThumbnailSourceTab}
+                    options={[
+                      { value: "upload", label: "Unggah Gambar (R2/S3)" },
+                      { value: "url", label: "Tautan URL Gambar" },
+                    ]}
+                  />
                 </div>
 
                 {/* Tab 1: Upload Image */}
@@ -1363,34 +1337,16 @@ export function AdminClient({
                 {/* Tab Switcher for Source Mode */}
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-foreground">Sumber Berkas Musik</span>
-                  <div role="tablist" aria-label="Sumber berkas musik" className="flex gap-2 rounded-xl bg-muted/60 p-1">
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={musicSourceTab === "upload"}
-                      onClick={() => setMusicSourceTab("upload")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        musicSourceTab === "upload"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Unggah MP3 (R2/S3 Storage)
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={musicSourceTab === "url"}
-                      onClick={() => setMusicSourceTab("url")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        musicSourceTab === "url"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Tautan URL Eksternal
-                    </button>
-                  </div>
+                  <SegmentedControl
+                    fullWidth
+                    ariaLabel="Sumber berkas musik"
+                    value={musicSourceTab}
+                    onChange={setMusicSourceTab}
+                    options={[
+                      { value: "upload", label: "Unggah MP3 (R2/S3 Storage)" },
+                      { value: "url", label: "Tautan URL Eksternal" },
+                    ]}
+                  />
                 </div>
 
                 {/* Tab 1: Upload File MP3 */}

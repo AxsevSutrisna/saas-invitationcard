@@ -569,8 +569,8 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       {/* Toolbar Controls Section */}
       <Surface as="section" padding="none" className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4">
         {/* Search & Filters */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-grow max-w-2xl">
-          <div className="relative flex-grow">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 grow max-w-2xl">
+          <div className="relative grow">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <label htmlFor="guest-search" className="sr-only">Cari tamu undangan</label>
             <input

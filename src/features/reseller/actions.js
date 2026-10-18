@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 import { requireSession } from "@/features/auth/guard";
 import { db } from "@/lib/db";
 import { ROLES } from "@/constants/roles";
-import { getPackageFeatureMap } from "@/features/entitlement/service";
+import { featureMapFromPackage } from "@/features/entitlement/service";
+import { findPackageWithFeatures } from "@/features/entitlement/repository";
 import { findAvailableCreditBatch } from "@/features/reseller/repository";
+import { getInvitationOwner } from "@/features/invitation/repository";
 
 /** Hanya AGENCY (dan SUPER_ADMIN) yang boleh mengelola kredit reseller. */
 function isAgencyOrAdmin(role) {
@@ -27,10 +29,7 @@ export async function allocateResellerCreditAction({ invitationId, packageId }) 
       return { success: false, error: "Undangan dan paket wajib dipilih." };
     }
 
-    const invitation = await db.invitation.findUnique({
-      where: { id: invitationId },
-      select: { id: true, userId: true },
-    });
+    const invitation = await getInvitationOwner(invitationId);
     if (!invitation || invitation.userId !== user.id) {
       return { success: false, error: "Undangan tidak ditemukan atau bukan milik Anda." };
     }
@@ -40,14 +39,13 @@ export async function allocateResellerCreditAction({ invitationId, packageId }) 
       return { success: false, error: "Kredit untuk paket ini sudah habis. Silakan beli kredit terlebih dahulu." };
     }
 
-    // Snapshot fitur paket (termasuk gabungan BUNDLE) + masa aktif — dibaca di
-    // luar transaksi agar transaksi tetap singkat.
-    const featuresSnapshot = await getPackageFeatureMap(packageId);
-    const pkg = await db.package.findUnique({
-      where: { id: packageId },
-      select: { durationDays: true },
-    });
-    const days = pkg?.durationDays ?? 180;
+    // Baca paket SEKALI → derivasi snapshot fitur (bundle-aware) + masa aktif.
+    const pkg = await findPackageWithFeatures(packageId);
+    if (!pkg) {
+      return { success: false, error: "Paket tidak ditemukan." };
+    }
+    const featuresSnapshot = featureMapFromPackage(pkg);
+    const days = pkg.durationDays ?? 180;
     const validUntil = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
     await db.$transaction(async (tx) => {

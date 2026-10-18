@@ -133,8 +133,10 @@ Pemakaian gating:
 ## 5. Admin & akses
 
 - **Dashboard → Admin → Paket & Fitur** (SUPER_ADMIN): CRUD paket (termasuk
-  bundle-builder), CRUD katalog fitur, penugasan fitur per paket, grant
-  entitlement manual. Aksi di [`src/features/admin/actions.js`](../src/features/admin/actions.js) (bagian 7–9).
+  bundle-builder), CRUD katalog fitur, penugasan fitur per paket, dan **Beri
+  Entitlement Manual** (form: slug undangan + paket + durasi → tanpa pembayaran,
+  untuk kompensasi/aktivasi manual). Aksi di
+  [`src/features/admin/actions.js`](../src/features/admin/actions.js) (bagian 7–9).
 - **Dashboard → Reseller** (AGENCY): ability `reseller:access` di
   [`src/lib/ability.js`](../src/lib/ability.js). Link sidebar muncul untuk agency.
 

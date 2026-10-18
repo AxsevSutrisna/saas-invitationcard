@@ -33,7 +33,7 @@ export function TrustBarSection() {
             direction="up"
             className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-zinc-900 mb-4"
           >
-            The <span className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-500">IKARA</span> Experience
+            The <span className="italic font-serif font-normal text-transparent bg-clip-text bg-linear-to-r from-gold-400 to-gold-500">IKARA</span> Experience
           </Reveal>
           <Reveal
             as="p"

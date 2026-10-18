@@ -57,7 +57,7 @@ export default async function PaymentFinishPage({ searchParams }) {
         <div className="flex flex-col gap-2 pt-2">
           <Link
             href={ROUTES.SUBSCRIPTION}
-            className="h-11 rounded-2xl bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-white font-medium text-sm flex items-center justify-center transition-all"
+            className="h-11 rounded-2xl bg-linear-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-white font-medium text-sm flex items-center justify-center transition-all"
           >
             Lihat Status Langganan
           </Link>

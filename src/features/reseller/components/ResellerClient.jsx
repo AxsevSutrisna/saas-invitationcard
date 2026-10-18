@@ -1,44 +1,28 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Script from "next/script";
 import { useRouter } from "next/navigation";
-import {
-  Store,
-  Coins,
-  ShoppingCart,
-  Share2,
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
+import { Store, Coins, ShoppingCart, Share2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
+import { Alert } from "@/components/ui/Alert";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { formatRupiah } from "@/lib/format";
-import { createCheckoutAction } from "@/features/payment/actions";
+import { useFeedback } from "@/hooks/useFeedback";
+import { SnapScript } from "@/features/payment/components/SnapScript";
+import { useMidtransSnap } from "@/features/payment/useMidtransSnap";
 import { allocateResellerCreditAction } from "@/features/reseller/actions";
-
-const SNAP_SCRIPT_URL =
-  process.env.MIDTRANS_IS_PRODUCTION === "true"
-    ? "https://app.midtrans.com/snap/snap.js"
-    : "https://app.sandbox.midtrans.com/snap/snap.js";
-const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
 
 export function ResellerClient({ credits = [], summary = {}, resellerPackages = [], invitations = [] }) {
   const router = useRouter();
-  const [feedback, setFeedback] = useState({ type: "", message: "" });
-  const [buyingId, setBuyingId] = useState(null);
+  const { feedback, notify } = useFeedback();
+  const { pay, loadingId } = useMidtransSnap();
   const [qtyMap, setQtyMap] = useState({});
   const [allocating, setAllocating] = useState(false);
   const [allocPackageId, setAllocPackageId] = useState("");
   const [allocInvitationId, setAllocInvitationId] = useState("");
-
-  const notify = (type, message) => {
-    setFeedback({ type, message });
-    if (type === "success") setTimeout(() => setFeedback({ type: "", message: "" }), 4000);
-  };
 
   // Nama paket per id (dari paket reseller + yang tercatat di kredit).
   const nameById = useMemo(() => {
@@ -59,27 +43,9 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
 
   const allocatableInvitations = invitations.filter((inv) => !inv.hasEntitlement);
 
-  const handleBuy = async (pkg) => {
-    try {
-      setFeedback({ type: "", message: "" });
-      setBuyingId(pkg.id);
-      const quantity = Math.max(1, parseInt(qtyMap[pkg.id]) || 1);
-
-      const result = await createCheckoutAction(pkg.id, { quantity });
-      if (!result.success) throw new Error(result.error || "Gagal membuat transaksi.");
-
-      if (!window.snap) throw new Error("Midtrans Snap belum siap. Muat ulang halaman.");
-      window.snap.pay(result.data.token, {
-        onSuccess: () => router.refresh(),
-        onPending: () => router.refresh(),
-        onError: () => notify("error", "Pembayaran gagal diproses oleh Midtrans."),
-        onClose: () => {},
-      });
-    } catch (e) {
-      notify("error", e.message || "Terjadi kesalahan pembayaran.");
-    } finally {
-      setBuyingId(null);
-    }
+  const handleBuy = (pkg) => {
+    const quantity = Math.max(1, parseInt(qtyMap[pkg.id]) || 1);
+    pay(pkg.id, { quantity, onError: (m) => notify("error", m) });
   };
 
   const handleAllocate = async () => {
@@ -106,7 +72,7 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
 
   return (
     <div className="space-y-8 pb-12">
-      <Script src={SNAP_SCRIPT_URL} data-client-key={clientKey} strategy="lazyOnload" />
+      <SnapScript />
 
       <PageHeader
         title={
@@ -119,29 +85,14 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
       />
 
       {feedback.message && (
-        <div
-          role="alert"
-          className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm ${
-            feedback.type === "success"
-              ? "border-emerald-300/50 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-              : "border-destructive/20 bg-destructive/10 text-destructive"
-          }`}
-        >
-          {feedback.type === "success" ? (
-            <CheckCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-          ) : (
-            <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-          )}
-          <span>{feedback.message}</span>
-        </div>
+        <Alert variant={feedback.type === "success" ? "success" : "error"}>
+          {feedback.message}
+        </Alert>
       )}
 
       {/* Saldo kredit */}
       <Surface as="section">
-        <h2 className="mb-4 flex items-center gap-2 border-b border-border/60 pb-3 font-heading text-lg font-bold text-foreground">
-          <Coins className="h-5 w-5 text-gold-400" aria-hidden="true" />
-          <span>Saldo Kredit Saya</span>
-        </h2>
+        <SectionHeading icon={Coins} title="Saldo Kredit Saya" divider className="mb-4" />
         {packagesWithCredit.length === 0 ? (
           <p className="py-6 text-center text-xs text-muted-foreground">
             Belum ada kredit tersisa. Beli kredit di bawah untuk mulai mengalokasikan.
@@ -160,10 +111,7 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
 
       {/* Alokasi kredit */}
       <Surface as="section">
-        <h2 className="mb-4 flex items-center gap-2 border-b border-border/60 pb-3 font-heading text-lg font-bold text-foreground">
-          <Share2 className="h-5 w-5 text-gold-400" aria-hidden="true" />
-          <span>Alokasikan ke Undangan</span>
-        </h2>
+        <SectionHeading icon={Share2} title="Alokasikan ke Undangan" divider className="mb-4" />
         {packagesWithCredit.length === 0 ? (
           <p className="py-4 text-center text-xs text-muted-foreground">
             Belum ada kredit untuk dialokasikan.
@@ -216,10 +164,7 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
 
       {/* Beli kredit */}
       <Surface as="section">
-        <h2 className="mb-4 flex items-center gap-2 border-b border-border/60 pb-3 font-heading text-lg font-bold text-foreground">
-          <ShoppingCart className="h-5 w-5 text-gold-400" aria-hidden="true" />
-          <span>Beli Kredit</span>
-        </h2>
+        <SectionHeading icon={ShoppingCart} title="Beli Kredit" divider className="mb-4" />
         {resellerPackages.length === 0 ? (
           <p className="py-6 text-center text-xs text-muted-foreground">
             Belum ada paket reseller tersedia. Hubungi admin.
@@ -262,8 +207,8 @@ export function ResellerClient({ credits = [], summary = {}, resellerPackages = 
                         className="w-20 rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none focus:border-gold-400"
                       />
                     </div>
-                    <Button onClick={() => handleBuy(pkg)} disabled={buyingId !== null} className="flex-1">
-                      {buyingId === pkg.id ? (
+                    <Button onClick={() => handleBuy(pkg)} disabled={loadingId !== null} className="flex-1">
+                      {loadingId === pkg.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                       ) : (
                         <ShoppingCart className="h-4 w-4" aria-hidden="true" />

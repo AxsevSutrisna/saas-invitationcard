@@ -70,13 +70,12 @@ export default async function AnalyticsPage({ searchParams }) {
       findActiveSubscriptionByUserId(session.user.id),
     ]);
 
-  // 7. Hitung Selisih Hari Menuju Acara Pertama
+  // 7. Hitung Selisih Hari Menuju Acara Pertama.
+  //    `events` sudah terurut menaik (orderBy date asc di getInvitationAnalytics),
+  //    jadi elemen pertama = acara paling awal — tak perlu sort ulang di JS.
   let daysDiff = 0;
   if (selectedInvitation.events && selectedInvitation.events.length > 0) {
-    const sortedEvents = [...selectedInvitation.events].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
-    const eventDate = new Date(sortedEvents[0].date);
+    const eventDate = new Date(selectedInvitation.events[0].date);
     const today = new Date();
     eventDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);

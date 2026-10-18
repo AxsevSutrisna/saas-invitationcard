@@ -151,7 +151,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
 
         {/* Dark Gradient Overlays for Readability */}
         <div className="absolute inset-0 bg-black/20 z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/40 z-0" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-black/40 z-0" />
 
         {/* Ambient Gold Particles (Optional subtle effect) */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
@@ -385,7 +385,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
             <h2 className={`text-base font-bold tracking-normal ${config.cardName || "text-zinc-800"}`}>
               {guestName || "Tamu Undangan"}
             </h2>
-            <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-current to-transparent mx-auto opacity-30" style={{ color: config.ornamentsColor }} />
+            <div className="h-[1px] w-8 bg-linear-to-r from-transparent via-current to-transparent mx-auto opacity-30" style={{ color: config.ornamentsColor }} />
           </div>
           <p className={`text-[8px] leading-relaxed font-light px-1 ${config.cardMuted || "text-zinc-500"}`}>
             Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami.

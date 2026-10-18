@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LayoutGrid, Link as LinkIcon, Sparkles, RefreshCw, Search, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
-import { Field } from "@/components/ui/Field";
+import { Field, TextField } from "@/components/ui/Field";
 
 const CATEGORIES = ["Semua", "Elegant", "Floral", "Sunda", "Blue", "Nature"];
 
@@ -62,27 +62,18 @@ export function Step1InfoTheme({ register, errors, watch, setValue, themes = [] 
       </div>
 
       {/* Input Judul Undangan */}
-      <Field
+      <TextField
+        label="Judul Undangan"
         htmlFor="invitation-title"
+        required
+        error={errors.title?.message}
         className="space-y-2"
         labelClassName="flex items-center gap-1.5 text-sm font-semibold text-foreground"
-        label={
-          <>
-            <span>Judul Undangan</span>
-            <span className="text-destructive">*</span>
-          </>
-        }
-        error={errors.title?.message}
         errorClassName="text-xs text-destructive"
-      >
-        <input
-          id="invitation-title"
-          type="text"
-          placeholder="Contoh: Pernikahan William & Elleanor"
-          {...register("title")}
-          className="w-full rounded-xl border border-border bg-zinc-50 px-4 py-3 text-sm transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
-        />
-      </Field>
+        type="text"
+        placeholder="Contoh: Pernikahan William & Elleanor"
+        {...register("title")}
+      />
 
       {/* Input Slug URL */}
       <Field

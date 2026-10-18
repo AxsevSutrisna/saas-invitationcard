@@ -92,7 +92,7 @@ export function FAQSection({ faqs = [] }) {
         >
 
           <div className="space-y-3 relative z-10">
-            <h3 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight font-cormorant script-glow">
+            <h3 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight script-glow">
               Your Story is Ready to be Shared
             </h3>
             <p className="text-zinc-300 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">

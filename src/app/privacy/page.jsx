@@ -32,14 +32,14 @@ export default async function PrivacyPage() {
       <Navbar />
       
       {/* Editorial Header Banner */}
-      <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-b from-[#e8dec6]/30 to-transparent dark:from-zinc-800/10">
+      <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-linear-to-b from-[#e8dec6]/30 to-transparent dark:from-zinc-800/10">
         <div className="absolute inset-0 bg-[radial-gradient(#C8A96A_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.07] pointer-events-none" />
         <div className="max-w-6xl mx-auto px-6 text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-400/10 border border-gold-400/20 text-gold-600 dark:text-[#E2C785] text-[12px] font-bold uppercase tracking-widest font-poppins">
             <ShieldCheck className="w-4 h-4" />
             Perlindungan Data
           </div>
-          <h1 className="font-heading text-[36px] sm:text-[48px] font-bold tracking-tight text-foreground font-cormorant leading-tight">
+          <h1 className="font-heading text-[36px] sm:text-[48px] font-bold tracking-tight text-foreground leading-tight">
             Kebijakan Privasi
           </h1>
           <p className="text-[16px] sm:text-[20px] text-muted-foreground max-w-xl mx-auto font-light leading-relaxed font-sans">
@@ -97,7 +97,7 @@ export default async function PrivacyPage() {
             {/* Section 1 */}
             <section id="pendahuluan" className="scroll-mt-28 space-y-4">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">01.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">01.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Pendahuluan
                 </h3>
@@ -115,7 +115,7 @@ export default async function PrivacyPage() {
             {/* Section 2 */}
             <section id="data-dikumpul" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">02.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">02.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Data yang Dikumpulkan
                 </h3>
@@ -137,7 +137,7 @@ export default async function PrivacyPage() {
             {/* Section 3 */}
             <section id="penggunaan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">03.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">03.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Penggunaan Informasi
                 </h3>
@@ -158,7 +158,7 @@ export default async function PrivacyPage() {
             {/* Section 4 */}
             <section id="keamanan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">04.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">04.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Keamanan Data
                 </h3>
@@ -178,7 +178,7 @@ export default async function PrivacyPage() {
             {/* Section 5 */}
             <section id="hak-user" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">05.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">05.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Hak Pengguna
                 </h3>
@@ -198,7 +198,7 @@ export default async function PrivacyPage() {
             {/* Section 6 */}
             <section id="berbagi-data" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">06.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">06.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Pihak Ketiga & Berbagi Data
                 </h3>
@@ -218,7 +218,7 @@ export default async function PrivacyPage() {
             {/* Section 7 */}
             <section id="cookies" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">07.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">07.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Teknologi Cookie
                 </h3>
@@ -236,7 +236,7 @@ export default async function PrivacyPage() {
             {/* Section 8 */}
             <section id="kontak" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">08.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">08.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Kontak & Keluhan
                 </h3>

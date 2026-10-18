@@ -135,7 +135,7 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
       {isOpen && !isPremium && (
         <div className="w-full py-6 text-center bg-zinc-50 dark:bg-zinc-900 border-t border-border/40 text-[10px] tracking-wider text-muted-foreground font-semibold uppercase flex items-center justify-center gap-1.5 z-40 relative">
           <span>Powered by</span>
-          <span className="text-[#C8A96A] font-heading font-bold text-xs tracking-widest">IKARA</span>
+          <span className="text-gold-400 font-heading font-bold text-xs tracking-widest">IKARA</span>
           <span className="text-[8px] font-normal lowercase opacity-60">— Every Promise Has a Story</span>
         </div>
       )}

@@ -42,7 +42,7 @@ export function HeroSection() {
       </div>
 
       {/* Gradient overlay: Gelap di kiri (area teks) memudar ke transparan di kanan */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent backdrop-blur-[2px]"></div>
+      <div className="absolute inset-0 z-0 bg-linear-to-r from-black/80 via-black/50 to-transparent backdrop-blur-[2px]"></div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
         {/* Text Content */}
@@ -60,7 +60,7 @@ export function HeroSection() {
           {/* Headline */}
           <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white drop-shadow-xl leading-[1.15]">
             Your Story Deserves a{" "}
-            <span className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#F6E5B3] via-[#D1A65D] to-[#F6E5B3] drop-shadow-sm">
+            <span className="italic font-serif font-normal text-transparent bg-clip-text bg-linear-to-r from-[#F6E5B3] via-[#D1A65D] to-[#F6E5B3] drop-shadow-sm">
               Beautiful Beginning
             </span>
           </h1>

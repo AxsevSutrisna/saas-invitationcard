@@ -25,7 +25,7 @@ export function ThemesClient({ initialThemes = [] }) {
         <span className="text-xs font-semibold uppercase tracking-widest text-gold-400">
           Koleksi Desain Premium
         </span>
-        <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground font-cormorant leading-tight">
+        <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground leading-tight">
           Visual Indah yang Mencerminkan<br />Kisah Anda
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto pt-2">

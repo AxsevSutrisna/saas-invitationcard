@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { submitRsvpAction } from "@/features/rsvp/actions";
-import { Check, Send, AlertCircle } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Alert } from "@/components/ui/Alert";
 
 const clientRsvpSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter").max(50, "Nama maksimal 50 karakter"),
@@ -96,12 +97,7 @@ export function RsvpForm({
       className="space-y-4 text-left"
       style={{ "--accent": accent, "--accent-dark": accentDark, "--accent-darker": accentDarker }}
     >
-      {serverError && (
-        <div role="alert" className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
-          <span>{serverError}</span>
-        </div>
-      )}
+      {serverError && <Alert variant="error">{serverError}</Alert>}
 
       {/* Input Nama Tamu */}
       <div className="space-y-1">
@@ -185,7 +181,7 @@ export function RsvpForm({
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-11 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] hover:from-[var(--accent-dark)] hover:to-[var(--accent-darker)] text-white font-semibold text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-300"
+        className="w-full h-11 rounded-xl bg-linear-to-r from-[var(--accent)] to-[var(--accent-dark)] hover:from-[var(--accent-dark)] hover:to-[var(--accent-darker)] text-white font-semibold text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-300"
       >
         <Send className="w-3.5 h-3.5" />
         <span>{isSubmitting ? "Mengirim..." : "Kirim Konfirmasi"}</span>

@@ -39,6 +39,22 @@ function collectMediaUrls(media) {
 }
 
 /**
+ * Cek akses tema premium (dipakai bersama create & update): tema ber-flag
+ * `isPremium` butuh fitur PREMIUM_THEME pada peta fitur user.
+ * @returns {Promise<string|null>} pesan error bila ditolak, null bila boleh.
+ */
+async function checkPremiumThemeAccess(themeId, grantableFeatures) {
+  const selectedTheme = await db.theme.findUnique({
+    where: { id: themeId },
+    select: { isPremium: true },
+  });
+  if (selectedTheme?.isPremium && !hasFeature(grantableFeatures, FEATURE_KEYS.PREMIUM_THEME)) {
+    return "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade paket Anda terlebih dahulu di menu Langganan.";
+  }
+  return null;
+}
+
+/**
  * Action: Memproses Pembuatan Undangan Baru
  */
 export async function createInvitationAction(payload) {
@@ -61,19 +77,10 @@ export async function createInvitationAction(payload) {
     const { map: grantableFeatures, subscription } =
       await getGrantableFeaturesForUser(user.id);
 
-    // Cek Akses Tema Premium (Security Check) — kini berbasis feature flag.
-    const selectedTheme = await db.theme.findUnique({
-      where: { id: validatedData.themeId },
-      select: { isPremium: true },
-    });
-    if (
-      selectedTheme?.isPremium &&
-      !hasFeature(grantableFeatures, FEATURE_KEYS.PREMIUM_THEME)
-    ) {
-      return {
-        success: false,
-        error: "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade paket Anda terlebih dahulu di menu Langganan.",
-      };
+    // Cek Akses Tema Premium (Security Check) — berbasis feature flag.
+    const premiumError = await checkPremiumThemeAccess(validatedData.themeId, grantableFeatures);
+    if (premiumError) {
+      return { success: false, error: premiumError };
     }
 
     // Penegakan kuota pembuatan undangan (MAX_INVITATIONS).
@@ -98,6 +105,7 @@ export async function createInvitationAction(payload) {
           invitationId: newInvitation.id,
           userId: user.id,
           subscription,
+          featuresSnapshot: grantableFeatures,
         });
         await incrementSubscriptionQuota(subscription.id);
       } catch (e) {
@@ -148,21 +156,11 @@ export async function updateInvitationAction(invitationId, payload) {
       };
     }
 
-    // Cek Akses Tema Premium (Security Check) — sama seperti saat membuat,
-    // berbasis feature flag PREMIUM_THEME.
-    const selectedTheme = await db.theme.findUnique({
-      where: { id: validatedData.themeId },
-      select: { isPremium: true },
-    });
-    if (selectedTheme?.isPremium) {
-      const { map: grantableFeatures } = await getGrantableFeaturesForUser(user.id);
-      if (!hasFeature(grantableFeatures, FEATURE_KEYS.PREMIUM_THEME)) {
-        return {
-          success: false,
-          error:
-            "Tema yang Anda pilih adalah Tema Premium. Silakan upgrade paket Anda terlebih dahulu di menu Langganan.",
-        };
-      }
+    // Cek Akses Tema Premium (Security Check) — berbasis feature flag.
+    const { map: grantableFeatures } = await getGrantableFeaturesForUser(user.id);
+    const premiumError = await checkPremiumThemeAccess(validatedData.themeId, grantableFeatures);
+    if (premiumError) {
+      return { success: false, error: premiumError };
     }
 
     const updated = await updateInvitation(invitationId, user.id, validatedData);

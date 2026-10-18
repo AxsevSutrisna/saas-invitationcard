@@ -19,6 +19,7 @@ import {
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Badge } from "@/components/ui/Badge";
+import { StatCard } from "@/components/ui/StatCard";
 
 export function AnalyticsClient({
   invitations,
@@ -98,88 +99,46 @@ export function AnalyticsClient({
         className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
       >
         {/* Card 1: H-Day Countdown */}
-        <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300">
-            <Calendar className="h-6 w-6" aria-hidden="true" />
-          </div>
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              Menuju Hari H
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-heading text-2xl font-bold text-foreground">
-                {daysDiff}
-              </span>
-              <span className="text-xs font-normal text-muted-foreground">
-                {daysDiff > 0 ? "Hari Lagi" : "Hari Ini / Sudah Lewat"}
-              </span>
-            </div>
-          </div>
-        </Surface>
+        <StatCard
+          icon={Calendar}
+          label="Menuju Hari H"
+          value={daysDiff}
+          suffix={daysDiff > 0 ? "Hari Lagi" : "Hari Ini / Sudah Lewat"}
+        />
 
         {/* Card 2: Status Akses */}
-        <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300">
-            <Infinity className="h-6 w-6" aria-hidden="true" />
-          </div>
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              Status Akses
-            </span>
-            <div className="flex items-center gap-1.5">
-              <span className="flex items-center gap-1 font-heading text-xl font-bold text-gold-400">
-                {isPremiumActive ? (
-                  <>
-                    <Sparkles className="h-4 w-4 fill-current text-gold-400" aria-hidden="true" />
-                    <span>{activePackage.name}</span>
-                  </>
-                ) : (
-                  <span>Free Trial</span>
-                )}
+        <StatCard
+          icon={Infinity}
+          label="Status Akses"
+          valueClassName="text-xl text-gold-400"
+          value={
+            isPremiumActive ? (
+              <span className="flex items-center gap-1">
+                <Sparkles className="h-4 w-4 fill-current text-gold-400" aria-hidden="true" />
+                <span>{activePackage.name}</span>
               </span>
-            </div>
-          </div>
-        </Surface>
+            ) : (
+              "Free Trial"
+            )
+          }
+        />
 
         {/* Card 3: Total Tamu Hadir */}
-        <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent dark:bg-accent/15">
-            <Users className="h-6 w-6" aria-hidden="true" />
-          </div>
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              Total Tamu Hadir
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-heading text-2xl font-bold text-foreground">
-                {attendingCount}
-              </span>
-              <span className="text-xs font-normal text-muted-foreground">
-                Pax Porsi Konfirmasi
-              </span>
-            </div>
-          </div>
-        </Surface>
+        <StatCard
+          icon={Users}
+          tone="accent"
+          label="Total Tamu Hadir"
+          value={attendingCount}
+          suffix="Pax Porsi Konfirmasi"
+        />
 
         {/* Card 4: Total Dilihat */}
-        <Surface as="article" className="relative space-y-4 overflow-hidden">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300">
-            <Eye className="h-6 w-6" aria-hidden="true" />
-          </div>
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              Total Dilihat
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-heading text-2xl font-bold text-foreground">
-                {selectedInvitation._count?.visitorLogs || 0}
-              </span>
-              <span className="text-xs font-normal text-muted-foreground">
-                Kali Kunjungan
-              </span>
-            </div>
-          </div>
-        </Surface>
+        <StatCard
+          icon={Eye}
+          label="Total Dilihat"
+          value={selectedInvitation._count?.visitorLogs || 0}
+          suffix="Kali Kunjungan"
+        />
       </section>
 
       {/* Bottom 2 Grid Cards */}

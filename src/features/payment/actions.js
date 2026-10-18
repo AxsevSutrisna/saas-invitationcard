@@ -1,11 +1,11 @@
 "use server";
 
 import { requireSession } from "@/features/auth/guard";
-import { db } from "@/lib/db";
 import { ROLES } from "@/constants/roles";
 import { createSnapTransaction } from "@/features/payment/services/midtrans";
 import { findPackageById } from "@/features/subscription/repository";
 import { createTransaction } from "@/features/payment/repository";
+import { getInvitationOwner } from "@/features/invitation/repository";
 
 /**
  * Server Action: Membuat transaksi checkout (Midtrans Snap).
@@ -57,10 +57,7 @@ export async function createCheckoutAction(packageId, options = {}) {
     // undangan orang lain). Diabaikan untuk pembelian reseller.
     const effectiveInvitationId = isReseller ? null : invitationId;
     if (effectiveInvitationId) {
-      const invitation = await db.invitation.findUnique({
-        where: { id: effectiveInvitationId },
-        select: { id: true, userId: true },
-      });
+      const invitation = await getInvitationOwner(effectiveInvitationId);
       if (!invitation || invitation.userId !== user.id) {
         return { success: false, error: "Undangan tidak ditemukan atau bukan milik Anda." };
       }

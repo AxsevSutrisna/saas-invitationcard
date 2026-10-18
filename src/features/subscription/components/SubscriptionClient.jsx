@@ -1,85 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import Script from "next/script";
-import { useRouter } from "next/navigation";
 import {
   CreditCard,
-  CheckCircle,
   Calendar,
   Layers,
   History,
   Sparkles,
   Loader2,
-  AlertCircle,
   TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
+import { Alert } from "@/components/ui/Alert";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { FeatureList } from "@/components/ui/FeatureList";
 import { formatRupiah, formatLongDate, formatDateTime } from "@/lib/format";
-import { createCheckoutAction } from "@/features/payment/actions";
-
-const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
-const isProduction = process.env.MIDTRANS_IS_PRODUCTION === "true";
-
-// Endpoint Snap JS SDK
-const SNAP_SCRIPT_URL = isProduction
-  ? "https://app.midtrans.com/snap/snap.js"
-  : "https://app.sandbox.midtrans.com/snap/snap.js";
+import { SnapScript } from "@/features/payment/components/SnapScript";
+import { useMidtransSnap } from "@/features/payment/useMidtransSnap";
 
 export function SubscriptionClient({
   activeSubscription,
   packages,
   transactions,
 }) {
-  const router = useRouter();
-  const [loadingPackageId, setLoadingPackageId] = useState(null);
+  const { pay, loadingId: loadingPackageId } = useMidtransSnap();
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleUpgrade = async (packageId) => {
-    try {
-      setErrorMessage("");
-      setLoadingPackageId(packageId);
-
-      // 1. Minta snap token via Server Action
-      const result = await createCheckoutAction(packageId);
-
-      if (!result.success) {
-        throw new Error(result.error || "Gagal membuat transaksi.");
-      }
-
-      const { token } = result.data;
-
-      // 2. Trigger Midtrans Snap popup
-      if (window.snap) {
-        window.snap.pay(token, {
-          onSuccess: (result) => {
-            console.log("Payment success:", result);
-            router.refresh();
-          },
-          onPending: (result) => {
-            console.log("Payment pending:", result);
-            router.refresh();
-          },
-          onError: (result) => {
-            console.error("Payment error:", result);
-            setErrorMessage("Pembayaran gagal diproses oleh Midtrans.");
-          },
-          onClose: () => {
-            console.log("Payment popup closed by customer.");
-          },
-        });
-      } else {
-        throw new Error("Midtrans Snap SDK gagal dimuat. Muat ulang halaman.");
-      }
-    } catch (error) {
-      console.error("Checkout Error:", error);
-      setErrorMessage(error.message || "Terjadi kesalahan pembayaran.");
-    } finally {
-      setLoadingPackageId(null);
-    }
+  const handleUpgrade = (packageId) => {
+    setErrorMessage("");
+    pay(packageId, { onError: setErrorMessage });
   };
 
 
@@ -90,11 +42,7 @@ export function SubscriptionClient({
   return (
     <div className="space-y-8 pb-12">
       {/* Script Snap Midtrans */}
-      <Script
-        src={SNAP_SCRIPT_URL}
-        data-client-key={clientKey}
-        strategy="lazyOnload"
-      />
+      <SnapScript />
 
       {/* Header */}
       <PageHeader
@@ -107,15 +55,7 @@ export function SubscriptionClient({
         description="Upgrade paket Anda untuk membuka seluruh fitur premium, menghilangkan watermark, dan mengaktifkan tema eksklusif."
       />
 
-      {errorMessage && (
-        <div
-          role="alert"
-          className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
-        >
-          <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-          <span>{errorMessage}</span>
-        </div>
-      )}
+      {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
 
       {/* Grid Utama: Status Aktif & Daftar Paket */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -224,14 +164,7 @@ export function SubscriptionClient({
                       )}
                     </div>
 
-                    <ul className="mt-6 space-y-3">
-                      {features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs text-muted-foreground">
-                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <FeatureList items={features} className="mt-6" />
                   </div>
 
                   <div className="mt-8">
@@ -304,13 +237,7 @@ export function SubscriptionClient({
                       {formatDateTime(trx.createdAt)}
                     </td>
                     <td className="px-4 py-3.5">
-                      {trx.status === "SUCCESS" ? (
-                        <Badge variant="success">Sukses</Badge>
-                      ) : trx.status === "PENDING" ? (
-                        <Badge variant="neutral">Pending</Badge>
-                      ) : (
-                        <Badge variant="danger">Gagal</Badge>
-                      )}
+                      <StatusBadge status={trx.status} />
                     </td>
                   </tr>
                 ))}

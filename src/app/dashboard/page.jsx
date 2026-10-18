@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Script from "next/script";
 import { auth } from "@/lib/auth";
 import { getInvitationsByUserId } from "@/features/invitation/repository";
 import {
@@ -15,14 +14,9 @@ import { ROUTES } from "@/constants/routes";
 import { Mail, Plus, ExternalLink, Edit3, Eye, Trash2, Heart, Sparkles } from "lucide-react";
 import { deleteInvitationAction } from "@/features/invitation/actions";
 import { InvitationUpgradeButton } from "@/features/invitation/components/InvitationUpgradeButton";
+import { SnapScript } from "@/features/payment/components/SnapScript";
 import { formatLongDate } from "@/lib/format";
 import { serialize } from "@/lib/utils";
-
-const midtransClientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
-const SNAP_SCRIPT_URL =
-  process.env.MIDTRANS_IS_PRODUCTION === "true"
-    ? "https://app.midtrans.com/snap/snap.js"
-    : "https://app.sandbox.midtrans.com/snap/snap.js";
 
 export const metadata = {
   title: "Undangan Saya — IKARA Dashboard",
@@ -55,9 +49,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* SDK Midtrans Snap — dimuat sekali untuk seluruh tombol upgrade di halaman */}
-      {!hasActiveSub && eceranPackages.length > 0 && (
-        <Script src={SNAP_SCRIPT_URL} data-client-key={midtransClientKey} strategy="lazyOnload" />
-      )}
+      {!hasActiveSub && eceranPackages.length > 0 && <SnapScript />}
 
       <PageHeader
         title="Undangan Saya"

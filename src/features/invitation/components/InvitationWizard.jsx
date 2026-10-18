@@ -15,6 +15,7 @@ import { Step4GiftsStories } from "./Step4GiftsStories";
 import { Step5ReviewPublish } from "./Step5ReviewPublish";
 import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/ui/Surface";
+import { Alert } from "@/components/ui/Alert";
 import { BookOpen, ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 const STEPS = [
@@ -234,14 +235,7 @@ export function InvitationWizard({
       </nav>
 
       {/* Server Error Alert */}
-      {serverError && (
-        <div
-          role="alert"
-          className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-xs font-medium text-destructive"
-        >
-          {serverError}
-        </div>
-      )}
+      {serverError && <Alert variant="error">{serverError}</Alert>}
 
       {/* Split-Screen Container: Left Form (60%) + Right Live Preview (40%) */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">

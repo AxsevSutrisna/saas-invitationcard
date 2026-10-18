@@ -348,7 +348,7 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
                         transition={{ duration: 0.6 }}
                       />
                     </AnimatePresence>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />
                     {galleries.length > 1 && (
                       <>
                         <button type="button" onClick={prev} aria-label="Sebelumnya"

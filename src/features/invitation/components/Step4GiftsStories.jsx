@@ -6,7 +6,7 @@ import { Heart, Plus, Trash2, LayoutGrid, Quote, Image as ImageIcon, Sparkles, B
 import { Button } from "@/components/ui/button";
 import { FileUploader } from "@/components/shared/FileUploader";
 import { Modal } from "@/components/ui/Modal";
-import { Field } from "@/components/ui/Field";
+import { TextField, TextAreaField } from "@/components/ui/Field";
 
 const QUOTES_PRESETS = [
   {
@@ -123,36 +123,33 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <Field label="Tahun / Tanggal" htmlFor={`loveStories-${index}-date`} className="space-y-1">
-                  <input
-                    id={`loveStories-${index}-date`}
-                    type="text"
-                    placeholder="Contoh: 2025"
-                    {...register(`loveStories.${index}.date`)}
-                    className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
-                  />
-                </Field>
-
-                <Field label="Judul Momen" htmlFor={`loveStories-${index}-title`} className="space-y-1 sm:col-span-2">
-                  <input
-                    id={`loveStories-${index}-title`}
-                    type="text"
-                    placeholder="Contoh: Menuju Pelaminan"
-                    {...register(`loveStories.${index}.title`)}
-                    className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
-                  />
-                </Field>
+                <TextField
+                  label="Tahun / Tanggal"
+                  htmlFor={`loveStories-${index}-date`}
+                  className="space-y-1"
+                  type="text"
+                  placeholder="Contoh: 2025"
+                  {...register(`loveStories.${index}.date`)}
+                />
+                <TextField
+                  label="Judul Momen"
+                  htmlFor={`loveStories-${index}-title`}
+                  className="space-y-1 sm:col-span-2"
+                  type="text"
+                  placeholder="Contoh: Menuju Pelaminan"
+                  {...register(`loveStories.${index}.title`)}
+                />
               </div>
 
-              <Field label="Deskripsi Cerita" htmlFor={`loveStories-${index}-description`} className="space-y-1">
-                <textarea
-                  id={`loveStories-${index}-description`}
-                  rows={2}
-                  placeholder="Setelah melewati banyak cerita bersama, kami memantapkan hati..."
-                  {...register(`loveStories.${index}.description`)}
-                  className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs leading-relaxed focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
-                />
-              </Field>
+              <TextAreaField
+                label="Deskripsi Cerita"
+                htmlFor={`loveStories-${index}-description`}
+                className="space-y-1"
+                rows={2}
+                inputClassName="leading-relaxed"
+                placeholder="Setelah melewati banyak cerita bersama, kami memantapkan hati..."
+                {...register(`loveStories.${index}.description`)}
+              />
             </div>
           ))}
         </div>

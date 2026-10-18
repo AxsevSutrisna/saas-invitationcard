@@ -27,11 +27,11 @@ import { FEATURE_KEYS } from "@/features/entitlement/constants";
  */
 
 /**
- * Peta fitur sebuah paket (dari PackageFeature). Untuk paket BUNDLE, fitur
- * paket digabung dengan fitur seluruh item di dalamnya. Fallback FREE bila kosong.
+ * Peta fitur dari paket yang SUDAH di-fetch (via findPackageWithFeatures).
+ * Untuk paket BUNDLE, fitur paket digabung dengan fitur seluruh item.
+ * Dipisah agar pemanggil yang sudah memegang objek paket tak perlu query ulang.
  */
-export async function getPackageFeatureMap(packageId) {
-  const pkg = await findPackageWithFeatures(packageId);
+export function featureMapFromPackage(pkg) {
   if (!pkg) return freeFeatureMap();
 
   const own = buildFeatureMap(pkg.packageFeatures);
@@ -45,6 +45,11 @@ export async function getPackageFeatureMap(packageId) {
   }
 
   return Object.keys(map).length ? map : freeFeatureMap();
+}
+
+/** Peta fitur sebuah paket berdasarkan id (fetch + resolve). Fallback FREE bila kosong. */
+export async function getPackageFeatureMap(packageId) {
+  return featureMapFromPackage(await findPackageWithFeatures(packageId));
 }
 
 /**
@@ -111,12 +116,14 @@ export async function checkInvitationQuota(userId, featureMap) {
  * Dipanggil saat undangan dibuat di bawah langganan aktif, agar hak akses
  * terikat ke undangan tersebut (bukan sekadar per-user). No-op → null bila
  * tidak ada langganan aktif.
- * @param {{ invitationId: string, userId: string, subscription: object }} params
+ * `featuresSnapshot` opsional: bila pemanggil sudah menghitung peta fitur paket
+ * (mis. `getGrantableFeaturesForUser`), oper di sini agar tak query ulang paket.
+ * @param {{ invitationId: string, userId: string, subscription: object, featuresSnapshot?: object }} params
  */
-export async function mintEntitlementFromSubscription({ invitationId, userId, subscription }) {
+export async function mintEntitlementFromSubscription({ invitationId, userId, subscription, featuresSnapshot }) {
   if (!subscription?.id || !subscription.packageId) return null;
 
-  const featuresSnapshot = await getPackageFeatureMap(subscription.packageId);
+  const snapshot = featuresSnapshot ?? (await getPackageFeatureMap(subscription.packageId));
 
   return createEntitlement({
     invitationId,
@@ -125,7 +132,7 @@ export async function mintEntitlementFromSubscription({ invitationId, userId, su
     source: "SUBSCRIPTION",
     status: "ACTIVE",
     validUntil: subscription.validUntil,
-    featuresSnapshot,
+    featuresSnapshot: snapshot,
     subscriptionId: subscription.id,
   });
 }
@@ -149,7 +156,8 @@ export async function grantEntitlementFromPackage({
 
   const days = durationDays ?? pkg.durationDays ?? 180;
   const validUntil = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
-  const featuresSnapshot = buildFeatureMap(pkg.packageFeatures);
+  // Bundle-aware: ikut gabung fitur item bila paket adalah BUNDLE.
+  const featuresSnapshot = featureMapFromPackage(pkg);
 
   return createEntitlement({
     invitationId,

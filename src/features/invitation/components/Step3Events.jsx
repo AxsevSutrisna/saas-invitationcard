@@ -3,7 +3,7 @@
 import { useFieldArray } from "react-hook-form";
 import { Calendar, Plus, Trash2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Field } from "@/components/ui/Field";
+import { TextField, TextAreaField } from "@/components/ui/Field";
 
 export function Step3Events({ register, errors, control }) {
   const { fields, append, remove } = useFieldArray({
@@ -71,62 +71,51 @@ export function Step3Events({ register, errors, control }) {
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {/* Nama Acara */}
-              <Field label="Nama Acara" htmlFor={`events-${index}-name`} required className="space-y-1">
-                <input
-                  id={`events-${index}-name`}
-                  type="text"
-                  placeholder="misal: Akad Nikah"
-                  {...register(`events.${index}.name`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </Field>
-
-              {/* Tanggal */}
-              <Field label="Tanggal" htmlFor={`events-${index}-date`} required className="space-y-1">
-                <input
-                  id={`events-${index}-date`}
-                  type="date"
-                  {...register(`events.${index}.date`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </Field>
-
-              {/* Jam Mulai */}
-              <Field label="Jam Mulai" htmlFor={`events-${index}-startTime`} required className="space-y-1">
-                <input
-                  id={`events-${index}-startTime`}
-                  type="time"
-                  {...register(`events.${index}.startTime`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </Field>
-
-              {/* Jam Selesai (opsional) */}
-              <Field label="Jam Selesai (opsional)" htmlFor={`events-${index}-endTime`} className="space-y-1">
-                <input
-                  id={`events-${index}-endTime`}
-                  type="time"
-                  {...register(`events.${index}.endTime`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </Field>
+              <TextField
+                label="Nama Acara"
+                htmlFor={`events-${index}-name`}
+                required
+                className="space-y-1"
+                type="text"
+                placeholder="misal: Akad Nikah"
+                {...register(`events.${index}.name`)}
+              />
+              <TextField
+                label="Tanggal"
+                htmlFor={`events-${index}-date`}
+                required
+                className="space-y-1"
+                type="date"
+                {...register(`events.${index}.date`)}
+              />
+              <TextField
+                label="Jam Mulai"
+                htmlFor={`events-${index}-startTime`}
+                required
+                className="space-y-1"
+                type="time"
+                {...register(`events.${index}.startTime`)}
+              />
+              <TextField
+                label="Jam Selesai (opsional)"
+                htmlFor={`events-${index}-endTime`}
+                className="space-y-1"
+                type="time"
+                {...register(`events.${index}.endTime`)}
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {/* Nama Tempat */}
-              <Field label="Nama Tempat / Gedung" htmlFor={`events-${index}-locationName`} required className="space-y-1">
-                <input
-                  id={`events-${index}-locationName`}
-                  type="text"
-                  placeholder="misal: Hotel Indonesia Kempinski"
-                  {...register(`events.${index}.locationName`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </Field>
-
-              {/* Link Google Maps */}
-              <Field
+              <TextField
+                label="Nama Tempat / Gedung"
+                htmlFor={`events-${index}-locationName`}
+                required
+                className="space-y-1"
+                type="text"
+                placeholder="misal: Hotel Indonesia Kempinski"
+                {...register(`events.${index}.locationName`)}
+              />
+              <TextField
                 htmlFor={`events-${index}-mapUrl`}
                 className="space-y-1"
                 labelClassName="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground"
@@ -136,27 +125,21 @@ export function Step3Events({ register, errors, control }) {
                     <span>Link Google Maps</span>
                   </>
                 }
-              >
-                <input
-                  id={`events-${index}-mapUrl`}
-                  type="url"
-                  placeholder="https://maps.google.com/..."
-                  {...register(`events.${index}.mapUrl`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </Field>
+                type="url"
+                placeholder="https://maps.google.com/..."
+                {...register(`events.${index}.mapUrl`)}
+              />
             </div>
 
-            {/* Alamat Lengkap */}
-            <Field label="Alamat Lengkap" htmlFor={`events-${index}-address`} required className="space-y-1">
-              <textarea
-                id={`events-${index}-address`}
-                rows={2}
-                placeholder="Jl. M.H. Thamrin No.1, Menteng, Jakarta Pusat"
-                {...register(`events.${index}.address`)}
-                className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-              />
-            </Field>
+            <TextAreaField
+              label="Alamat Lengkap"
+              htmlFor={`events-${index}-address`}
+              required
+              className="space-y-1"
+              rows={2}
+              placeholder="Jl. M.H. Thamrin No.1, Menteng, Jakarta Pusat"
+              {...register(`events.${index}.address`)}
+            />
           </div>
         ))}
       </div>

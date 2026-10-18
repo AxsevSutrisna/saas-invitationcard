@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 /**
  * Field — pembungkus field form BERSAMA untuk form dashboard/wizard:
  * label + penanda wajib (*) + kontrol (children) + pesan error / hint.
@@ -51,3 +53,54 @@ export function Field({
  */
 export const DASHBOARD_INPUT =
   "w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800";
+
+/**
+ * Varian "ghost" (latar transparan, padding lebih rapat) — dipakai form admin.
+ */
+export const DASHBOARD_INPUT_GHOST =
+  "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
+
+// Props Field yang di-"forward" oleh wrapper di bawah.
+function splitFieldProps({ label, htmlFor, required, error, hint, className, labelClassName, ...rest }) {
+  return { fieldProps: { label, htmlFor, required, error, hint, className, labelClassName }, rest };
+}
+
+/**
+ * TextField — Field + <input> ber-gaya dashboard. Props Field (label/htmlFor/
+ * required/error/hint/className/labelClassName) + sisanya diteruskan ke <input>.
+ * `inputClassName` menimpa/menambah gaya input (mis. DASHBOARD_INPUT_GHOST).
+ */
+export function TextField({ inputClassName, ...props }) {
+  const { fieldProps, rest } = splitFieldProps(props);
+  return (
+    <Field {...fieldProps}>
+      <input id={fieldProps.htmlFor} className={cn(DASHBOARD_INPUT, inputClassName)} {...rest} />
+    </Field>
+  );
+}
+
+/** TextAreaField — Field + <textarea> ber-gaya dashboard. */
+export function TextAreaField({ inputClassName, ...props }) {
+  const { fieldProps, rest } = splitFieldProps(props);
+  return (
+    <Field {...fieldProps}>
+      <textarea id={fieldProps.htmlFor} className={cn(DASHBOARD_INPUT, inputClassName)} {...rest} />
+    </Field>
+  );
+}
+
+/** SelectField — Field + <select> ber-gaya dashboard. Opsi via children. */
+export function SelectField({ inputClassName, children, ...props }) {
+  const { fieldProps, rest } = splitFieldProps(props);
+  return (
+    <Field {...fieldProps}>
+      <select
+        id={fieldProps.htmlFor}
+        className={cn(DASHBOARD_INPUT, "cursor-pointer", inputClassName)}
+        {...rest}
+      >
+        {children}
+      </select>
+    </Field>
+  );
+}

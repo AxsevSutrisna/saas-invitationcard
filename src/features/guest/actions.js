@@ -154,10 +154,9 @@ export async function getGuestByCodeAction(uniqueCode) {
  */
 export async function trackGuestOpenAction(uniqueCode) {
   try {
-    const result = await trackGuestOpen(uniqueCode);
-    if (!result) {
-      return { success: false, error: "Tamu tidak ditemukan." };
-    }
+    // Best-effort (fire-and-forget dari halaman publik). count 0 = sudah dibuka
+    // atau kode tak dikenal — bukan error yang perlu dilaporkan ke pengunjung.
+    await trackGuestOpen(uniqueCode);
     return { success: true };
   } catch (error) {
     console.error("Error trackGuestOpenAction:", error);

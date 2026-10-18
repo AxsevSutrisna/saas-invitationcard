@@ -6,7 +6,7 @@ import { CreditCard, Plus, Trash2, Gift, Music, Sparkles, Volume2, VolumeX, Disc
 import { Button } from "@/components/ui/button";
 import { FileUploader } from "@/components/shared/FileUploader";
 import { Modal } from "@/components/ui/Modal";
-import { Field } from "@/components/ui/Field";
+import { Field, TextField, TextAreaField } from "@/components/ui/Field";
 
 const MUSIC_PRESETS = [
   { title: "Nadhif Basalamah - Bergema Sampai Selamanya", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
@@ -153,9 +153,9 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
             onClick={() =>
               appendGift({
                 type: "BANK",
-                providerName: "BCA",
-                accountName: "William Jonathan Tanuwidjaja",
-                accountNumber: "1234567890",
+                providerName: "",
+                accountName: "",
+                accountNumber: "",
               })
             }
             variant="outline"
@@ -179,36 +179,34 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           </p>
         </div>
 
-        <Field label="Alamat Lengkap Penerima" htmlFor="physicalGiftAddress" className="space-y-2">
-          <textarea
-            id="physicalGiftAddress"
-            rows={3}
-            placeholder="Contoh: Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)"
-            {...register("physicalGiftAddress")}
-            className="w-full rounded-xl border border-border bg-white px-4 py-3 text-xs leading-relaxed transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-          />
-        </Field>
+        <TextAreaField
+          label="Alamat Lengkap Penerima"
+          htmlFor="physicalGiftAddress"
+          className="space-y-2"
+          rows={3}
+          placeholder="Contoh: Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)"
+          inputClassName="px-4 py-3 leading-relaxed"
+          {...register("physicalGiftAddress")}
+        />
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label="Nama Penerima" htmlFor="physicalGiftReceiver" className="space-y-1">
-            <input
-              id="physicalGiftReceiver"
-              type="text"
-              placeholder="Contoh: William & Elleanor"
-              {...register("physicalGiftReceiver")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </Field>
+          <TextField
+            label="Nama Penerima"
+            htmlFor="physicalGiftReceiver"
+            className="space-y-1"
+            type="text"
+            placeholder="Contoh: William & Elleanor"
+            {...register("physicalGiftReceiver")}
+          />
 
-          <Field label="No. Telepon Penerima" htmlFor="physicalGiftPhone" className="space-y-1">
-            <input
-              id="physicalGiftPhone"
-              type="text"
-              placeholder="Contoh: 081234567890"
-              {...register("physicalGiftPhone")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </Field>
+          <TextField
+            label="No. Telepon Penerima"
+            htmlFor="physicalGiftPhone"
+            className="space-y-1"
+            type="text"
+            placeholder="Contoh: 081234567890"
+            {...register("physicalGiftPhone")}
+          />
         </div>
       </div>
 

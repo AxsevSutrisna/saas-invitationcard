@@ -34,13 +34,15 @@ export async function findAvailableCreditBatch(agencyUserId, packageId) {
 
 /** Ringkasan sisa kredit per paket milik agency: { packageId: available }. */
 export async function getCreditSummaryByAgency(agencyUserId) {
-  const batches = await db.resellerCredit.findMany({
+  // Agregasi di DB (groupBy + _sum) alih-alih menjumlah di JS.
+  const grouped = await db.resellerCredit.groupBy({
+    by: ["packageId"],
     where: { agencyUserId },
-    select: { packageId: true, quantityTotal: true, quantityUsed: true },
+    _sum: { quantityTotal: true, quantityUsed: true },
   });
   const summary = {};
-  for (const b of batches) {
-    summary[b.packageId] = (summary[b.packageId] || 0) + (b.quantityTotal - b.quantityUsed);
+  for (const g of grouped) {
+    summary[g.packageId] = (g._sum.quantityTotal || 0) - (g._sum.quantityUsed || 0);
   }
   return summary;
 }
@@ -57,10 +59,6 @@ export async function createResellerCredit({ agencyUserId, packageId, quantityTo
   });
 }
 
-/** Naikkan pemakaian sebuah batch kredit sebanyak 1 (saat alokasi). */
-export async function incrementCreditUsed(creditId) {
-  return db.resellerCredit.update({
-    where: { id: creditId },
-    data: { quantityUsed: { increment: 1 } },
-  });
-}
+// Catatan: pemakaian kredit (quantityUsed++) di-update langsung di dalam
+// transaksi `allocateResellerCreditAction` memakai klien `tx`, jadi tidak ada
+// helper terpisah di sini (agar operasi tetap atomik dengan pembuatan entitlement).

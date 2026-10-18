@@ -6,7 +6,7 @@ import { Leaf } from "lucide-react";
 function GoldStarDivider({ color = "#C8A96A" }) {
   return (
     <div className="flex items-center justify-center gap-1.5 sm:gap-3 py-2 w-full max-w-[280px] sm:max-w-md mx-auto" aria-hidden="true" style={{ color }}>
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-r from-transparent to-current opacity-50" />
+      <div className="h-px flex-grow max-w-[24px] bg-linear-to-r from-transparent to-current opacity-50" />
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
         <path d="M12 1L14.5 9H22L15.5 14L18 22L12 17L6 22L8.5 14L2 9H9.5Z" fill={color} opacity="0.65" />
       </svg>
@@ -18,7 +18,7 @@ function GoldStarDivider({ color = "#C8A96A" }) {
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
         <path d="M12 1L14.5 9H22L15.5 14L18 22L12 17L6 22L8.5 14L2 9Z" fill={color} opacity="0.65" />
       </svg>
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-l from-transparent to-current opacity-50" />
+      <div className="h-px flex-grow max-w-[24px] bg-linear-to-l from-transparent to-current opacity-50" />
     </div>
   );
 }
@@ -27,19 +27,19 @@ function GoldStarDivider({ color = "#C8A96A" }) {
 function HeartDivider({ color = "#B76E79" }) {
   return (
     <div className="flex items-center justify-center gap-1.5 sm:gap-3 py-2 w-full max-w-[280px] sm:max-w-md mx-auto" aria-hidden="true">
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-r from-transparent to-current opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[24px] bg-linear-to-r from-transparent to-current opacity-40" style={{ color }} />
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
         <path d="M12 2C12 2 9 8 2 10C9 12 12 22 12 22C12 22 15 12 22 10C15 8 12 2 12 2Z" fill={color} opacity="0.6" />
       </svg>
-      <div className="h-px flex-grow max-w-[48px] bg-gradient-to-r from-current to-transparent opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[48px] bg-linear-to-r from-current to-transparent opacity-40" style={{ color }} />
       <svg width="10" height="10" viewBox="0 0 24 24" fill={color} opacity="0.4" className="shrink-0">
         <circle cx="12" cy="12" r="5" />
       </svg>
-      <div className="h-px flex-grow max-w-[48px] bg-gradient-to-l from-current to-transparent opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[48px] bg-linear-to-l from-current to-transparent opacity-40" style={{ color }} />
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
         <path d="M12 2C12 2 9 8 2 10C9 12 12 22 12 22C12 22 15 12 22 10C15 8 12 2 12 2Z" fill={color} opacity="0.6" />
       </svg>
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-l from-transparent to-current opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[24px] bg-linear-to-l from-transparent to-current opacity-40" style={{ color }} />
     </div>
   );
 }
@@ -80,15 +80,15 @@ function LineDivider({ color = "#1E293B" }) {
 function LeafDivider({ color = "#4A6B3D" }) {
   return (
     <div className="flex items-center justify-center gap-1.5 @[640px]:gap-3 py-2 w-full max-w-[280px] @[640px]:max-w-md mx-auto" aria-hidden="true">
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-r from-transparent to-current opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[24px] bg-linear-to-r from-transparent to-current opacity-40" style={{ color }} />
       <Leaf className="w-4 h-4 shrink-0" style={{ color }} />
-      <div className="h-px flex-grow max-w-[48px] bg-gradient-to-r from-current to-transparent opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[48px] bg-linear-to-r from-current to-transparent opacity-40" style={{ color }} />
       <svg width="10" height="10" viewBox="0 0 24 24" fill={color} opacity="0.4" className="shrink-0">
         <circle cx="12" cy="12" r="5" />
       </svg>
-      <div className="h-px flex-grow max-w-[48px] bg-gradient-to-l from-current to-transparent opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[48px] bg-linear-to-l from-current to-transparent opacity-40" style={{ color }} />
       <Leaf className="w-4 h-4 shrink-0 -scale-x-100" style={{ color }} />
-      <div className="h-px flex-grow max-w-[24px] bg-gradient-to-l from-transparent to-current opacity-40" style={{ color }} />
+      <div className="h-px flex-grow max-w-[24px] bg-linear-to-l from-transparent to-current opacity-40" style={{ color }} />
     </div>
   );
 }

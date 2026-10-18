@@ -3,11 +3,10 @@
  * Barrel export untuk semua komponen Landing Page.
  */
 
+// Catatan: InteractiveScrollSection, RealtimeEditorSection & HowItWorksSection
+// dimuat via dynamic import di BelowFoldSections.jsx (bukan lewat barrel ini).
 export { HeroSection } from "./components/HeroSection";
 export { TrustBarSection } from "./components/TrustBarSection";
-export { InteractiveScrollSection } from "./components/InteractiveScrollSection";
-export { RealtimeEditorSection } from "./components/RealtimeEditorSection";
 export { ThemeGallerySection } from "./components/ThemeGallerySection";
-export { HowItWorksSection } from "./components/HowItWorksSection";
 export { PricingSection } from "./components/PricingSection";
 export { FAQSection } from "./components/FAQSection";

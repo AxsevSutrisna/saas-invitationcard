@@ -744,24 +744,26 @@ export async function deleteFeatureAction(featureId) {
 // Mengikat hak akses sebuah paket ke SATU undangan (mis. kompensasi, bonus,
 // atau aktivasi manual tanpa pembayaran).
 
-export async function grantEntitlementAction({ invitationId, packageId, durationDays }) {
+export async function grantEntitlementAction({ invitationSlug, packageId, durationDays }) {
   try {
     await requireSuperAdmin();
 
-    if (!invitationId || !packageId) {
-      return { success: false, error: "Undangan dan paket wajib dipilih." };
+    const slug = String(invitationSlug || "").trim();
+    if (!slug || !packageId) {
+      return { success: false, error: "Slug undangan dan paket wajib diisi." };
     }
 
+    // Cari undangan berdasarkan slug (lebih mudah bagi admin daripada ID).
     const invitation = await db.invitation.findUnique({
-      where: { id: invitationId },
+      where: { slug },
       select: { id: true, userId: true },
     });
     if (!invitation) {
-      return { success: false, error: "Undangan tidak ditemukan." };
+      return { success: false, error: `Undangan dengan slug "${slug}" tidak ditemukan.` };
     }
 
     await grantEntitlementFromPackage({
-      invitationId,
+      invitationId: invitation.id,
       ownerUserId: invitation.userId,
       packageId,
       source: "ADMIN",
@@ -769,6 +771,7 @@ export async function grantEntitlementAction({ invitationId, packageId, duration
     });
 
     revalidatePath("/dashboard/admin");
+    revalidatePath(`/${slug}`);
     return { success: true, message: "Entitlement berhasil diberikan ke undangan." };
   } catch (error) {
     return { success: false, error: error.message };

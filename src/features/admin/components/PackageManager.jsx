@@ -8,13 +8,10 @@ import { Surface } from "@/components/ui/Surface";
 import { Modal } from "@/components/ui/Modal";
 import {
   Plus,
-  Edit,
-  Trash2,
   Loader2,
   Package as PackageIcon,
   SlidersHorizontal,
-  CheckCircle,
-  AlertTriangle,
+  Ticket,
 } from "lucide-react";
 import {
   createPackageAction,
@@ -23,12 +20,18 @@ import {
   createFeatureAction,
   updateFeatureAction,
   deleteFeatureAction,
+  grantEntitlementAction,
 } from "@/features/admin/actions";
 import { formatRupiah } from "@/lib/format";
+import { Alert } from "@/components/ui/Alert";
+import { RowActions } from "@/components/ui/RowActions";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { AdminTableShell } from "@/components/ui/AdminTableShell";
+import { useFeedback } from "@/hooks/useFeedback";
+import { DASHBOARD_INPUT_GHOST } from "@/components/ui/Field";
 
-const FIELD_CLASS =
-  "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
-const TH_CLASS = "px-4 py-3 font-semibold";
+// Satu sumber gaya input (ghost) — dibagikan via Field agar tak drift.
+const FIELD_CLASS = DASHBOARD_INPUT_GHOST;
 const MODAL_PANEL =
   "relative w-full max-w-2xl space-y-5 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8 max-h-[90vh] overflow-y-auto";
 
@@ -70,7 +73,7 @@ export function PackageManager({ packages = [], features = [] }) {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: "", message: "" });
+  const { feedback, notify, clear } = useFeedback();
 
   // --- Modal paket ---
   const [pkgModalOpen, setPkgModalOpen] = useState(false);
@@ -86,10 +89,9 @@ export function PackageManager({ packages = [], features = [] }) {
   const [editingFeat, setEditingFeat] = useState(null);
   const [featForm, setFeatForm] = useState(EMPTY_FEATURE);
 
-  const notify = (type, message) => {
-    setFeedback({ type, message });
-    if (type === "success") setTimeout(() => setFeedback({ type: "", message: "" }), 4000);
-  };
+  // --- Grant entitlement manual ---
+  const [grantForm, setGrantForm] = useState({ slug: "", packageId: "", durationDays: "" });
+  const [granting, setGranting] = useState(false);
 
   // ---------------------------------------------------------------------------
   // PAKET
@@ -173,7 +175,7 @@ export function PackageManager({ packages = [], features = [] }) {
   const handlePkgSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setFeedback({ type: "", message: "" });
+    clear();
 
     const featureAssignments = Object.entries(assignMap).map(([featureId, v]) => ({
       featureId,
@@ -261,7 +263,7 @@ export function PackageManager({ packages = [], features = [] }) {
   const handleFeatSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setFeedback({ type: "", message: "" });
+    clear();
 
     const res = editingFeat
       ? await updateFeatureAction(editingFeat.id, featForm)
@@ -296,58 +298,61 @@ export function PackageManager({ packages = [], features = [] }) {
   };
 
   // ---------------------------------------------------------------------------
+  // GRANT ENTITLEMENT MANUAL
+  // ---------------------------------------------------------------------------
+  const handleGrant = async (e) => {
+    e.preventDefault();
+    setGranting(true);
+    clear();
+    const res = await grantEntitlementAction({
+      invitationSlug: grantForm.slug,
+      packageId: grantForm.packageId,
+      durationDays: grantForm.durationDays || undefined,
+    });
+    setGranting(false);
+    if (res.success) {
+      setGrantForm({ slug: "", packageId: "", durationDays: "" });
+      notify("success", res.message || "Entitlement diberikan.");
+      router.refresh();
+    } else {
+      notify("error", res.error || "Gagal memberikan entitlement.");
+    }
+  };
+
+  // ---------------------------------------------------------------------------
   return (
     <div className="space-y-8">
       {feedback.message && (
-        <div
-          className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-xs ${
-            feedback.type === "success"
-              ? "border-emerald-300/50 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-              : "border-rose-300/50 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
-          }`}
-        >
-          {feedback.type === "success" ? (
-            <CheckCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-          ) : (
-            <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
-          )}
-          <span>{feedback.message}</span>
-        </div>
+        <Alert variant={feedback.type === "success" ? "success" : "error"}>
+          {feedback.message}
+        </Alert>
       )}
 
       {/* ====================== DAFTAR PAKET ====================== */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <PackageIcon className="h-4 w-4 text-gold-500" aria-hidden="true" />
-            Paket &amp; Bundling
-            <span className="text-xs font-normal text-muted-foreground">({packages.length})</span>
-          </h3>
-          <Button size="sm" onClick={openCreatePkg} disabled={loading}>
-            <Plus aria-hidden="true" /> Paket Baru
-          </Button>
-        </div>
+        <SectionHeading
+          icon={PackageIcon}
+          title="Paket & Bundling"
+          count={packages.length}
+          action={
+            <Button size="sm" onClick={openCreatePkg} disabled={loading}>
+              <Plus aria-hidden="true" /> Paket Baru
+            </Button>
+          }
+        />
 
-        <Surface padding="none" className="overflow-x-auto">
-          {packages.length === 0 ? (
-            <p className="px-4 py-8 text-center text-xs text-muted-foreground">
-              Belum ada paket. Klik &ldquo;Paket Baru&rdquo; untuk menambah.
-            </p>
-          ) : (
-            <table className="w-full min-w-180 text-left text-xs">
-              <thead className="border-b border-border bg-muted/40 text-muted-foreground">
-                <tr>
-                  <th className={TH_CLASS}>Paket</th>
-                  <th className={TH_CLASS}>Jenis</th>
-                  <th className={TH_CLASS}>Harga</th>
-                  <th className={TH_CLASS}>Masa Aktif</th>
-                  <th className={TH_CLASS}>Fitur</th>
-                  <th className={TH_CLASS}>Status</th>
-                  <th className={`${TH_CLASS} text-right`}>Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {packages.map((pkg) => (
+        <AdminTableShell
+          minWidth="min-w-180"
+          headers={["Paket", "Jenis", "Harga", "Masa Aktif", "Fitur", "Status", { label: "Aksi", align: "right" }]}
+          empty={
+            packages.length === 0 ? (
+              <p className="px-4 py-8 text-center text-xs text-muted-foreground">
+                Belum ada paket. Klik &ldquo;Paket Baru&rdquo; untuk menambah.
+              </p>
+            ) : undefined
+          }
+        >
+          {packages.map((pkg) => (
                   <tr key={pkg.id} className="hover:bg-muted/30">
                     <td className="px-4 py-3">
                       <div className="font-semibold text-foreground">
@@ -384,65 +389,43 @@ export function PackageManager({ packages = [], features = [] }) {
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1.5">
-                        <Button
-                          size="icon-sm"
-                          variant="ghost"
-                          onClick={() => openEditPkg(pkg)}
-                          aria-label={`Edit ${pkg.name}`}
-                        >
-                          <Edit aria-hidden="true" />
-                        </Button>
-                        <Button
-                          size="icon-sm"
-                          variant="destructive"
-                          onClick={() => handleDeletePkg(pkg)}
-                          aria-label={`Hapus ${pkg.name}`}
-                        >
-                          <Trash2 aria-hidden="true" />
-                        </Button>
-                      </div>
+                      <RowActions
+                        onEdit={() => openEditPkg(pkg)}
+                        onDelete={() => handleDeletePkg(pkg)}
+                        editLabel={`Edit ${pkg.name}`}
+                        deleteLabel={`Hapus ${pkg.name}`}
+                      />
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          )}
-        </Surface>
+        </AdminTableShell>
       </div>
 
       {/* ====================== KATALOG FITUR ====================== */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <SlidersHorizontal className="h-4 w-4 text-gold-500" aria-hidden="true" />
-            Katalog Fitur
-            <span className="text-xs font-normal text-muted-foreground">({features.length})</span>
-          </h3>
-          <Button size="sm" variant="outline" onClick={openCreateFeat} disabled={loading}>
-            <Plus aria-hidden="true" /> Fitur Baru
-          </Button>
-        </div>
+        <SectionHeading
+          icon={SlidersHorizontal}
+          title="Katalog Fitur"
+          count={features.length}
+          action={
+            <Button size="sm" variant="outline" onClick={openCreateFeat} disabled={loading}>
+              <Plus aria-hidden="true" /> Fitur Baru
+            </Button>
+          }
+        />
 
-        <Surface padding="none" className="overflow-x-auto">
-          {features.length === 0 ? (
-            <p className="px-4 py-8 text-center text-xs text-muted-foreground">
-              Belum ada fitur. Tambahkan fitur lalu tugaskan ke paket.
-            </p>
-          ) : (
-            <table className="w-full min-w-160 text-left text-xs">
-              <thead className="border-b border-border bg-muted/40 text-muted-foreground">
-                <tr>
-                  <th className={TH_CLASS}>Fitur</th>
-                  <th className={TH_CLASS}>Key</th>
-                  <th className={TH_CLASS}>Tipe</th>
-                  <th className={TH_CLASS}>Kategori</th>
-                  <th className={TH_CLASS}>Status</th>
-                  <th className={`${TH_CLASS} text-right`}>Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {features.map((feat) => (
+        <AdminTableShell
+          minWidth="min-w-160"
+          headers={["Fitur", "Key", "Tipe", "Kategori", "Status", { label: "Aksi", align: "right" }]}
+          empty={
+            features.length === 0 ? (
+              <p className="px-4 py-8 text-center text-xs text-muted-foreground">
+                Belum ada fitur. Tambahkan fitur lalu tugaskan ke paket.
+              </p>
+            ) : undefined
+          }
+        >
+          {features.map((feat) => (
                   <tr key={feat.id} className="hover:bg-muted/30">
                     <td className="px-4 py-3 font-medium text-foreground">{feat.name}</td>
                     <td className="px-4 py-3">
@@ -460,30 +443,69 @@ export function PackageManager({ packages = [], features = [] }) {
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1.5">
-                        <Button
-                          size="icon-sm"
-                          variant="ghost"
-                          onClick={() => openEditFeat(feat)}
-                          aria-label={`Edit ${feat.name}`}
-                        >
-                          <Edit aria-hidden="true" />
-                        </Button>
-                        <Button
-                          size="icon-sm"
-                          variant="destructive"
-                          onClick={() => handleDeleteFeat(feat)}
-                          aria-label={`Hapus ${feat.name}`}
-                        >
-                          <Trash2 aria-hidden="true" />
-                        </Button>
-                      </div>
+                      <RowActions
+                        onEdit={() => openEditFeat(feat)}
+                        onDelete={() => handleDeleteFeat(feat)}
+                        editLabel={`Edit ${feat.name}`}
+                        deleteLabel={`Hapus ${feat.name}`}
+                      />
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          )}
+        </AdminTableShell>
+      </div>
+
+      {/* ====================== GRANT ENTITLEMENT MANUAL ====================== */}
+      <div className="space-y-3">
+        <SectionHeading icon={Ticket} title="Beri Entitlement Manual" />
+        <Surface className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Berikan paket ke sebuah undangan tanpa pembayaran (mis. kompensasi / aktivasi manual).
+            Masukkan <strong>slug</strong> undangan — bagian URL publik, mis.{" "}
+            <code className="rounded bg-muted px-1 py-0.5">william-eleanor</code>.
+          </p>
+          <form onSubmit={handleGrant} className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Slug Undangan</label>
+              <input
+                type="text"
+                required
+                value={grantForm.slug}
+                onChange={(e) => setGrantForm({ ...grantForm, slug: e.target.value })}
+                placeholder="william-eleanor"
+                className={FIELD_CLASS}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Paket</label>
+              <select
+                required
+                value={grantForm.packageId}
+                onChange={(e) => setGrantForm({ ...grantForm, packageId: e.target.value })}
+                className={`${FIELD_CLASS} cursor-pointer`}
+              >
+                <option value="">— Pilih paket —</option>
+                {packages.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Durasi (hari)</label>
+              <input
+                type="number"
+                min="1"
+                value={grantForm.durationDays}
+                onChange={(e) => setGrantForm({ ...grantForm, durationDays: e.target.value })}
+                placeholder="default paket"
+                className={`${FIELD_CLASS} w-32`}
+              />
+            </div>
+            <Button type="submit" disabled={granting} className="h-10">
+              {granting ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Ticket aria-hidden="true" />}
+              <span>Beri</span>
+            </Button>
+          </form>
         </Surface>
       </div>
 
