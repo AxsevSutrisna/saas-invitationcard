@@ -2,7 +2,11 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* Dark mode berbasis class `.dark` pada <html>. Pengecualian: apa pun di dalam
+   subtree `.light` TIDAK ikut dark mode (opt-out), dipakai untuk halaman undangan
+   publik yang punya art-direction tetap/selalu terang. `:where()` memastikan
+   spesifisitas selektor tidak berubah → tak ada regresi di bagian app lain. */
+@custom-variant dark (&:is(.dark *):not(:where(.light, .light *)));
 
 @theme inline {
   --color-background: var(--background);

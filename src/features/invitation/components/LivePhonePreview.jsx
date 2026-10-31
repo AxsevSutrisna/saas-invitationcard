@@ -137,8 +137,15 @@ export function LivePhonePreview({ formData, themes = [] }) {
 
           {/* Bezel hitam */}
           <div className="relative h-full w-full rounded-[51px] bg-black p-2.75">
-            {/* Layar */}
-            <div className="relative h-full w-full overflow-hidden rounded-[41px] bg-[#0b0b0d] text-center">
+            {/* Layar — `transform` menjadikannya containing block bagi elemen
+                `fixed` di dalam undangan (cover, partikel, tombol musik) agar
+                TERKURUNG di layar HP, bukan lolos memenuhi area dashboard.
+                Scroll ditangani lapisan dalam (overflow-y-auto) yang terpisah,
+                supaya elemen fixed tetap diam saat konten di-scroll. */}
+            <div
+              className="relative h-full w-full overflow-hidden rounded-[41px] bg-[#0b0b0d] text-center"
+              style={{ transform: "translateZ(0)" }}
+            >
               {/* Dynamic Island */}
               <div className="absolute left-1/2 top-2.5 z-50 flex h-6.5 w-24 -translate-x-1/2 items-center justify-end gap-2 rounded-full bg-black px-3 shadow-[inset_0_0_2px_rgba(255,255,255,0.15)]">
                 <div className="h-2.5 w-2.5 rounded-full bg-[#0a0a0f] ring-1 ring-zinc-700" />

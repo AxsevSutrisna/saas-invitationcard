@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Heart, Gift, ChevronLeft, ChevronRight } from "lucide-react";
 import { MapEmbed } from "@/features/theme/components/MapEmbed";
@@ -13,6 +14,8 @@ import { ParticleField } from "@/features/theme/components/ParticleField";
 import { BankCard } from "@/features/theme/components/BankCard";
 import { MusicToggle } from "@/features/theme/components/MusicToggle";
 import { SectionHeading } from "@/features/theme/components/SectionHeading";
+import { FloralCorner, GardenBorder, FiligreeFlourish, HangingFlorals, FloralAmbience } from "@/features/theme/components/FloralOrnaments";
+import { useFloralGsap } from "@/features/theme/hooks/useFloralGsap";
 import { useInvitationView } from "@/features/theme/hooks/useInvitationView";
 import { formatEventDate } from "@/lib/format";
 import { getThemeConfig } from "@/features/theme/theme-config";
@@ -26,6 +29,12 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
   const cfg = config || getThemeConfig("classic-elegance");
   const { accent } = cfg;
   const { hero, fonts, copy, layout: surfaces } = cfg;
+  const isFloral = cfg.slug === "floral-blossom";
+
+  // GSAP ScrollTrigger + Lenis (khusus floral) — menambah parallax saat scroll
+  // + smooth-scroll, tanpa mengganggu animasi framer-motion yang ada.
+  const rootRef = useRef(null);
+  useFloralGsap(rootRef, isFloral);
 
   // Bayangan premium ber-tint aksen (kedalaman lembut & berlapis).
   const cardShadow = `0 2px 8px ${accent}0c, 0 24px 48px -14px ${accent}22`;
@@ -40,6 +49,7 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
 
   return (
     <main
+      ref={rootRef}
       className="w-full font-sans overflow-x-hidden min-h-screen relative pb-16 selection:bg-[var(--accent)] selection:text-white @container"
       style={{ background: surfaces.pageBg, color: surfaces.text, "--accent": accent }}
     >
@@ -69,30 +79,42 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
           </>
         )}
 
-        {/* Background floral roses (blossom) */}
-        {hero.bgDecor === "rose" && (
-          <div className="absolute inset-0 pointer-events-none" aria-hidden>
-            <svg className="absolute top-0 left-0 w-48 opacity-10" viewBox="0 0 200 200" fill={accent}>
-              <circle cx="100" cy="100" r="80" />
-              <circle cx="100" cy="30" r="25" />
-              <circle cx="160" cy="75" r="20" />
-              <circle cx="155" cy="150" r="22" />
-              <circle cx="100" cy="185" r="20" />
-              <circle cx="45" cy="155" r="22" />
-              <circle cx="35" cy="78" r="20" />
-            </svg>
-            <svg className="absolute bottom-0 right-0 w-48 opacity-10 rotate-180" viewBox="0 0 200 200" fill={accent}>
-              <circle cx="100" cy="100" r="80" />
-              <circle cx="100" cy="30" r="25" />
-            </svg>
-          </div>
-        )}
-
         {/* Background wave (blue) */}
         {hero.bgDecor === "wave" && (
           <svg className="absolute bottom-0 left-0 w-full h-32 pointer-events-none" viewBox="0 0 1440 128" preserveAspectRatio="none" aria-hidden>
             <path d="M0 64 C360 0, 720 128, 1080 64 S1360 0, 1440 64 L1440 128 L0 128 Z" fill={accent} opacity="0.05" />
           </svg>
+        )}
+
+        {/* Floral garden decor (floral-blossom): arch glow + atmosfer dreamy +
+            sudut bunga (bergoyang) + taman bawah */}
+        {hero.bgDecor === "garden" && (
+          <>
+            <div
+              className="absolute left-1/2 top-[16%] -translate-x-1/2 w-[80%] max-w-sm h-[64%] pointer-events-none"
+              aria-hidden="true"
+              style={{
+                background: "radial-gradient(60% 55% at 50% 42%, rgba(255,255,255,0.6), rgba(255,255,255,0) 72%)",
+                borderRadius: "48% 48% 46% 46% / 62% 62% 40% 40%",
+              }}
+            />
+            {/* Lapisan parallax (GSAP ScrollTrigger di useFloralGsap):
+                ambient melayang pelan, bunga sudut turun, taman naik saat scroll.
+                data-parallax = yPercent tujuan. Transform GSAP di wrapper ini,
+                animasi framer-motion tetap di komponen anak → tak bentrok. */}
+            <div data-parallax="6" className="absolute inset-0 pointer-events-none">
+              <FloralAmbience />
+            </div>
+            <div data-parallax="16" className="absolute -top-1 -left-3 w-28 sm:w-36 pointer-events-none">
+              <FloralCorner className="w-full" />
+            </div>
+            <div data-parallax="16" className="absolute -top-1 -right-3 w-28 sm:w-36 pointer-events-none">
+              <FloralCorner className="w-full -scale-x-100" />
+            </div>
+            <div data-parallax="-22" className="absolute bottom-0 left-0 w-full h-24 sm:h-28">
+              <GardenBorder className="w-full h-full" />
+            </div>
+          </>
         )}
 
         <div className="relative z-10 space-y-6 max-w-xl">
@@ -173,6 +195,11 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
         <Reveal direction="up" delay={0.2}>
           <p className="text-xs text-gray-500 font-light tracking-wider">{invitation?.quotes || "QS. Ar-Rum: 21"}</p>
         </Reveal>
+        {isFloral && (
+          <Reveal direction="up" delay={0.3}>
+            <HangingFlorals className="mx-auto mt-2 w-60 sm:w-72" />
+          </Reveal>
+        )}
       </section>
 
       {/* ════════ 3. COUPLES ════════ */}
@@ -196,7 +223,11 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: accent }}>The Groom</p>
+                <div className="flex items-center justify-center gap-2">
+                  {isFloral && <FiligreeFlourish color={accent} flip className="w-10 sm:w-14 shrink-0" />}
+                  <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: accent }}>The Groom</p>
+                  {isFloral && <FiligreeFlourish color={accent} className="w-10 sm:w-14 shrink-0" />}
+                </div>
                 <h3 className={`${fonts.heading} text-xl font-bold leading-tight`} style={{ color: accent }}>{groomFull}</h3>
                 <p className="text-[11px] text-gray-500 font-light leading-relaxed">
                   Putra dari Bapak {invitation?.groomFather || "—"} &amp; Ibu {invitation?.groomMother || "—"}
@@ -229,7 +260,11 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: accent }}>The Bride</p>
+                <div className="flex items-center justify-center gap-2">
+                  {isFloral && <FiligreeFlourish color={accent} flip className="w-10 sm:w-14 shrink-0" />}
+                  <p className="text-[10px] tracking-[0.25em] font-bold uppercase opacity-60" style={{ color: accent }}>The Bride</p>
+                  {isFloral && <FiligreeFlourish color={accent} className="w-10 sm:w-14 shrink-0" />}
+                </div>
                 <h3 className={`${fonts.heading} text-xl font-bold leading-tight`} style={{ color: accent }}>{brideFull}</h3>
                 <p className="text-[11px] text-gray-500 font-light leading-relaxed">
                   Putri dari Bapak {invitation?.brideFather || "—"} &amp; Ibu {invitation?.brideMother || "—"}
@@ -417,7 +452,6 @@ export function TraditionalLayout({ config, invitation, rsvps, guestName, onRsvp
                       chipClass={cfg.bankCard.chipClass}
                       accent={accent}
                       providerFont={cfg.bankCard.providerFont}
-                      resolveGradient={cfg.bankCard.resolveGradient}
                     />
                   )}
                 </Reveal>

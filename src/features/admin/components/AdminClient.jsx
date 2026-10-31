@@ -1034,23 +1034,17 @@ export function AdminClient({
         open={modalOpen}
         onClose={closeModal}
         labelledBy="admin-modal-title"
-        overlayClassName="bg-zinc-950/60 backdrop-blur-sm"
-        panelClassName="relative w-full max-w-lg space-y-6 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8"
+        panelClassName="max-w-lg"
+        title={
+          <>
+            {modalType === "upgrade_user" && "Upgrade Paket Langganan Manual"}
+            {modalType === "theme" && (editItem ? "Edit Tema Undangan" : "Tambah Tema Baru")}
+            {modalType === "quote" && (editItem ? "Edit Templat Ayat/Kutipan" : "Tambah Templat Ayat/Kutipan")}
+            {modalType === "music" && (editItem ? "Edit Lagu Latar" : "Tambah Lagu Latar")}
+            {modalType === "faq" && (editItem ? "Edit FAQ" : "Tambah FAQ Baru")}
+          </>
+        }
       >
-
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-border/40 pb-4">
-              <h3 id="admin-modal-title" className="font-heading text-lg font-bold text-foreground">
-                {modalType === "upgrade_user" && "Upgrade Paket Langganan Manual"}
-                {modalType === "theme" && (editItem ? "Edit Tema Undangan" : "Tambah Tema Baru")}
-                {modalType === "quote" && (editItem ? "Edit Templat Ayat/Kutipan" : "Tambah Templat Ayat/Kutipan")}
-                {modalType === "music" && (editItem ? "Edit Lagu Latar" : "Tambah Lagu Latar")}
-                {modalType === "faq" && (editItem ? "Edit FAQ" : "Tambah FAQ Baru")}
-              </h3>
-              <Button variant="ghost" size="icon-sm" onClick={closeModal} aria-label="Tutup dialog">
-                <X aria-hidden="true" />
-              </Button>
-            </div>
 
             {/* Modal Form Body */}
 
@@ -1092,7 +1086,7 @@ export function AdminClient({
             {/* 2. Form Theme CRUD */}
             {modalType === "theme" && (
               <form onSubmit={handleThemeSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <label htmlFor="theme-name" className="text-xs font-semibold text-foreground">Nama Tema</label>
                     <input
@@ -1273,7 +1267,7 @@ export function AdminClient({
             {/* 3. Form Quote Template CRUD */}
             {modalType === "quote" && (
               <form onSubmit={handleQuoteSubmit} className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div className="col-span-2 space-y-1.5">
                     <label htmlFor="quote-title" className="text-xs font-semibold text-foreground">Judul / Sumber Ayat</label>
                     <input

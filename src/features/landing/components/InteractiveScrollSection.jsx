@@ -116,8 +116,9 @@ export function InteractiveScrollSection() {
             <div className="relative h-[600px] rounded-[3rem] bg-linear-to-b from-zinc-700 via-zinc-900 to-black p-[3px] shadow-2xl">
               {/* Bezel */}
               <div className="relative h-full w-full rounded-[2.85rem] bg-black p-[9px]">
-                {/* Screen (scrollable) */}
-                <div className="relative h-full w-full overflow-hidden rounded-[2.35rem] bg-background">
+                {/* Screen (scrollable). Dipaku terang di kedua mode: ini layar HP
+                    yang menampilkan undangan (tema terang), bukan latar aplikasi. */}
+                <div className="relative h-full w-full overflow-hidden rounded-[2.35rem] bg-[#F8F6F2]">
                   <div
                     ref={scrollRef}
                     className="h-full w-full overflow-y-auto px-5 pb-16 pt-14 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -293,7 +294,7 @@ export function InteractiveScrollSection() {
 
                   {/* ===== COVER AMPLOP (tampil dulu; naik mulus saat dibuka) ===== */}
                   <div
-                    className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 overflow-hidden bg-background px-5 pb-6 pt-14 text-center transition-all duration-900 ease-[cubic-bezier(0.77,0,0.175,1)] ${
+                    className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 overflow-hidden bg-[#F8F6F2] px-5 pb-6 pt-14 text-center transition-all duration-900 ease-[cubic-bezier(0.77,0,0.175,1)] ${
                       opened ? "pointer-events-none -translate-y-full opacity-0" : ""
                     }`}
                   >

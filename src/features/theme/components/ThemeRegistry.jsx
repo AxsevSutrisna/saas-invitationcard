@@ -23,7 +23,6 @@ export function ThemeRegistry({
   rsvps,
   guestName,
   onRsvpSuccess,
-  isPreview,
   guest,
   isMuted,
   setIsMuted,
@@ -39,7 +38,6 @@ export function ThemeRegistry({
       rsvps={rsvps}
       guestName={guestName}
       onRsvpSuccess={onRsvpSuccess}
-      isPreview={isPreview}
       guest={guest}
       isMuted={isMuted}
       setIsMuted={setIsMuted}

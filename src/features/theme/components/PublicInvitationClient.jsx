@@ -96,11 +96,15 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
   };
 
   return (
-    <div className="relative min-h-screen">
+    // `light`: undangan publik selalu tampil terang (art-direction tetap),
+    // tidak mengikuti dark mode aplikasi — menyelaraskan warna sampul & isi
+    // untuk SEMUA tema sekaligus (lihat @custom-variant dark di globals.css).
+    <div className="light relative min-h-screen">
       {/* 1. LAYAR SAMPUL PEMBUKA (Envelope Cover) */}
       <AnimatePresence>
         {!isOpen && (
           <EnvelopeCover
+            key="envelope-cover"
             invitation={invitation}
             guestName={guestName}
             onOpen={handleOpenInvitation}

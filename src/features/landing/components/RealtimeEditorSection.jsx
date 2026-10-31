@@ -21,7 +21,7 @@ export function RealtimeEditorSection() {
     "w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
 
   return (
-    <section className="py-20 md:py-28 bg-[#F8F6F2] relative">
+    <section className="py-20 md:py-28 bg-background relative">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         
         {/* Left Column: Visual Mockups (Form & Phone overlapping) */}

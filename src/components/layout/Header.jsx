@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useUIStore } from "@/stores/uiStore";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { ROUTES } from "@/constants/routes";
 import { signOut } from "next-auth/react";
 import { Menu, Plus, User, LogOut, Settings } from "lucide-react";
@@ -27,7 +28,7 @@ export function Header({ user }) {
       </div>
 
       {/* Right: CTA & User Dropdown */}
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-3 sm:gap-4">
         {/* Primary CTA */}
         <Link href={ROUTES.INVITATION_NEW}>
           <Button size="sm">
@@ -36,6 +37,9 @@ export function Header({ user }) {
             <span className="sm:hidden">Buat</span>
           </Button>
         </Link>
+
+        {/* Toggle tema gelap/terang */}
+        <ThemeToggle className="h-10 w-10 rounded-xl border border-border/60 text-foreground hover:bg-gold-400/10 hover:text-gold-600 dark:hover:text-gold-300" />
 
         {/* User Profile Dropdown */}
         <div className="relative">

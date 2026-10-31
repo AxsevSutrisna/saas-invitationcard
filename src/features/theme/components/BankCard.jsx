@@ -59,10 +59,9 @@ function CardOverlay({ overlay }) {
  * - overlay: "stripes-circles" | "glass" | "wave" | "grid-glow"
  * - chipClass: { base, inner, cell } class Tailwind untuk chip
  * - providerFont: "cormorant" | null (font nama provider)
- * - resolveGradient?: (providerName) => gradientString (mis. cabang isRose floral-blossom)
  */
-export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-circles", chipClass = {}, providerFont, resolveGradient }) {
-  const background = resolveGradient ? resolveGradient(gift.providerName) : gradient;
+export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-circles", chipClass = {}, providerFont }) {
+  const background = gradient;
   const providerFontClass = providerFont === "cormorant" ? "font-cormorant" : "";
 
   const isEwallet = gift.type === "EWALLET";

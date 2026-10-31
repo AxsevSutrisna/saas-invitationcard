@@ -32,7 +32,7 @@ export function FAQSection({ faqs = [] }) {
       ];
 
   return (
-    <section id="faq" className="scroll-mt-28 py-20 md:py-28 bg-[#F8F6F2]">
+    <section id="faq" className="scroll-mt-28 py-20 md:py-28 bg-background">
       <div className="max-w-4xl mx-auto px-6 space-y-16">
         {/* Header FAQ */}
         <Reveal

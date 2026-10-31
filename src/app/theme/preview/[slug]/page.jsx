@@ -2,6 +2,7 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { PublicInvitationClient } from "@/features/theme/components/PublicInvitationClient";
+import { ThemePreviewFrame } from "@/features/theme/components/ThemePreviewFrame";
 
 // Dedupe fetch tema: dipakai generateMetadata & page dalam 1 request
 const loadTheme = cache((slug) => db.theme.findUnique({ where: { slug } }));
@@ -157,12 +158,14 @@ export default async function ThemePreviewPage({ params }) {
   ];
 
   return (
-    <PublicInvitationClient
-      invitation={mockInvitation}
-      initialRsvps={mockRsvps}
-      guestName="Tamu Undangan"
-      guestCode=""
-      isPremium={true} // Selalu tampil premium di halaman preview agar visualnya maksimal
-    />
+    <ThemePreviewFrame themeName={theme.name}>
+      <PublicInvitationClient
+        invitation={mockInvitation}
+        initialRsvps={mockRsvps}
+        guestName="Tamu Undangan"
+        guestCode=""
+        isPremium={true} // Selalu tampil premium di halaman preview agar visualnya maksimal
+      />
+    </ThemePreviewFrame>
   );
 }

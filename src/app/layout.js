@@ -7,6 +7,7 @@ import {
   Fraunces,
 } from "next/font/google";
 import "./globals.css";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -103,10 +104,15 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="id"
+      suppressHydrationWarning
       className={`${poppins.variable} ${cormorant.variable} ${greatVibes.variable} ${playfair.variable} ${baskerville.variable} ${fraunces.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        {/* Anti-flash: set mode gelap/terang sebelum paint pertama */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {children}
+      </body>
     </html>
   );
 }

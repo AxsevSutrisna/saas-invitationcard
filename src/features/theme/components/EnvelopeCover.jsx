@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import { Mail, Leaf } from "lucide-react";
 import { getThemeConfig } from "@/features/theme/theme-config";
+import { HangingLeavesTop, GardenScene, CoverGardenBorder } from "@/features/theme/components/FloralOrnaments";
+import { FloralCoverLayers } from "@/features/theme/components/FloralCoverLayers";
+import { FLORAL_USE_PNG } from "@/features/theme/floral-assets";
 
 const ROSE_PETALS = [
   { left: "12%", xEnd: 30,  dur: 9,   del: 0   },
@@ -35,6 +38,34 @@ const GREEN_LEAVES = [
   { left: "74%", xEnd: -26, dur: 16, del: 1,   fontSize: "18px" },
   { left: "90%", xEnd: 20,  dur: 11, del: 5.5, fontSize: "15px" },
 ];
+
+/**
+ * Transisi "buka undangan" — FADE + ZOOM-THROUGH: cover memudar (opacity 1→0)
+ * sambil sedikit membesar (scale 1→1.08), seolah resesi/larut ke arah penonton.
+ * Saat cover larut, isi undangan di belakangnya tersingkap halus (cross-dissolve).
+ * Dipakai BERSAMA oleh kedua varian cover (fullbleed & framed) agar tak duplikat.
+ *
+ * PENTING — cover dirender `fixed inset-0`, BUKAN `absolute`. Begitu undangan
+ * dibuka, isi undangan (tinggi) ikut ter-render sebagai sibling dan membuat
+ * parent membengkak setinggi seluruh halaman. Kalau cover `absolute`, tingginya
+ * ikut membengkak → titik pusat skala jatuh di tengah HALAMAN (jauh di bawah
+ * viewport) dan konten cover meloncat. Dengan `fixed`, cover selalu seukuran
+ * viewport (di preview: terkurung ke layar HP via transform parent) → pusat
+ * skala di tengah layar, zoom terasa benar.
+ *
+ * Isi undangan TIDAK diberi transform zoom sendiri (hanya tersingkap oleh cover
+ * yang larut): transform yang menetap akan membuat elemen `fixed` (partikel &
+ * tombol musik) terkurung + ikut ter-scroll, dan merusak rantai tinggi
+ * `min-h-screen` di preview. Hero isi sengaja statis (lihat Reveal.jsx).
+ *
+ * Blur lembut (0→8px) saat memudar → kesan "larut"/dreamy. Blur hanya pada cover
+ * (unmount setelah transisi) & tak memengaruhi isi undangan (cover = sibling).
+ */
+const COVER_TRANSITION = {
+  initial: { opacity: 1, scale: 1, filter: "blur(0px)" },
+  exit: { opacity: 0, scale: 1.08, filter: "blur(8px)" },
+  transition: { duration: 1, ease: [0.4, 0, 0.2, 1] },
+};
 
 function PhotoFrame({ frameKind, coverUrl, title }) {
   const defaultPlaceholder = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600";
@@ -135,10 +166,8 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
   if (config.layout === "fullbleed") {
     return (
       <motion.div
-        initial={{ y: 0 }}
-        exit={{ y: "-100%" }}
-        transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-        className="absolute inset-0 z-50 flex flex-col items-center justify-between py-12 px-6 select-none overflow-hidden bg-[#F8F6F2]"
+        {...COVER_TRANSITION}
+        className="fixed inset-0 z-60 flex flex-col items-center justify-between py-12 px-6 select-none overflow-hidden bg-[#F8F6F2]"
       >
         {/* Background Photo (Full Screen) */}
         {invitation?.coverUrl && (
@@ -202,12 +231,108 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
     );
   }
 
+  // ── Cover "GARDEN" (floral-blossom): taman pastel dreamy, dedaunan menjuntai,
+  //    nama putih, foto perangko, karangan bunga lebat di dasar. ──
+  if (config.layout === "garden") {
+    return (
+      <motion.div
+        {...COVER_TRANSITION}
+        className="fixed inset-0 z-60 flex flex-col items-center justify-center overflow-hidden select-none px-6 pt-24 pb-28 gap-4"
+      >
+        {/* Langit pastel (pink → lavender) */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{ background: "linear-gradient(175deg, #F9E4D3 0%, #F6D7D9 22%, #F0D1DF 46%, #E1CCE8 74%, #D4C6EA 100%)" }}
+        />
+        {/* Dekor floral: layer PNG fotorealistis bila FLORAL_USE_PNG aktif,
+            selain itu ornamen SVG bawaan (fallback aman). */}
+        {FLORAL_USE_PNG ? (
+          <FloralCoverLayers />
+        ) : (
+          <>
+            {/* Taman pastel lembut */}
+            <GardenScene className="absolute inset-0 z-0 h-full w-full" />
+            {/* Dedaunan menjuntai dari atas */}
+            <HangingLeavesTop className="absolute inset-x-0 top-0 z-10 h-44" />
+          </>
+        )}
+
+        {/* Hujan kelopak */}
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" aria-hidden="true">
+          {ROSE_PETALS.map((petal, i) => (
+            <motion.div
+              key={`petal-${i}`}
+              className="absolute pointer-events-none select-none"
+              style={{
+                top: "-5%",
+                left: petal.left,
+                width: 10,
+                height: 7,
+                borderRadius: "50% 0 50% 50%",
+                background: "linear-gradient(135deg, #ffccd5 0%, #B76E79 100%)",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              }}
+              animate={{ y: ["0vh", "110vh"], x: [0, petal.xEnd], rotate: [0, 360], opacity: [0, 0.7, 0] }}
+              transition={{ duration: petal.dur, repeat: Infinity, delay: petal.del, ease: "linear" }}
+            />
+          ))}
+        </div>
+
+        {/* Karangan bunga SVG di dasar — hanya bila TIDAK memakai layer PNG
+            (saat PNG aktif, bunga dasar sudah dari FloralCoverLayers). */}
+        {!FLORAL_USE_PNG && (
+          <CoverGardenBorder className="absolute inset-x-0 bottom-0 z-10 h-52" />
+        )}
+
+        {/* Konten */}
+        <div className="relative z-20 flex w-full max-w-xs flex-col items-center text-center">
+          <span className="text-[8px] tracking-[0.35em] uppercase font-semibold text-white/85 drop-shadow-sm">
+            The Wedding Of
+          </span>
+          <h1 className="mt-1 font-greatvibes leading-[1.05] text-white drop-shadow-[0_2px_10px_rgba(130,90,120,0.45)]">
+            <span className="block text-4xl sm:text-5xl">{groom}</span>
+            <span className="block text-xl my-0.5 opacity-90">&amp;</span>
+            <span className="block text-4xl sm:text-5xl">{bride}</span>
+          </h1>
+        </div>
+
+        <div className="relative z-20 flex items-center justify-center">
+          <PhotoFrame frameKind={config.frameKind} coverUrl={invitation?.coverUrl} title={title} />
+        </div>
+
+        <div className="relative z-20 flex flex-col items-center text-center">
+          <p className="text-[8px] tracking-[0.3em] uppercase font-bold text-white/85 drop-shadow-sm">
+            Kepada Yth.
+          </p>
+          <p className="mt-1 text-base font-bold text-white drop-shadow-[0_1px_6px_rgba(130,90,120,0.4)]">
+            {guestName || "Tamu Undangan"}
+          </p>
+          <div className="my-2 h-px w-10 bg-white/55" />
+
+          <button
+            type="button"
+            onClick={onOpen}
+            aria-label="Buka undangan"
+            className="group flex flex-col items-center gap-1 cursor-pointer focus:outline-none"
+          >
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-white/20 text-white shadow-lg backdrop-blur-md transition-all"
+            >
+              <Mail className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
+            </motion.div>
+            <span className="text-[8px] tracking-[0.35em] font-bold uppercase text-white/90">Buka</span>
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
-      initial={{ y: 0 }}
-      exit={{ y: "-100%" }}
-      transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-      className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-8 sm:gap-12 py-10 px-4 sm:px-6 select-none overflow-hidden"
+      {...COVER_TRANSITION}
+      className="fixed inset-0 z-60 flex flex-col items-center justify-center gap-8 sm:gap-12 py-10 px-4 sm:px-6 select-none overflow-hidden"
     >
       {/* 0. Base solid (OPAQUE) — tirai wajib menutup penuh konten di belakangnya
           selama transisi luncur-naik, agar isi undangan tak "menembus" (mencegah

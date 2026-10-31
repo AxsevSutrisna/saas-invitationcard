@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { ROUTES } from "@/constants/routes";
 import { marketingNav } from "@/config/navigation.config";
 import { useState, useEffect } from "react";
@@ -76,6 +77,13 @@ export function Navbar({ overlay = false }) {
 
         {/* Action Buttons */}
         <div className="hidden sm:flex items-center gap-3">
+          <ThemeToggle
+            className={
+              solid
+                ? "text-zinc-700 dark:text-zinc-200 hover:bg-gold-400/12 hover:text-gold-600 dark:hover:text-[#E2C785]"
+                : "text-white hover:bg-white/20"
+            }
+          />
           <Link href={ROUTES.LOGIN}>
             <Button
               variant="ghost"
@@ -128,6 +136,10 @@ export function Navbar({ overlay = false }) {
               </Link>
             ))}
           </nav>
+          <div className="flex items-center justify-between border-t border-gold-400/20 pt-3">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Mode tampilan</span>
+            <ThemeToggle className="border border-gold-400/30 text-zinc-700 hover:bg-gold-400/12 hover:text-gold-600 dark:text-zinc-200 dark:hover:text-[#E2C785]" />
+          </div>
           <div className="flex flex-col gap-2 pt-2">
             <Link href={ROUTES.LOGIN} onClick={() => setMobileMenuOpen(false)}>
               <Button variant="outline" className="w-full justify-center">

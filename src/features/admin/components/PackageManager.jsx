@@ -32,8 +32,8 @@ import { DASHBOARD_INPUT_GHOST } from "@/components/ui/Field";
 
 // Satu sumber gaya input (ghost) — dibagikan via Field agar tak drift.
 const FIELD_CLASS = DASHBOARD_INPUT_GHOST;
-const MODAL_PANEL =
-  "relative w-full max-w-2xl space-y-5 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8 max-h-[90vh] overflow-y-auto";
+// Lebar panel modal (struktur header/body/footer + tinggi aman iOS ditangani Modal).
+const MODAL_PANEL = "max-w-2xl";
 
 const KIND_LABEL = { PLAN: "Paket", ADDON: "Add-on", BUNDLE: "Bundle" };
 const SALE_LABEL = {
@@ -515,13 +515,10 @@ export function PackageManager({ packages = [], features = [] }) {
         onClose={() => setPkgModalOpen(false)}
         labelledBy="pkg-modal-title"
         panelClassName={MODAL_PANEL}
-        showClose
+        title={editingPkg ? "Edit Paket" : "Paket Baru"}
       >
-        <h3 id="pkg-modal-title" className="text-base font-semibold text-foreground">
-          {editingPkg ? "Edit Paket" : "Paket Baru"}
-        </h3>
         <form onSubmit={handlePkgSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Nama Paket</label>
               <input
@@ -557,7 +554,7 @@ export function PackageManager({ packages = [], features = [] }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Jenis Produk</label>
               <select
@@ -584,7 +581,7 @@ export function PackageManager({ packages = [], features = [] }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Harga (Rp)</label>
               <input
@@ -610,7 +607,7 @@ export function PackageManager({ packages = [], features = [] }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Kuota Undangan</label>
               <input
@@ -789,14 +786,11 @@ export function PackageManager({ packages = [], features = [] }) {
         open={featModalOpen}
         onClose={() => setFeatModalOpen(false)}
         labelledBy="feat-modal-title"
-        panelClassName="relative w-full max-w-lg space-y-5 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8"
-        showClose
+        panelClassName="max-w-lg"
+        title={editingFeat ? "Edit Fitur" : "Fitur Baru"}
       >
-        <h3 id="feat-modal-title" className="text-base font-semibold text-foreground">
-          {editingFeat ? "Edit Fitur" : "Fitur Baru"}
-        </h3>
         <form onSubmit={handleFeatSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Key (unik)</label>
               <input
@@ -833,7 +827,7 @@ export function PackageManager({ packages = [], features = [] }) {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Tipe</label>
               <select
@@ -866,7 +860,7 @@ export function PackageManager({ packages = [], features = [] }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">Kategori</label>
               <input
