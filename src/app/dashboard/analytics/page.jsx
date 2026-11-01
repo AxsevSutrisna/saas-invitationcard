@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { getInvitationsByUserId } from "@/features/invitation/repository";
+import {
+  getInvitationSummariesByUserId,
+  getInvitationAnalytics,
+} from "@/features/invitation/repository";
 import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
 import {
   getRsvpsWithGuestByInvitationId,
@@ -29,8 +32,8 @@ export default async function AnalyticsPage({ searchParams }) {
     redirect(ROUTES.LOGIN || "/login");
   }
 
-  // 2. Ambil Seluruh Daftar Undangan Milik Pengguna Aktif
-  const invitations = await getInvitationsByUserId(session.user.id);
+  // 2. Ambil ringkasan undangan (id + judul saja) untuk dropdown pemilih.
+  const invitations = await getInvitationSummariesByUserId(session.user.id);
 
   // Jika belum memiliki undangan -> Tampilkan Empty State
   if (invitations.length === 0) {
@@ -51,27 +54,28 @@ export default async function AnalyticsPage({ searchParams }) {
     );
   }
 
-  // 3. Tentukan Undangan Terpilih Berdasarkan Query Parameter URL
+  // 3. Tentukan Undangan Terpilih (dari daftar milik user → aman dari IDOR).
   const resolvedSearchParams = await searchParams;
   const selectedId = resolvedSearchParams.invitationId;
-  const selectedInvitation = selectedId
-    ? invitations.find((i) => i.id === selectedId) || invitations[0]
-    : invitations[0];
+  const selected =
+    invitations.find((i) => i.id === selectedId) || invitations[0];
 
-  // 4-6. Ketiga query di bawah independen -> jalankan paralel
-  const [rsvps, nonRespondedCount, activeSubscription] = await Promise.all([
-    getRsvpsWithGuestByInvitationId(selectedInvitation.id),
-    countGuestsWithoutRsvp(selectedInvitation.id),
-    findActiveSubscriptionByUserId(session.user.id),
-  ]);
+  // 4. Ambil detail undangan terpilih + data pendukung secara paralel.
+  //    Hanya undangan terpilih yang dimuat relasinya (bukan seluruh daftar).
+  const [selectedInvitation, rsvps, nonRespondedCount, activeSubscription] =
+    await Promise.all([
+      getInvitationAnalytics(selected.id, session.user.id),
+      getRsvpsWithGuestByInvitationId(selected.id),
+      countGuestsWithoutRsvp(selected.id),
+      findActiveSubscriptionByUserId(session.user.id),
+    ]);
 
-  // 7. Hitung Selisih Hari Menuju Acara Pertama
+  // 7. Hitung Selisih Hari Menuju Acara Pertama.
+  //    `events` sudah terurut menaik (orderBy date asc di getInvitationAnalytics),
+  //    jadi elemen pertama = acara paling awal — tak perlu sort ulang di JS.
   let daysDiff = 0;
   if (selectedInvitation.events && selectedInvitation.events.length > 0) {
-    const sortedEvents = [...selectedInvitation.events].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
-    const eventDate = new Date(sortedEvents[0].date);
+    const eventDate = new Date(selectedInvitation.events[0].date);
     const today = new Date();
     eventDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);

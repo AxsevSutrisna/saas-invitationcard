@@ -7,6 +7,9 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    // Prisma 7 membaca konfigurasi seed dari sini (bukan lagi package.json).
+    // `-r dotenv/config` memastikan DATABASE_URL termuat di subprocess seed.
+    seed: "node -r dotenv/config prisma/seed.js",
   },
   datasource: {
     url: process.env["DATABASE_URL"],

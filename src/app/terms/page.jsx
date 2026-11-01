@@ -32,14 +32,14 @@ export default async function TermsPage() {
       <Navbar />
       
       {/* Editorial Header Banner */}
-      <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-b from-[#e8dec6]/30 to-transparent dark:from-zinc-800/10">
+      <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-linear-to-b from-[#e8dec6]/30 to-transparent dark:from-zinc-800/10">
         <div className="absolute inset-0 bg-[radial-gradient(#C8A96A_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.07] pointer-events-none" />
         <div className="max-w-6xl mx-auto px-6 text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-400/10 border border-gold-400/20 text-gold-600 dark:text-[#E2C785] text-[12px] font-bold uppercase tracking-widest font-poppins">
             <Scale className="w-4 h-4" />
             Dokumen Hukum
           </div>
-          <h1 className="font-heading text-[36px] sm:text-[48px] font-bold tracking-tight text-foreground font-cormorant leading-tight">
+          <h1 className="font-heading text-[36px] sm:text-[48px] font-bold tracking-tight text-foreground leading-tight">
             Syarat & Ketentuan
           </h1>
           <p className="text-[16px] sm:text-[20px] text-muted-foreground max-w-xl mx-auto font-light leading-relaxed font-sans">
@@ -97,7 +97,7 @@ export default async function TermsPage() {
             {/* Section 1 */}
             <section id="penerimaan" className="scroll-mt-28 space-y-4">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">01.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">01.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Penerimaan Syarat
                 </h3>
@@ -115,7 +115,7 @@ export default async function TermsPage() {
             {/* Section 2 */}
             <section id="layanan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">02.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">02.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Deskripsi Layanan
                 </h3>
@@ -141,7 +141,7 @@ export default async function TermsPage() {
             {/* Section 3 */}
             <section id="akun" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">03.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">03.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Keamanan Akun
                 </h3>
@@ -159,7 +159,7 @@ export default async function TermsPage() {
             {/* Section 4 */}
             <section id="pembayaran" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">04.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">04.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Metode Pembayaran
                 </h3>
@@ -180,7 +180,7 @@ export default async function TermsPage() {
             {/* Section 5 */}
             <section id="konten" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">05.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">05.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Kebijakan Konten
                 </h3>
@@ -198,7 +198,7 @@ export default async function TermsPage() {
             {/* Section 6 */}
             <section id="hak-cipta" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">06.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">06.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Hak Kekayaan Intelektual
                 </h3>
@@ -216,7 +216,7 @@ export default async function TermsPage() {
             {/* Section 7 */}
             <section id="larangan" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">07.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">07.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Larangan & Penyalahgunaan
                 </h3>
@@ -237,7 +237,7 @@ export default async function TermsPage() {
             {/* Section 8 */}
             <section id="penghentian" className="scroll-mt-28 space-y-4 border-t border-border/50 pt-8">
               <div className="flex items-center gap-3">
-                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400 font-cormorant">08.</span>
+                <span className="font-heading text-[20px] sm:text-[24px] font-bold text-gold-400">08.</span>
                 <h3 className="font-heading text-[20px] sm:text-[24px] font-bold text-foreground">
                   Penghentian Layanan
                 </h3>

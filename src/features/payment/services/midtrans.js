@@ -3,11 +3,6 @@ import crypto from "crypto";
 const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
 const isProduction = process.env.MIDTRANS_IS_PRODUCTION === "true";
 
-// Tentukan base URL untuk Snap API (buat transaksi)
-const SNAP_BASE_URL = isProduction
-  ? "https://app.midtrans.com/snap/v1"
-  : "https://app.sandbox.midtrans.com/snap/v1";
-
 // Base URL untuk Core/Status API (CATATAN: pakai host "api.*", bukan "app.*")
 const API_BASE_URL = isProduction
   ? "https://api.midtrans.com/v2"
@@ -22,63 +17,109 @@ function getAuthHeader() {
 }
 
 /**
- * Membuat transaksi baru di Midtrans Snap
+ * Membuat charge via Midtrans CORE API (bukan Snap) untuk UI pembayaran custom.
+ * Mendukung QRIS, Bank Transfer / VA (BCA/BNI/BRI/Permata), dan Mandiri (echannel).
+ *
  * @param {Object} params
- * @param {string} params.orderId - ID Pesanan unik
- * @param {number} params.amount - Jumlah nominal pembayaran
- * @param {string} params.userEmail - Email pembeli
- * @param {string} params.userName - Nama pembeli
- * @param {string} params.packageName - Nama paket langganan
- * @returns {Promise<Object>} Token & Redirect URL dari Midtrans
+ * @param {string} params.orderId
+ * @param {number} params.amount
+ * @param {string} params.userEmail
+ * @param {string} params.userName
+ * @param {string} params.itemName - nama item (tampil di riwayat/tagihan)
+ * @param {"qris"|"bank_transfer"|"echannel"} params.method - payment_type Core API
+ * @param {string} [params.bank] - untuk bank_transfer: bca | bni | bri | permata
+ * @returns {Promise<Object>} instruksi pembayaran ternormalisasi
  */
-export async function createSnapTransaction({
+export async function createCoreCharge({
   orderId,
   amount,
   userEmail,
   userName,
-  packageName,
-  finishUrl,
+  itemName,
+  method,
+  bank,
 }) {
   const body = {
-    transaction_details: {
-      order_id: orderId,
-      gross_amount: amount,
-    },
-    customer_details: {
-      first_name: userName || "Pelanggan",
-      email: userEmail,
-    },
+    payment_type: method,
+    transaction_details: { order_id: orderId, gross_amount: amount },
+    customer_details: { first_name: userName || "Pelanggan", email: userEmail },
     item_details: [
-      {
-        id: "premium_invitation_pkg",
-        price: amount,
-        quantity: 1,
-        name: packageName,
-      },
+      { id: "ikara_pkg", price: amount, quantity: 1, name: (itemName || "Paket IKARA").slice(0, 50) },
     ],
+    // Batas waktu pembayaran 24 jam.
+    custom_expiry: { expiry_duration: 24, unit: "hour" },
   };
 
-  // Redirect callback (mode Snap redirect / mobile): user diarahkan balik ke situs
-  if (finishUrl) {
-    body.callbacks = { finish: finishUrl };
+  if (method === "bank_transfer") {
+    body.bank_transfer = { bank };
+  } else if (method === "echannel") {
+    body.echannel = { bill_info1: "Pembayaran", bill_info2: (itemName || "Paket IKARA").slice(0, 50) };
+  } else if (method === "qris") {
+    body.qris = { acquirer: "gopay" };
   }
 
-  const response = await fetch(`${SNAP_BASE_URL}/transactions`, {
+  const response = await fetch(`${API_BASE_URL}/charge`, {
     method: "POST",
     headers: {
-      "Accept": "application/json",
+      Accept: "application/json",
       "Content-Type": "application/json",
-      "Authorization": getAuthHeader(),
+      Authorization: getAuthHeader(),
     },
     body: JSON.stringify(body),
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Midtrans API Error (${response.status}): ${errorText}`);
+  const data = await response.json().catch(() => ({}));
+  const statusCode = String(data.status_code || "");
+
+  // Charge sukses (pending/settlement) → status_code 2xx. Selain itu = gagal.
+  if (!response.ok || (statusCode && !statusCode.startsWith("2"))) {
+    throw new Error(
+      data.status_message || `Midtrans Charge Error (${response.status}/${statusCode || "?"})`
+    );
   }
 
-  return response.json();
+  return normalizeCoreCharge(data);
+}
+
+/** Normalisasi respons charge Core API ke bentuk seragam untuk disimpan & ditampilkan. */
+function normalizeCoreCharge(d) {
+  let bank = null;
+  let vaNumber = null;
+  let billerCode = null;
+  let billKey = null;
+  let qrImageUrl = null;
+  let qrString = null;
+
+  if (Array.isArray(d.va_numbers) && d.va_numbers[0]) {
+    bank = d.va_numbers[0].bank;
+    vaNumber = d.va_numbers[0].va_number;
+  }
+  if (d.permata_va_number) {
+    bank = "permata";
+    vaNumber = d.permata_va_number;
+  }
+  if (d.biller_code) billerCode = d.biller_code;
+  if (d.bill_key) billKey = d.bill_key;
+  if (Array.isArray(d.actions)) {
+    const qr = d.actions.find((a) => a.name === "generate-qr-code");
+    if (qr) qrImageUrl = qr.url;
+  }
+  if (d.qr_string) qrString = d.qr_string;
+
+  // expiry_time Midtrans: "YYYY-MM-DD HH:mm:ss" (WIB/GMT+7) → jadikan ISO absolut.
+  const expiryTime = d.expiry_time ? `${d.expiry_time.replace(" ", "T")}+07:00` : null;
+
+  return {
+    paymentType: d.payment_type || null,
+    bank,
+    vaNumber,
+    billerCode,
+    billKey,
+    qrImageUrl,
+    qrString,
+    expiryTime,
+    grossAmount: d.gross_amount || null,
+  };
 }
 
 /**

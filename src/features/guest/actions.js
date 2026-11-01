@@ -5,7 +5,6 @@ import { authorize } from "@/features/auth/guard";
 import {
   createGuest,
   createGuestsBulk,
-  getGuestsByInvitationId,
   updateGuest,
   deleteGuest,
   trackGuestOpen,
@@ -32,7 +31,7 @@ export async function createGuestAction(payload) {
 
     const newGuest = await createGuest(validatedData);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true, data: newGuest };
   } catch (error) {
     console.error("Error createGuestAction:", error);
@@ -80,7 +79,7 @@ export async function createGuestsBulkAction(payload) {
 
     await createGuestsBulk(invitationId, guestsList);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true };
   } catch (error) {
     console.error("Error createGuestsBulkAction:", error);
@@ -88,23 +87,6 @@ export async function createGuestsBulkAction(payload) {
       success: false,
       error: error.errors?.[0]?.message || error.message || "Gagal menambah tamu massal.",
     };
-  }
-}
-
-/**
- * Action: Get all guests for an invitation (hanya pemilik undangan)
- */
-export async function getGuestsAction(invitationId) {
-  try {
-    // Otorisasi: hanya pemilik undangan yang boleh melihat daftar tamunya.
-    const invitation = await getInvitationOwner(invitationId);
-    await authorize("guest:read", invitation);
-
-    const guests = await getGuestsByInvitationId(invitationId);
-    return { success: true, data: guests };
-  } catch (error) {
-    console.error("Error getGuestsAction:", error);
-    return { success: false, error: "Gagal mengambil daftar tamu." };
   }
 }
 
@@ -121,7 +103,7 @@ export async function updateGuestAction(guestId, payload) {
 
     const updated = await updateGuest(guestId, validatedData);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true, data: updated };
   } catch (error) {
     console.error("Error updateGuestAction:", error);
@@ -143,7 +125,7 @@ export async function deleteGuestAction(guestId) {
 
     await deleteGuest(guestId);
 
-    revalidatePath("/dashboard/invitations/new");
+    revalidatePath("/dashboard/guests");
     return { success: true };
   } catch (error) {
     console.error("Error deleteGuestAction:", error);
@@ -172,10 +154,9 @@ export async function getGuestByCodeAction(uniqueCode) {
  */
 export async function trackGuestOpenAction(uniqueCode) {
   try {
-    const result = await trackGuestOpen(uniqueCode);
-    if (!result) {
-      return { success: false, error: "Tamu tidak ditemukan." };
-    }
+    // Best-effort (fire-and-forget dari halaman publik). count 0 = sudah dibuka
+    // atau kode tak dikenal — bukan error yang perlu dilaporkan ke pengunjung.
+    await trackGuestOpen(uniqueCode);
     return { success: true };
   } catch (error) {
     console.error("Error trackGuestOpenAction:", error);

@@ -51,6 +51,49 @@ export function formatShortDate(date) {
 }
 
 /**
+ * Format tanggal panjang tanpa hari, mis. "12 Oktober 2025".
+ * @param {string|number|Date} date
+ */
+export function formatLongDate(date) {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+/**
+ * Format tanggal + waktu (bulan panjang), mis. "12 Oktober 2025, 14.30".
+ * @param {string|number|Date} date
+ */
+export function formatDateTime(date) {
+  if (!date) return "";
+  return new Date(date).toLocaleString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/**
+ * Format tanggal + waktu ringkas (bulan singkat), mis. "12 Okt 2025, 14.30".
+ * @param {string|number|Date} date
+ */
+export function formatShortDateTime(date) {
+  if (!date) return "";
+  return new Date(date).toLocaleString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/**
  * Bangun URL WhatsApp (wa.me) dari nomor telepon + pesan opsional.
  * Membersihkan karakter non-digit dan menormalkan awalan "0" (lokal ID) menjadi "62".
  * @param {string} phone

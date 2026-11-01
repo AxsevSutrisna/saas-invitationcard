@@ -12,11 +12,15 @@ export const registerSchema = z.object({
     .min(8, "Password must be at least 8 characters."),
 });
 
-export const loginSchema = z.object({
+export const forgotPasswordSchema = z.object({
   email: z
-    .string({ required_error: "Email is required." })
-    .email("Invalid email address format."),
+    .string({ required_error: "Email wajib diisi." })
+    .email("Format email tidak valid."),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Token tidak valid."),
   password: z
-    .string({ required_error: "Password is required." })
-    .min(1, "Password is required."),
+    .string({ required_error: "Kata sandi wajib diisi." })
+    .min(8, "Kata sandi minimal 8 karakter."),
 });

@@ -33,24 +33,6 @@ export const dashboardNav = [
   },
 ];
 
-export const adminNav = [
-  {
-    label: "Kelola Pengguna",
-    href: ROUTES.ADMIN_USERS,
-    icon: "Users",
-  },
-  {
-    label: "Transaksi",
-    href: ROUTES.ADMIN_TRANSACTIONS,
-    icon: "Receipt",
-  },
-  {
-    label: "Tema Desain",
-    href: ROUTES.ADMIN_THEMES,
-    icon: "Palette",
-  },
-];
-
 export const marketingNav = [
   { label: "Fitur", href: "/#fitur" },
   { label: "Tema", href: "/#tema" },

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Gift, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapEmbed } from "@/features/theme/components/MapEmbed";
 import { CountdownTimer } from "@/features/theme/components/CountdownTimer";
 import { RsvpForm } from "@/features/rsvp/components/RsvpForm";
 import { GuestWishes } from "@/features/rsvp/components/GuestWishes";
@@ -10,8 +11,7 @@ import { Divider } from "@/features/theme/components/Divider";
 import { GeometricFrame } from "@/features/theme/components/frames";
 import { BankCard } from "@/features/theme/components/BankCard";
 import { MusicToggle } from "@/features/theme/components/MusicToggle";
-import { useCarousel } from "@/features/theme/hooks/useCarousel";
-import { useClipboard } from "@/features/theme/hooks/useClipboard";
+import { useInvitationView } from "@/features/theme/hooks/useInvitationView";
 import { formatEventDate } from "@/lib/format";
 import { getThemeConfig } from "@/features/theme/theme-config";
 
@@ -21,8 +21,8 @@ function SectionHeading({ title, subtitle, color = "#1E293B" }) {
     <Reveal direction="up">
       <div className="space-y-3">
         <Divider glyph="line" color={color} />
-        <h2 className="text-3xl font-black tracking-tight uppercase" style={{ color }}>{title}</h2>
-        {subtitle && <p className="text-xs text-gray-400 font-light max-w-xs leading-relaxed">{subtitle}</p>}
+        <h2 className="text-3xl @[1024px]:text-4xl font-black tracking-tight uppercase" style={{ color }}>{title}</h2>
+        {subtitle && <p className="text-xs text-gray-500 font-light max-w-xs leading-relaxed">{subtitle}</p>}
         <Divider glyph="line" color={color} />
       </div>
     </Reveal>
@@ -34,18 +34,16 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
   const cfg = getThemeConfig("modern-minimalist");
   const DARK = cfg.accent; // #0F172A
 
-  const groom     = invitation?.groomNickname || "Pria";
-  const bride     = invitation?.brideNickname  || "Wanita";
-  const groomFull = invitation?.groomFullName  || "Nama Pria Lengkap";
-  const brideFull = invitation?.brideFullName  || "Nama Wanita Lengkap";
-  const galleries = invitation?.galleries      || [];
-  const layout    = invitation?.galleryLayout  || "CAROUSEL";
+  // Depth halus khas minimalis (bayangan tipis ber-tint navy, bukan emas).
+  const cardShadow = `0 1px 3px ${DARK}0a, 0 18px 36px -18px ${DARK}20`;
 
-  const { index: carouselIndex, setIndex: setIdx, next, prev } = useCarousel(
-    galleries.length,
-    layout === "CAROUSEL" ? 4500 : 0
-  );
-  const { copiedId, copy: handleCopy } = useClipboard();
+  // Prelude bersama (default nama/galeri, carousel, clipboard, cardHover).
+  const {
+    groom, bride, groomFull, brideFull,
+    galleries, galleryLayout: layout, carousel, clipboard, cardHover,
+  } = useInvitationView(invitation);
+  const { index: carouselIndex, setIndex: setIdx, next, prev } = carousel;
+  const { copiedId, copy: handleCopy } = clipboard;
 
   return (
     <main
@@ -98,7 +96,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
 
           {invitation?.openingText && (
             <Reveal direction="up" delay={0.3}>
-              <p className="text-xs text-gray-400 font-light leading-relaxed max-w-sm mx-auto">{invitation.openingText}</p>
+              <p className="text-xs text-gray-500 font-light leading-relaxed max-w-sm mx-auto">{invitation.openingText}</p>
             </Reveal>
           )}
 
@@ -138,7 +136,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
       </section>
 
       {/* ════════ 2. QUOTES ════════ */}
-      <section aria-label="Kutipan" className="py-20 px-6 max-w-2xl mx-auto text-center space-y-6">
+      <section aria-label="Kutipan" className="py-24 px-6 max-w-2xl mx-auto text-center space-y-6">
         <Reveal direction="zoom">
           <div className="w-12 h-px mx-auto" style={{ background: DARK, opacity: 0.2 }} />
         </Reveal>
@@ -150,13 +148,13 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
       </section>
 
       {/* ════════ 3. COUPLES ════════ */}
-      <section aria-label="Mempelai" className="py-20 px-6" style={{ background: "#F4F4F2" }}>
-        <div className="max-w-xl mx-auto space-y-12">
+      <section aria-label="Mempelai" className="py-24 px-6" style={{ background: "#F4F4F2" }}>
+        <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-12">
           <SectionHeading title="The Couple" subtitle="Dua jiwa yang disatukan dalam ikatan suci" color={DARK} />
 
           {/* Groom */}
           <Reveal direction="up">
-            <div className="flex flex-col items-center gap-4 p-5 bg-white/60 border border-[#1E293B]/10 text-center">
+            <div className={`flex flex-col items-center gap-4 p-5 bg-white/80 border border-[#1E293B]/10 text-center ${cardHover}`} style={{ boxShadow: cardShadow }}>
               <div className="relative w-28 h-28 shrink-0">
                 <GeometricFrame color={DARK} size={112} />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -174,7 +172,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
               <div className="space-y-1">
                 <p className="text-[9px] tracking-[0.3em] font-bold uppercase opacity-40" style={{ color: DARK }}>The Groom</p>
                 <h3 className="text-xl font-black uppercase leading-tight" style={{ color: DARK }}>{groomFull}</h3>
-                <p className="text-xs text-gray-400 font-light">
+                <p className="text-xs text-gray-500 font-light">
                   Putra dari {invitation?.groomFather || "—"} &amp; {invitation?.groomMother || "—"}
                 </p>
               </div>
@@ -187,7 +185,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
 
           {/* Bride */}
           <Reveal direction="up">
-            <div className="flex flex-col items-center gap-4 p-5 bg-white/60 border border-[#1E293B]/10 text-center">
+            <div className={`flex flex-col items-center gap-4 p-5 bg-white/80 border border-[#1E293B]/10 text-center ${cardHover}`} style={{ boxShadow: cardShadow }}>
               <div className="relative w-28 h-28 shrink-0">
                 <GeometricFrame color={DARK} size={112} />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -205,7 +203,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
               <div className="space-y-1">
                 <p className="text-[9px] tracking-[0.3em] font-bold uppercase opacity-40" style={{ color: DARK }}>The Bride</p>
                 <h3 className="text-xl font-black uppercase leading-tight" style={{ color: DARK }}>{brideFull}</h3>
-                <p className="text-xs text-gray-400 font-light">
+                <p className="text-xs text-gray-500 font-light">
                   Putri dari {invitation?.brideFather || "—"} &amp; {invitation?.brideMother || "—"}
                 </p>
               </div>
@@ -215,13 +213,13 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
       </section>
 
       {/* ════════ 4. EVENTS ════════ */}
-      <section aria-label="Acara" className="py-20 px-6">
-        <div className="max-w-xl mx-auto space-y-10">
+      <section aria-label="Acara" className="py-24 px-6">
+        <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
           <SectionHeading title="Jadwal Acara" subtitle="Dengan segala kerendahan hati, kami mengundang Bapak/Ibu hadir" color={DARK} />
           <div className="space-y-6">
             {invitation?.events?.map((evt, i) => (
               <Reveal key={evt.id} direction="up" delay={i * 0.12}>
-                <div className="rounded-2xl overflow-hidden border border-[#1E293B]/10">
+                <div className={`rounded-2xl overflow-hidden border border-[#1E293B]/10 ${cardHover}`} style={{ boxShadow: cardShadow }}>
                   {/* Header */}
                   <div className="px-6 py-4 text-white" style={{ background: DARK }}>
                     <p className="text-[9px] tracking-[0.3em] uppercase opacity-50">Acara</p>
@@ -230,30 +228,33 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
                   {/* Body */}
                   <div className="p-6 bg-white grid grid-cols-2 gap-4 text-xs">
                     <div>
-                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-400 mb-1">Tanggal</p>
+                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-500 mb-1">Tanggal</p>
                       <p className="font-semibold text-gray-800 leading-snug">
                         {formatEventDate(evt.date)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-400 mb-1">Waktu</p>
+                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-500 mb-1">Waktu</p>
                       <p className="font-semibold text-gray-800">{evt.startTime} {evt.endTime ? `– ${evt.endTime}` : "WIB"}</p>
                     </div>
                     <div className="col-span-2 pt-3 border-t border-[#1E293B]/10">
-                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-400 mb-1 flex items-center gap-1">
+                      <p className="text-[9px] tracking-[0.2em] font-bold uppercase text-gray-500 mb-1 flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-[#1E293B]" /> Lokasi
                       </p>
                       <p className="font-bold text-gray-800">{evt.locationName}</p>
                       <p className="text-gray-500 font-light text-[11px] mt-0.5">{evt.address}</p>
                     </div>
                   </div>
-                  {evt.mapUrl && (
-                    <div className="px-6 pb-6 bg-white">
-                      <a href={evt.mapUrl} target="_blank" rel="noreferrer"
-                        className="w-full h-10 rounded-xl flex items-center justify-center gap-2 text-[11px] font-bold text-white cursor-pointer hover:opacity-90"
-                        style={{ background: DARK }}>
-                        <MapPin className="w-3.5 h-3.5" /> Buka Google Maps
-                      </a>
+                  {(evt.address || evt.mapUrl) && (
+                    <div className="px-6 pb-6 bg-white space-y-3">
+                      <MapEmbed locationName={evt.locationName} address={evt.address} accent={DARK} />
+                      {evt.mapUrl && (
+                        <a href={evt.mapUrl} target="_blank" rel="noreferrer"
+                          className="w-full h-10 rounded-xl flex items-center justify-center gap-2 text-[11px] font-bold text-white cursor-pointer hover:opacity-90"
+                          style={{ background: DARK }}>
+                          <MapPin className="w-3.5 h-3.5" /> Buka Google Maps
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>
@@ -265,15 +266,15 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
 
       {/* ════════ 5. LOVE STORY ════════ */}
       {invitation?.loveStories?.length > 0 && (
-        <section aria-label="Cerita Cinta" className="py-20 px-6" style={{ background: "#F4F4F2" }}>
-          <div className="max-w-xl mx-auto space-y-10">
+        <section aria-label="Cerita Cinta" className="py-24 px-6" style={{ background: "#F4F4F2" }}>
+          <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
             <SectionHeading title="Our Story" color={DARK} />
             <div className="relative pl-8 border-l-2 space-y-10" style={{ borderColor: `${DARK}20` }}>
               {invitation.loveStories.map((story, i) => (
                 <Reveal key={story.id} direction="left" delay={i * 0.1}>
                   <div className="relative">
                     <div className="absolute -left-[39px] top-2 w-5 h-5 rotate-45 border-2 border-white shadow-md" style={{ background: DARK }} />
-                    <div className="bg-white rounded-xl p-5 border border-[#1E293B]/10 shadow-sm space-y-2">
+                    <div className="bg-white rounded-xl p-5 border border-[#1E293B]/10 space-y-2" style={{ boxShadow: cardShadow }}>
                       <p className="text-[10px] font-black tracking-[0.2em] uppercase" style={{ color: DARK, opacity: 0.5 }}>{story.date}</p>
                       <h4 className="text-lg font-black uppercase tracking-tight" style={{ color: DARK }}>{story.title}</h4>
                       <p className="text-xs text-gray-500 font-light leading-relaxed">{story.description}</p>
@@ -288,8 +289,8 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
 
       {/* ════════ 6. GALLERY ════════ */}
       {galleries.length > 0 && (
-        <section aria-label="Galeri" className="py-20 px-6">
-          <div className="max-w-xl mx-auto space-y-8">
+        <section aria-label="Galeri" className="py-24 px-6">
+          <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-8">
             <SectionHeading title="Our Gallery" color={DARK} />
             {layout === "CAROUSEL" ? (
               <Reveal direction="zoom">
@@ -342,14 +343,14 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
 
       {/* ════════ 7. GIFTS ════════ */}
       {invitation?.gifts?.length > 0 && (
-        <section aria-label="Kado" className="py-20 px-6" style={{ background: "#F4F4F2" }}>
-          <div className="max-w-xl mx-auto space-y-10">
+        <section aria-label="Kado" className="py-24 px-6" style={{ background: "#F4F4F2" }}>
+          <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
             <SectionHeading title="Digital Gift" color={DARK} />
             <div className="space-y-6 max-w-sm mx-auto">
               {invitation.gifts.map((gft, i) => (
                 <Reveal key={gft.id} direction="up" delay={i * 0.15}>
                   {gft.type === "PHYSICAL" ? (
-                    <div className="p-6 bg-white border border-[#1E293B]/10 space-y-3 text-left">
+                    <div className={`p-6 bg-white border border-[#1E293B]/10 space-y-3 text-left ${cardHover}`} style={{ boxShadow: cardShadow }}>
                       <div className="flex items-center gap-2">
                         <Gift className="w-5 h-5" style={{ color: DARK }} />
                         <h3 className="font-black uppercase text-sm" style={{ color: DARK }}>Kirim Kado Fisik</h3>
@@ -377,11 +378,11 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
       )}
 
       {/* ════════ 8. RSVP ════════ */}
-      <section aria-label="RSVP" className="py-20 px-6">
-        <div className="max-w-xl mx-auto space-y-10">
+      <section aria-label="RSVP" className="py-24 px-6">
+        <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
           <SectionHeading title="RSVP & Ucapan" color={DARK} />
           <Reveal direction="up">
-            <div className="p-6 bg-white border border-[#1E293B]/10 shadow-sm">
+            <div className="p-6 bg-white border border-[#1E293B]/10" style={{ boxShadow: cardShadow }}>
               <RsvpForm
                 invitationId={invitation.id}
                 defaultGuestName={guestName}
@@ -395,7 +396,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
           </Reveal>
           <Reveal direction="up" delay={0.1}>
             <div className="space-y-3">
-              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Ucapan Tamu ({rsvps?.length || 0})</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Ucapan Tamu ({rsvps?.length || 0})</p>
               <GuestWishes rsvps={rsvps} accent={DARK} />
             </div>
           </Reveal>
@@ -407,7 +408,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
         <Reveal direction="up">
           <div className="space-y-3">
             <Divider glyph="line" color={DARK} />
-            <p className="text-[10px] text-gray-400 font-light tracking-wider uppercase">Merupakan kehormatan bagi kami</p>
+            <p className="text-[10px] text-gray-500 font-light tracking-wider uppercase">Merupakan kehormatan bagi kami</p>
             <p className="text-2xl font-thin italic" style={{ color: DARK }}>
               {groom} &amp; {bride}
             </p>
@@ -415,7 +416,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
           </div>
         </Reveal>
         <Reveal direction="up" delay={0.1}>
-          <div className="text-[9px] text-gray-400 tracking-[0.3em] font-semibold uppercase flex items-center justify-center gap-2">
+          <div className="text-[9px] text-gray-500 tracking-[0.3em] font-semibold uppercase flex items-center justify-center gap-2">
             <span>CREATED BY</span>
             <span className="font-black" style={{ color: DARK }}>IKARA</span>
           </div>

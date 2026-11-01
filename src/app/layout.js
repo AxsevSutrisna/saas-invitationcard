@@ -1,5 +1,13 @@
-import { Poppins, Cormorant_Garamond, Great_Vibes } from "next/font/google";
+import {
+  Poppins,
+  Cormorant_Garamond,
+  Great_Vibes,
+  Playfair_Display,
+  Libre_Baskerville,
+  Fraunces,
+} from "next/font/google";
 import "./globals.css";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -19,6 +27,32 @@ const greatVibes = Great_Vibes({
   subsets: ["latin"],
   weight: ["400"],
   // Font skrip dekoratif & jarang → jangan render-blocking di muat awal.
+  preload: false,
+  display: "swap",
+});
+
+// ── Font judul KHUSUS per tema undangan (hanya dipakai di halaman undangan) ──
+// preload:false agar tak membebani muat awal situs; di-swap saat dibutuhkan.
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  preload: false,
+  display: "swap",
+});
+
+const baskerville = Libre_Baskerville({
+  variable: "--font-baskerville",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  preload: false,
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   preload: false,
   display: "swap",
 });
@@ -70,10 +104,15 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="id"
-      className={`${poppins.variable} ${cormorant.variable} ${greatVibes.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${poppins.variable} ${cormorant.variable} ${greatVibes.variable} ${playfair.variable} ${baskerville.variable} ${fraunces.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        {/* Anti-flash: set mode gelap/terang sebelum paint pertama */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {children}
+      </body>
     </html>
   );
 }

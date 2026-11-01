@@ -13,22 +13,22 @@
 
 // ─── Chip specs untuk BankCard bersama ({ base, inner, cell }) ───
 const CHIP_GOLD = {
-  base: "bg-gradient-to-br from-yellow-100 via-yellow-300 to-amber-200",
+  base: "bg-linear-to-br from-yellow-100 via-yellow-300 to-amber-200",
   inner: "border-amber-400/60",
   cell: "bg-amber-300/60",
 };
 const CHIP_AMBER = {
-  base: "bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-600 opacity-90",
+  base: "bg-linear-to-br from-yellow-300 via-amber-400 to-yellow-600 opacity-90",
   inner: "border-amber-600/60",
   cell: "bg-amber-500/60",
 };
 const CHIP_BLUE = {
-  base: "bg-gradient-to-br from-cyan-200 via-sky-300 to-blue-200",
+  base: "bg-linear-to-br from-cyan-200 via-sky-300 to-blue-200",
   inner: "border-blue-400/50",
   cell: "bg-blue-200/60",
 };
 const CHIP_ZINC = {
-  base: "bg-gradient-to-br from-zinc-300 via-zinc-200 to-white",
+  base: "bg-linear-to-br from-zinc-300 via-zinc-200 to-white",
   inner: "border-zinc-400/60",
   cell: "bg-zinc-300/60",
 };
@@ -37,6 +37,7 @@ export const THEME_CONFIG = {
   "classic-elegance": {
     slug: "classic-elegance",
     name: "Classic Elegance",
+    renderer: "traditional",
     accent: "#C8A96A",
     accentDark: "#b39150",
     accentDarker: "#9e7e40",
@@ -104,43 +105,38 @@ export const THEME_CONFIG = {
   "floral-blossom": {
     slug: "floral-blossom",
     name: "Floral Blossom",
-    accent: "#B76E79",
-    accentDark: "#a65f6a",
-    accentDarker: "#8B3E4A",
-    fonts: { heading: "font-cormorant", name: "font-greatvibes" },
+    renderer: "traditional",
+    // Tinta/script hijau sage + ornamen bunga pink/peach (terinspirasi undangan
+    // floral: teks hijau lembut di atas blush/cream dengan mawar cat air).
+    accent: "#5E7152",
+    accentDark: "#495A40",
+    accentDarker: "#374430",
+    fonts: { heading: "font-playfair", name: "font-greatvibes" },
     frame: "floral",
-    divider: "heart",
+    divider: "floral-sprig",
     particle: "petals",
     bankCard: {
-      gradient: "linear-gradient(135deg, #2d3f5e 0%, #1a2a48 50%, #0d1a30 100%)",
+      // Kartu bank bernuansa mawar agar aksen floral tetap hadir.
+      gradient: "linear-gradient(135deg, #C98A94 0%, #9E5A66 50%, #6E3A44 100%)",
       overlay: "glass",
       chipClass: CHIP_AMBER,
       providerFont: null,
-      // isRose (BCA/BNI) → gradient rose; selain itu → gradient biru gelap
-      resolveGradient: (providerName) => {
-        const isRose =
-          providerName?.toLowerCase().includes("bca") ||
-          providerName?.toLowerCase().includes("bni");
-        return isRose
-          ? "linear-gradient(135deg, #B76E79 0%, #8B3E4A 50%, #5C1F2B 100%)"
-          : "linear-gradient(135deg, #2d3f5e 0%, #1a2a48 50%, #0d1a30 100%)";
-      },
     },
     hero: {
-      pretitle: "✦ THE WEDDING CELEBRATION ✦",
+      pretitle: "✦ THE WEDDING OF ✦",
       pretitleReveal: "down",
       pretitleOpacity: 1,
       borderFrame: false,
-      bgDecor: "rose",
+      bgDecor: "garden",
       showDivider: false,
     },
-    eventGradient: "linear-gradient(135deg, #B76E79 0%, #8B3E4A 100%)",
+    eventGradient: "linear-gradient(135deg, #6E8560 0%, #45543B 100%)",
     eventOverlay: "circle",
     layout: {
-      pageBg: "linear-gradient(180deg, #FFF3F5 0%, #FFF8F9 60%, #FFF3F5 100%)",
-      surfaceBg: "linear-gradient(180deg, #FFF8F9 0%, #FFF3F5 100%)",
-      text: "#3A2A2D",
-      footerBg: "#B76E7908",
+      pageBg: "linear-gradient(180deg, #FDF2EE 0%, #FBF7F0 55%, #FDF2EE 100%)",
+      surfaceBg: "linear-gradient(180deg, #FBF7F0 0%, #FDF2EE 100%)",
+      text: "#3C352F",
+      footerBg: "#5E715208",
     },
     copy: {
       coupleTitle: "Mempelai Pengantin",
@@ -157,33 +153,40 @@ export const THEME_CONFIG = {
       guestbookLabel: "Doa & Restu Tamu",
     },
     cover: {
-      bg: "bg-[#F8F6F2]/90 dark:bg-zinc-950/90",
-      textPrimary: "text-[#B76E79]",
-      textSecondary: "text-zinc-500 dark:text-zinc-400",
+      // Sampul floral SELALU terang (blush + sage), tidak mengikuti dark mode
+      // aplikasi, agar warnanya selaras dengan isi undangan yang juga selalu
+      // terang. Warna muted dibuat hangat (taupe) agar menyatu dengan blush.
+      bg: "bg-[#FDF2EE]/90",
+      solid: "bg-[#FDF2EE]",
+      textPrimary: "text-[#5E7152]",
+      textSecondary: "text-[#8A7F74]",
       fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
-      cardBg: "bg-white/85 dark:bg-zinc-900/80 border-[#B76E79]/20 shadow-xl",
-      btnColor: "bg-[#B76E79] text-white hover:bg-[#a65f6a] hover:shadow-[#B76E79]/35",
-      btnText: "text-[#B76E79]",
-      ornamentsColor: "#B76E79",
+      cardBg: "bg-white/85 border-[#5E7152]/20 shadow-xl",
+      btnColor: "bg-[#5E7152] text-white hover:bg-[#495A40] hover:shadow-[#5E7152]/35",
+      btnText: "text-[#5E7152]",
+      ornamentsColor: "#5E7152",
       frameKind: "floral-blossom",
+      cardName: "text-[#3C352F]",
+      cardMuted: "text-[#8A7F74]",
       particleType: "petals",
-      layout: "framed",
+      layout: "garden",
       guestCardShape: "rounded-2xl",
     },
     preview: {
-      previewBg: "bg-rose-50/70 dark:bg-[#1f1618]",
-      accentBg: "bg-rose-100 border-rose-300 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
-      primaryBtn: "bg-rose-600 text-white",
+      previewBg: "bg-[#FBF5EF]/80 dark:bg-[#1f1b16]",
+      accentBg: "bg-[#5E7152]/12 border-[#5E7152]/30 text-[#5E7152] dark:bg-green-950/40 dark:text-green-300",
+      primaryBtn: "bg-[#5E7152] text-white",
     },
   },
 
   "floral-blue": {
     slug: "floral-blue",
     name: "Floral Blue",
+    renderer: "traditional",
     accent: "#1A365D",
     accentDark: "#122744",
     accentDarker: "#0d1a30",
-    fonts: { heading: "font-cormorant", name: "font-greatvibes" },
+    fonts: { heading: "font-baskerville", name: "font-greatvibes" },
     frame: "blue-leaf",
     divider: "wave",
     particle: "bubbles",
@@ -225,6 +228,7 @@ export const THEME_CONFIG = {
     },
     cover: {
       bg: "bg-[#E8F4FD]/90 dark:bg-[#0b1420]/90",
+      solid: "bg-[#E8F4FD] dark:bg-[#0b1420]",
       textPrimary: "text-[#1A365D]",
       textSecondary: "text-zinc-500 dark:text-zinc-400",
       fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
@@ -233,8 +237,10 @@ export const THEME_CONFIG = {
       btnText: "text-[#1A365D]",
       ornamentsColor: "#1A365D",
       frameKind: "floral-blue",
+      cardName: "text-zinc-800",
+      cardMuted: "text-zinc-500",
       particleType: "bubbles",
-      layout: "framed",
+      layout: "blue-garden",
       guestCardShape: "rounded-2xl",
     },
     preview: {
@@ -247,6 +253,7 @@ export const THEME_CONFIG = {
   "modern-minimalist": {
     slug: "modern-minimalist",
     name: "Modern Minimalist",
+    renderer: "modern",
     accent: "#0F172A",
     accentDark: "#1E293B",
     accentDarker: "#020617",
@@ -279,6 +286,7 @@ export const THEME_CONFIG = {
     copy: {},
     cover: {
       bg: "bg-[#0F172A]/90 dark:bg-[#090d16]/95",
+      solid: "bg-[#0F172A] dark:bg-[#090d16]",
       textPrimary: "text-zinc-100",
       textSecondary: "text-zinc-400",
       fontName: "font-sans font-black text-xl sm:text-2xl tracking-widest uppercase",
@@ -287,8 +295,10 @@ export const THEME_CONFIG = {
       btnText: "text-zinc-200",
       ornamentsColor: "#FFFFFF",
       frameKind: "modern",
+      cardName: "text-zinc-100",
+      cardMuted: "text-zinc-400",
       particleType: "grid",
-      layout: "framed",
+      layout: "modern-scene",
       guestCardShape: "rounded-none",
     },
     preview: {
@@ -301,10 +311,11 @@ export const THEME_CONFIG = {
   "nature-harmony": {
     slug: "nature-harmony",
     name: "Nature Harmony",
+    renderer: "nature",
     accent: "#4A6B3D",
     accentDark: "#2F4A28",
     accentDarker: "#1B2E16",
-    fonts: { heading: "font-cormorant", name: "font-greatvibes" },
+    fonts: { heading: "font-fraunces", name: "font-greatvibes" },
     frame: "blob",
     divider: "leaf",
     particle: "leaves",
@@ -333,6 +344,7 @@ export const THEME_CONFIG = {
     copy: {},
     cover: {
       bg: "bg-[#F7F5EE]/90 dark:bg-[#171d14]/95",
+      solid: "bg-[#F7F5EE] dark:bg-[#171d14]",
       textPrimary: "text-[#4A6B3D]",
       textSecondary: "text-zinc-500 dark:text-zinc-400",
       fontName: "font-greatvibes text-3xl sm:text-4xl font-medium",
@@ -341,8 +353,10 @@ export const THEME_CONFIG = {
       btnText: "text-[#4A6B3D]",
       ornamentsColor: "#4A6B3D",
       frameKind: "blob",
+      cardName: "text-zinc-800",
+      cardMuted: "text-zinc-500",
       particleType: "leaves",
-      layout: "framed",
+      layout: "nature-garden",
       guestCardShape: "rounded-2xl",
     },
     preview: {

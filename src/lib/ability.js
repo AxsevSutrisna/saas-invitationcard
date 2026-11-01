@@ -64,6 +64,8 @@ const ABILITIES = {
     "guest:read": ownsResource,
     "guest:update": ownsGuest,
     "guest:delete": ownsGuest,
+    // Panel reseller: beli kredit & alokasikan ke undangan klien.
+    "reseller:access": true,
   },
 
   // ADMIN terdefinisi di enum namun belum diberi kemampuan panel CMS.

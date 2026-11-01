@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
-import { ChevronDown, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronDown, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
@@ -32,7 +32,7 @@ export function FAQSection({ faqs = [] }) {
       ];
 
   return (
-    <section id="faq" className="scroll-mt-28 py-20 md:py-28 bg-[#F8F6F2]">
+    <section id="faq" className="scroll-mt-28 py-20 md:py-28 bg-background">
       <div className="max-w-4xl mx-auto px-6 space-y-16">
         {/* Header FAQ */}
         <Reveal
@@ -92,7 +92,7 @@ export function FAQSection({ faqs = [] }) {
         >
 
           <div className="space-y-3 relative z-10">
-            <h3 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight font-cormorant script-glow">
+            <h3 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight script-glow">
               Your Story is Ready to be Shared
             </h3>
             <p className="text-zinc-300 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">

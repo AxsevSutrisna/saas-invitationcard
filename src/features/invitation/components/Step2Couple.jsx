@@ -2,8 +2,9 @@
 
 import { User, Image as ImageIcon, Info } from "lucide-react";
 import { FileUploader } from "@/components/shared/FileUploader";
+import { TextField } from "@/components/ui/Field";
 
-export function Step2Couple({ register, errors, watch, setValue }) {
+export function Step2Couple({ register, errors, watch, setValue, invitationId }) {
   const groomPhotoUrl = watch("groomPhotoUrl");
   const bridePhotoUrl = watch("bridePhotoUrl");
   const coverUrl = watch("coverUrl");
@@ -43,67 +44,46 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               onChange={(url) => setValue("groomPhotoUrl", url)}
               accept="image/*"
               maxSize={5 * 1024 * 1024}
+              invitationId={invitationId}
               helperText="Format JPG, PNG, atau WEBP (Maks 5MB)"
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomNickname" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Panggilan <span className="text-destructive">*</span>
-            </label>
-            <input
-              id="groomNickname"
-              type="text"
-              placeholder="Contoh: William"
-              {...register("groomNickname")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-            {errors.groomNickname && (
-              <p className="text-[10px] text-destructive">{errors.groomNickname.message}</p>
-            )}
-          </div>
+          <TextField
+            label="Nama Panggilan"
+            htmlFor="groomNickname"
+            required
+            error={errors.groomNickname?.message}
+            type="text"
+            placeholder="Contoh: William"
+            {...register("groomNickname")}
+          />
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomFullName" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Lengkap <span className="text-destructive">*</span>
-            </label>
-            <input
-              id="groomFullName"
-              type="text"
-              placeholder="Contoh: William Jonathan Tanuwijaya"
-              {...register("groomFullName")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-            {errors.groomFullName && (
-              <p className="text-[10px] text-destructive">{errors.groomFullName.message}</p>
-            )}
-          </div>
+          <TextField
+            label="Nama Lengkap"
+            htmlFor="groomFullName"
+            required
+            error={errors.groomFullName?.message}
+            type="text"
+            placeholder="Contoh: William Jonathan Tanuwijaya"
+            {...register("groomFullName")}
+          />
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomFather" className="text-[11px] font-semibold text-muted-foreground">
-              Putra dari Bapak
-            </label>
-            <input
-              id="groomFather"
-              type="text"
-              placeholder="Contoh: Bapak William Jonathan"
-              {...register("groomFather")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </div>
+          <TextField
+            label="Putra dari Bapak"
+            htmlFor="groomFather"
+            type="text"
+            placeholder="Contoh: Bapak William Jonathan"
+            {...register("groomFather")}
+          />
 
-          <div className="space-y-1.5">
-            <label htmlFor="groomMother" className="text-[11px] font-semibold text-muted-foreground">
-              dan Ibu
-            </label>
-            <input
-              id="groomMother"
-              type="text"
-              placeholder="Contoh: Ibu William Jonathan"
-              {...register("groomMother")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </div>
+          <TextField
+            label="dan Ibu"
+            htmlFor="groomMother"
+            type="text"
+            placeholder="Contoh: Ibu William Jonathan"
+            {...register("groomMother")}
+          />
         </div>
 
         {/* Kolom Mempelai Wanita */}
@@ -120,67 +100,46 @@ export function Step2Couple({ register, errors, watch, setValue }) {
               onChange={(url) => setValue("bridePhotoUrl", url)}
               accept="image/*"
               maxSize={5 * 1024 * 1024}
+              invitationId={invitationId}
               helperText="Format JPG, PNG, atau WEBP (Maks 5MB)"
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideNickname" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Panggilan <span className="text-destructive">*</span>
-            </label>
-            <input
-              id="brideNickname"
-              type="text"
-              placeholder="Contoh: Eleanor"
-              {...register("brideNickname")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-            {errors.brideNickname && (
-              <p className="text-[10px] text-destructive">{errors.brideNickname.message}</p>
-            )}
-          </div>
+          <TextField
+            label="Nama Panggilan"
+            htmlFor="brideNickname"
+            required
+            error={errors.brideNickname?.message}
+            type="text"
+            placeholder="Contoh: Eleanor"
+            {...register("brideNickname")}
+          />
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideFullName" className="text-[11px] font-semibold text-muted-foreground">
-              Nama Lengkap <span className="text-destructive">*</span>
-            </label>
-            <input
-              id="brideFullName"
-              type="text"
-              placeholder="Contoh: Eleanor Grace Tanuwidjaja"
-              {...register("brideFullName")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-            {errors.brideFullName && (
-              <p className="text-[10px] text-destructive">{errors.brideFullName.message}</p>
-            )}
-          </div>
+          <TextField
+            label="Nama Lengkap"
+            htmlFor="brideFullName"
+            required
+            error={errors.brideFullName?.message}
+            type="text"
+            placeholder="Contoh: Eleanor Grace Tanuwidjaja"
+            {...register("brideFullName")}
+          />
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideFather" className="text-[11px] font-semibold text-muted-foreground">
-              Putri dari Bapak
-            </label>
-            <input
-              id="brideFather"
-              type="text"
-              placeholder="Contoh: Bapak William Jonathan"
-              {...register("brideFather")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </div>
+          <TextField
+            label="Putri dari Bapak"
+            htmlFor="brideFather"
+            type="text"
+            placeholder="Contoh: Bapak William Jonathan"
+            {...register("brideFather")}
+          />
 
-          <div className="space-y-1.5">
-            <label htmlFor="brideMother" className="text-[11px] font-semibold text-muted-foreground">
-              dan Ibu
-            </label>
-            <input
-              id="brideMother"
-              type="text"
-              placeholder="Contoh: Ibu William Jonathan"
-              {...register("brideMother")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </div>
+          <TextField
+            label="dan Ibu"
+            htmlFor="brideMother"
+            type="text"
+            placeholder="Contoh: Ibu William Jonathan"
+            {...register("brideMother")}
+          />
         </div>
       </div>
 
@@ -209,6 +168,7 @@ export function Step2Couple({ register, errors, watch, setValue }) {
             onChange={(url) => setValue("coverUrl", url)}
             accept="image/*"
             maxSize={5 * 1024 * 1024}
+            invitationId={invitationId}
             helperText="Gunakan foto portrait (tegak) untuk hasil terbaik. Maks 5MB."
           />
         </div>

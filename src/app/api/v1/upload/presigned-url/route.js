@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { s3Client, R2_BUCKET_NAME, buildPublicUrl } from "@/lib/r2";
+import { s3Client, R2_BUCKET_NAME, buildPublicUrl, buildUserObjectKey } from "@/lib/r2";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// Batasan tipe & ukuran berkas
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+// Endpoint ini KHUSUS AUDIO (unggah langsung ke R2 via presigned PUT).
+// Gambar selalu lewat POST /api/v1/upload (dikompres sharp → WebP).
 const MAX_AUDIO_SIZE = 10 * 1024 * 1024; // 10MB
-
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const ALLOWED_AUDIO_TYPES = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg", "audio/x-m4a"];
 
 export async function POST(req) {
@@ -28,7 +26,7 @@ export async function POST(req) {
 
     // 2. Baca payload JSON
     const body = await req.json();
-    const { filename, fileType, fileSize } = body;
+    const { filename, fileType, fileSize, invitationId } = body;
 
     if (!filename || !fileType || !fileSize) {
       return NextResponse.json(
@@ -41,33 +39,19 @@ export async function POST(req) {
       );
     }
 
-    // 3. Klasifikasi & Validasi Tipe & Ukuran File
-    const isImage = ALLOWED_IMAGE_TYPES.includes(fileType);
-    const isAudio = ALLOWED_AUDIO_TYPES.includes(fileType);
-
-    if (!isImage && !isAudio) {
+    // 3. Validasi Tipe & Ukuran File (audio saja)
+    if (!ALLOWED_AUDIO_TYPES.includes(fileType)) {
       return NextResponse.json(
         {
           success: false,
           message: "Tipe berkas tidak didukung.",
-          error: { code: "INVALID_FILE_TYPE", details: ["Hanya mendukung gambar (JPEG, PNG, WEBP) atau audio (MP3, WAV, M4A)."] },
+          error: { code: "INVALID_FILE_TYPE", details: ["Endpoint ini hanya untuk audio (MP3, WAV, OGG, M4A)."] },
         },
         { status: 400 }
       );
     }
 
-    if (isImage && fileSize > MAX_IMAGE_SIZE) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Ukuran berkas melebihi batas.",
-          error: { code: "FILE_TOO_LARGE", details: ["Ukuran gambar maksimal 5MB."] },
-        },
-        { status: 400 }
-      );
-    }
-
-    if (isAudio && fileSize > MAX_AUDIO_SIZE) {
+    if (fileSize > MAX_AUDIO_SIZE) {
       return NextResponse.json(
         {
           success: false,
@@ -78,14 +62,15 @@ export async function POST(req) {
       );
     }
 
-    // 4. Generate Unique Key untuk S3/R2
+    // 4. Generate Unique Key untuk S3/R2 (builder bersama — prefix & konvensi
+    //    terpusat di r2.js agar selaras dengan guard penghapusan).
     const fileExtension = filename.split(".").pop() || "";
-    const cleanExtension = fileExtension.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(2, 10);
-    const folder = isImage ? "images" : "audio";
-    
-    const uniqueKey = `invitations/${session.user.id}/${folder}/${timestamp}-${randomStr}.${cleanExtension}`;
+    const uniqueKey = buildUserObjectKey({
+      userId: session.user.id,
+      invitationId: typeof invitationId === "string" && invitationId ? invitationId : undefined,
+      folder: "audio",
+      ext: fileExtension,
+    });
 
     // 5. Generate Presigned URL (PUT)
     const command = new PutObjectCommand({

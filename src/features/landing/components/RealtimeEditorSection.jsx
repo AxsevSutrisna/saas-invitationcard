@@ -21,7 +21,7 @@ export function RealtimeEditorSection() {
     "w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
 
   return (
-    <section className="py-20 md:py-28 bg-[#F8F6F2] relative">
+    <section className="py-20 md:py-28 bg-background relative">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         
         {/* Left Column: Visual Mockups (Form & Phone overlapping) */}
@@ -94,12 +94,12 @@ export function RealtimeEditorSection() {
             </div>
 
             {/* Live Mobile Screen Preview (Foreground Overlapping) */}
-            <div className="absolute -bottom-10 -right-4 md:-right-10 w-[200px] sm:w-[220px] h-[320px] bg-gradient-to-b from-[#2C2723] to-[#1a1613] rounded-2xl p-4 border-4 border-gold-400 shadow-2xl flex flex-col justify-between text-center transform hover:-translate-y-2 transition-transform duration-500">
+            <div className="absolute -bottom-10 -right-4 md:-right-10 w-[200px] sm:w-[220px] h-[320px] bg-linear-to-b from-[#2C2723] to-[#1a1613] rounded-2xl p-4 border-4 border-gold-400 shadow-2xl flex flex-col justify-between text-center transform hover:-translate-y-2 transition-transform duration-500">
               <div className="space-y-2 pt-4 relative z-10">
                 <span className="text-[8px] uppercase tracking-widest text-[#E2C785] font-bold bg-gold-400/20 px-2 py-1 rounded-full">
                   ● Live Preview
                 </span>
-                <h4 className="font-heading text-2xl font-bold text-white mt-4 font-cormorant wrap-break-word px-2 leading-tight">
+                <h4 className="font-heading text-2xl font-bold text-white mt-4 wrap-break-word px-2 leading-tight">
                   {coupleName}
                 </h4>
                 <p className="text-[9px] text-zinc-300 wrap-break-word px-2">
@@ -126,7 +126,7 @@ export function RealtimeEditorSection() {
               Bebas Revisi Kapan Saja
             </span>
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-[#1F1F1F] dark:text-zinc-50 leading-tight">
-              Edit Sendiri, Langsung <span className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-500">Jadi.</span>
+              Edit Sendiri, Langsung <span className="italic font-serif font-normal text-transparent bg-clip-text bg-linear-to-r from-gold-400 to-gold-500">Jadi.</span>
             </h2>
           </div>
 

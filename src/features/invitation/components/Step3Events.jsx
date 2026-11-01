@@ -3,6 +3,7 @@
 import { useFieldArray } from "react-hook-form";
 import { Calendar, Plus, Trash2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TextField, TextAreaField } from "@/components/ui/Field";
 
 export function Step3Events({ register, errors, control }) {
   const { fields, append, remove } = useFieldArray({
@@ -26,11 +27,12 @@ export function Step3Events({ register, errors, control }) {
           type="button"
           onClick={() =>
             append({
-              name: "Resepsi Pernikahan",
-              date: new Date().toISOString().split("T")[0],
-              startTime: "11:00",
-              locationName: "Grand Ballroom",
-              address: "Jl. Jend. Sudirman No. 1, Jakarta",
+              name: "",
+              date: "",
+              startTime: "",
+              endTime: "",
+              locationName: "",
+              address: "",
               mapUrl: "",
             })
           }
@@ -68,92 +70,76 @@ export function Step3Events({ register, errors, control }) {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {/* Nama Acara */}
-              <div className="space-y-1">
-                <label htmlFor={`events-${index}-name`} className="text-[11px] font-semibold text-muted-foreground">
-                  Nama Acara <span className="text-destructive">*</span>
-                </label>
-                <input
-                  id={`events-${index}-name`}
-                  type="text"
-                  placeholder="misal: Akad Nikah"
-                  {...register(`events.${index}.name`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </div>
-
-              {/* Tanggal */}
-              <div className="space-y-1">
-                <label htmlFor={`events-${index}-date`} className="text-[11px] font-semibold text-muted-foreground">
-                  Tanggal <span className="text-destructive">*</span>
-                </label>
-                <input
-                  id={`events-${index}-date`}
-                  type="date"
-                  {...register(`events.${index}.date`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </div>
-
-              {/* Jam Mulai */}
-              <div className="space-y-1">
-                <label htmlFor={`events-${index}-startTime`} className="text-[11px] font-semibold text-muted-foreground">
-                  Jam Mulai <span className="text-destructive">*</span>
-                </label>
-                <input
-                  id={`events-${index}-startTime`}
-                  type="time"
-                  {...register(`events.${index}.startTime`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <TextField
+                label="Nama Acara"
+                htmlFor={`events-${index}-name`}
+                required
+                className="space-y-1"
+                type="text"
+                placeholder="misal: Akad Nikah"
+                {...register(`events.${index}.name`)}
+              />
+              <TextField
+                label="Tanggal"
+                htmlFor={`events-${index}-date`}
+                required
+                className="space-y-1"
+                type="date"
+                {...register(`events.${index}.date`)}
+              />
+              <TextField
+                label="Jam Mulai"
+                htmlFor={`events-${index}-startTime`}
+                required
+                className="space-y-1"
+                type="time"
+                {...register(`events.${index}.startTime`)}
+              />
+              <TextField
+                label="Jam Selesai (opsional)"
+                htmlFor={`events-${index}-endTime`}
+                className="space-y-1"
+                type="time"
+                {...register(`events.${index}.endTime`)}
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {/* Nama Tempat */}
-              <div className="space-y-1">
-                <label htmlFor={`events-${index}-locationName`} className="text-[11px] font-semibold text-muted-foreground">
-                  Nama Tempat / Gedung <span className="text-destructive">*</span>
-                </label>
-                <input
-                  id={`events-${index}-locationName`}
-                  type="text"
-                  placeholder="misal: Hotel Indonesia Kempinski"
-                  {...register(`events.${index}.locationName`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </div>
-
-              {/* Link Google Maps */}
-              <div className="space-y-1">
-                <label htmlFor={`events-${index}-mapUrl`} className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
-                  <MapPin className="h-3 w-3 text-gold-500" aria-hidden="true" />
-                  <span>Link Google Maps</span>
-                </label>
-                <input
-                  id={`events-${index}-mapUrl`}
-                  type="url"
-                  placeholder="https://maps.google.com/..."
-                  {...register(`events.${index}.mapUrl`)}
-                  className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-                />
-              </div>
-            </div>
-
-            {/* Alamat Lengkap */}
-            <div className="space-y-1">
-              <label htmlFor={`events-${index}-address`} className="text-[11px] font-semibold text-muted-foreground">
-                Alamat Lengkap <span className="text-destructive">*</span>
-              </label>
-              <textarea
-                id={`events-${index}-address`}
-                rows={2}
-                placeholder="Jl. M.H. Thamrin No.1, Menteng, Jakarta Pusat"
-                {...register(`events.${index}.address`)}
-                className="w-full rounded-xl border border-border bg-white px-3.5 py-2 text-xs transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+              <TextField
+                label="Nama Tempat / Gedung"
+                htmlFor={`events-${index}-locationName`}
+                required
+                className="space-y-1"
+                type="text"
+                placeholder="misal: Hotel Indonesia Kempinski"
+                {...register(`events.${index}.locationName`)}
+              />
+              <TextField
+                htmlFor={`events-${index}-mapUrl`}
+                className="space-y-1"
+                labelClassName="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground"
+                label={
+                  <>
+                    <MapPin className="h-3 w-3 text-gold-500" aria-hidden="true" />
+                    <span>Link Google Maps</span>
+                  </>
+                }
+                type="url"
+                placeholder="https://maps.google.com/..."
+                {...register(`events.${index}.mapUrl`)}
               />
             </div>
+
+            <TextAreaField
+              label="Alamat Lengkap"
+              htmlFor={`events-${index}-address`}
+              required
+              className="space-y-1"
+              rows={2}
+              placeholder="Jl. M.H. Thamrin No.1, Menteng, Jakarta Pusat"
+              {...register(`events.${index}.address`)}
+            />
           </div>
         ))}
       </div>

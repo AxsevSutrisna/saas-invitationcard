@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Leaf } from "lucide-react";
+import { RoseCluster, FLORAL } from "@/features/theme/components/FloralOrnaments";
 
 // ─────────── Gold Wreath SVG (laurel-style, classic) ───────────
 export function GoldWreath({ color = "#C8A96A", size = 160 }) {
@@ -37,8 +38,10 @@ export function GoldWreath({ color = "#C8A96A", size = 160 }) {
   );
 }
 
-// ─────────── Floral Wreath SVG ornament (Bunga Melingkar) ───────────
-export function FloralWreath({ color = "#B76E79", size = 160 }) {
+// ─────────── Floral Wreath SVG ornament (laurel + gugus mawar) ───────────
+// Cincin dedaunan sage mengelilingi foto + gugus mawar/peach di bawah
+// (terinspirasi bingkai foto undangan floral).
+export function FloralWreath({ color = "#5E7152", size = 160 }) {
   return (
     <svg
       width={size}
@@ -48,31 +51,23 @@ export function FloralWreath({ color = "#B76E79", size = 160 }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {/* Central photo circle */}
-      <circle cx="80" cy="80" r="52" fill="white" stroke={color} strokeWidth="2.5" strokeDasharray="6 4" />
-      {/* Petal cluster top */}
-      <ellipse cx="80" cy="18" rx="8" ry="13" fill={color} opacity="0.25" transform="rotate(0 80 80)" />
-      <ellipse cx="80" cy="18" rx="6" ry="10" fill={color} opacity="0.45" />
-      {/* Rotate 8 petal clusters */}
-      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-        <g key={i} style={{ transformOrigin: "80px 80px", transform: `rotate(${angle}deg)` }}>
-          <ellipse cx="80" cy="22" rx="6" ry="10" fill={color} opacity="0.22" />
-          <circle cx="80" cy="14" r="4" fill={color} opacity="0.35" />
-        </g>
-      ))}
-      {/* Leaves (4 diagonal) */}
-      {[30, 120, 210, 300].map((angle, i) => (
-        <g key={`leaf-${i}`} style={{ transformOrigin: "80px 80px", transform: `rotate(${angle}deg)` }}>
-          <ellipse cx="80" cy="16" rx="4" ry="8" fill="#86efac" opacity="0.5" />
-        </g>
-      ))}
-      {/* Small accent dots */}
-      {[22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5].map((angle, i) => {
-        const rad = (angle * Math.PI) / 180;
-        const cx = 80 + 58 * Math.cos(rad);
-        const cy = 80 + 58 * Math.sin(rad);
-        return <circle key={`dot-${i}`} cx={cx} cy={cy} r="3" fill={color} opacity="0.4" />;
+      {/* Cincin halus di sekeliling foto */}
+      <circle cx="80" cy="80" r="55" stroke={color} strokeWidth="1.3" strokeDasharray="2 5" opacity="0.5" />
+      {/* Dedaunan laurel mengitari cincin (dilewati di area bawah untuk mawar) */}
+      {Array.from({ length: 18 }).map((_, i) => {
+        const ang = (i / 18) * 360;
+        if (ang > 52 && ang < 128) return null; // beri ruang gugus mawar di bawah
+        const rad = (ang * Math.PI) / 180;
+        const lx = 80 + 59 * Math.cos(rad);
+        const ly = 80 + 59 * Math.sin(rad);
+        return (
+          <g key={i} style={{ transformOrigin: `${lx}px ${ly}px`, transform: `rotate(${ang + 90}deg)` }}>
+            <ellipse cx={lx} cy={ly} rx="3.2" ry="7" fill={i % 2 ? FLORAL.leaf : FLORAL.leafDk} opacity="0.6" />
+          </g>
+        );
       })}
+      {/* Gugus mawar + peach menumpuk di bawah foto */}
+      <RoseCluster cx={80} cy={128} scale={1.35} />
     </svg>
   );
 }

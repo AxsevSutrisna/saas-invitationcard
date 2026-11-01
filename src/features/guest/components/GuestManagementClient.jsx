@@ -15,7 +15,6 @@ import {
   X,
   UserPlus,
   Eye,
-  Calendar,
   Clock,
   Sparkles,
   Printer
@@ -25,13 +24,25 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
+import { Modal } from "@/components/ui/Modal";
 import {
   createGuestAction,
   createGuestsBulkAction,
   updateGuestAction,
   deleteGuestAction
 } from "@/features/guest/actions";
-import { buildWhatsAppUrl } from "@/lib/format";
+import { buildWhatsAppUrl, formatEventDate, formatShortDateTime } from "@/lib/format";
+
+/**
+ * Bangun tautan undangan personal seorang tamu. SATU-SATUNYA tempat kontrak
+ * query-param (?to=<nama>&code=<kode>) didefinisikan — ubah di sini saja.
+ * @param {string} baseUrl origin (mis. https://ikara.id)
+ * @param {string} slug slug undangan
+ * @param {{ name: string, uniqueCode: string }} guest
+ */
+function buildGuestLink(baseUrl, slug, guest) {
+  return `${baseUrl}/${slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+}
 
 export function GuestManagementClient({ invitations, selectedInvitation, initialGuests }) {
   const router = useRouter();
@@ -154,7 +165,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
   // Copy invitation link to clipboard
   const handleCopyLink = (guest) => {
-    const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+    const link = buildGuestLink(baseUrl, selectedInvitation.slug, guest);
     navigator.clipboard.writeText(link);
     setCopiedId(guest.id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -162,9 +173,62 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
 
   // Generate WA share URL
   const getWaShareUrl = (guest) => {
-    const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+    const link = buildGuestLink(baseUrl, selectedInvitation.slug, guest);
     const message = `Halo ${guest.name}, tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami. Berikut adalah tautan undangan digital kami:\n\n${link}`;
     return buildWhatsAppUrl(guest.whatsapp, message);
+  };
+
+  // Export daftar tamu sebagai file CSV (dibuka di Excel/Google Sheets)
+  const handleExportCSV = () => {
+    // Bungkus nilai yang mengandung koma/kutip/baris baru sesuai standar CSV
+    const escapeCsv = (val) => {
+      const s = String(val ?? "");
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rsvpLabel = (g) => {
+      if (!g.rsvp) return "Belum Konfirmasi";
+      if (g.rsvp.attendance === "YES") return "Hadir";
+      if (g.rsvp.attendance === "NO") return "Tidak Hadir";
+      return "Ragu-ragu";
+    };
+
+    const header = [
+      "No",
+      "Nama",
+      "WhatsApp",
+      "Status Undangan",
+      "Konfirmasi RSVP",
+      "Jumlah Tamu",
+      "Ucapan & Doa",
+      "Link Personal",
+    ];
+    const rows = initialGuests.map((g, i) => [
+      i + 1,
+      g.name,
+      g.whatsapp || "",
+      g.isOpened ? "Sudah Dibuka" : "Belum Dibuka",
+      rsvpLabel(g),
+      g.rsvp?.pax ?? "",
+      g.rsvp?.message || "",
+      buildGuestLink(baseUrl, selectedInvitation.slug, g),
+    ]);
+
+    const csv = [header, ...rows]
+      .map((r) => r.map(escapeCsv).join(","))
+      .join("\r\n");
+
+    // Prefix BOM (﻿) agar Excel membaca UTF-8 dengan benar (nama & emoji)
+    const blob = new Blob(["﻿" + csv], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `daftar-tamu-${selectedInvitation.slug || "undangan"}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   // Print and Generate PDF report of Guests list
@@ -201,12 +265,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       `;
     }).join("");
 
-    const dateStr = new Date().toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    const dateStr = formatEventDate(new Date());
 
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
@@ -510,8 +569,8 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       {/* Toolbar Controls Section */}
       <Surface as="section" padding="none" className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4">
         {/* Search & Filters */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-grow max-w-2xl">
-          <div className="relative flex-grow">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 grow max-w-2xl">
+          <div className="relative grow">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <label htmlFor="guest-search" className="sr-only">Cari tamu undangan</label>
             <input
@@ -546,6 +605,16 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
           <Button onClick={handlePrintPDF} variant="outline" size="sm">
             <Printer className="w-4 h-4" aria-hidden="true" />
             <span>Cetak Daftar Hadir Tamu</span>
+          </Button>
+
+          <Button
+            onClick={handleExportCSV}
+            variant="outline"
+            size="sm"
+            disabled={initialGuests.length === 0}
+          >
+            <FileSpreadsheet className="w-4 h-4" aria-hidden="true" />
+            <span>Export CSV</span>
           </Button>
 
           <Button onClick={() => setShowBulkModal(true)} variant="outline" size="sm">
@@ -598,7 +667,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                 </tr>
               ) : (
                 filteredGuests.map((guest) => {
-                  const link = `${baseUrl}/${selectedInvitation.slug}?to=${encodeURIComponent(guest.name)}&code=${guest.uniqueCode}`;
+                  const link = buildGuestLink(baseUrl, selectedInvitation.slug, guest);
                   
                   return (
                     <tr key={guest.id} className="hover:bg-gold-400/5 transition-colors">
@@ -622,7 +691,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                             </Badge>
                             {guest.openedAt && (
                               <span className="block text-[8px] text-muted-foreground font-light pl-1">
-                                {new Date(guest.openedAt).toLocaleDateString("id-ID", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                {formatShortDateTime(guest.openedAt)}
                               </span>
                             )}
                           </div>
@@ -733,14 +802,13 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
       </Surface>
 
       {/* modal A: Single Guest (Create / Edit) */}
-      {showSingleModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="single-guest-title"
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-        >
-          <div className="bg-card w-full max-w-md rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
+      <Modal
+        open={showSingleModal}
+        onClose={() => setShowSingleModal(false)}
+        labelledBy="single-guest-title"
+        overlayClassName="bg-black/60 backdrop-blur-sm"
+        panelClassName="bg-card w-full max-w-md rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4"
+      >
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
               <h2 id="single-guest-title" className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-gold-400" aria-hidden="true" />
@@ -803,19 +871,16 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                 </Button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
 
       {/* modal B: Bulk Guests (Textarea generator) */}
-      {showBulkModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="bulk-guest-title"
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-        >
-          <div className="bg-card w-full max-w-lg rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4">
+      <Modal
+        open={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        labelledBy="bulk-guest-title"
+        overlayClassName="bg-black/60 backdrop-blur-sm"
+        panelClassName="bg-card w-full max-w-lg rounded-3xl border border-border/60 shadow-2xl p-6 space-y-4"
+      >
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
               <h2 id="bulk-guest-title" className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
                 <UserPlus className="w-4 h-4 text-gold-400" aria-hidden="true" />
@@ -866,9 +931,7 @@ export function GuestManagementClient({ invitations, selectedInvitation, initial
                 </Button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

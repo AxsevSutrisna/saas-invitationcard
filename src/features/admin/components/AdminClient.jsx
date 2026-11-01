@@ -8,6 +8,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Modal } from "@/components/ui/Modal";
+import { DASHBOARD_INPUT_GHOST } from "@/components/ui/Field";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import {
   Users as UsersIcon,
   CreditCard as CreditCardIcon,
@@ -16,6 +20,7 @@ import {
   Music,
   HelpCircle,
   Settings,
+  Package as PackageIcon,
   Plus,
   Trash2,
   Edit,
@@ -46,8 +51,10 @@ import {
   deleteFaqAction,
   updateSystemSettingAction
 } from "@/features/admin/actions";
-import { formatRupiah } from "@/lib/format";
+import { PackageManager } from "@/features/admin/components/PackageManager";
+import { formatRupiah, formatShortDate, formatDateTime } from "@/lib/format";
 import { ROLES } from "@/constants/roles";
+import { THEME_CATEGORIES } from "@/features/theme/theme-catalog";
 
 const TAB_TITLES = {
   users: {
@@ -78,6 +85,10 @@ const TAB_TITLES = {
     title: "Setelan WhatsApp Support",
     description: "Kelola nomor kontak WhatsApp bantuan pelanggan untuk tombol chat melayang di landing page.",
   },
+  packages: {
+    title: "Kelola Paket & Fitur",
+    description: "Atur harga, kuota, masa aktif, dan fitur tiap paket/bundle. Semua bisa diubah tanpa deploy ulang.",
+  },
 };
 
 const TAB_ICONS = {
@@ -88,11 +99,11 @@ const TAB_ICONS = {
   musics: Music,
   faqs: HelpCircle,
   settings: Settings,
+  packages: PackageIcon,
 };
 
-// Kelas field seragam (rule desain: rounded-xl + border-border + fokus emas).
-const FIELD_CLASS =
-  "w-full rounded-xl border border-border bg-transparent px-3 py-2 text-xs text-foreground outline-none transition-colors focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30";
+// Kelas field seragam (ghost) — satu sumber via Field agar tidak drift.
+const FIELD_CLASS = DASHBOARD_INPUT_GHOST;
 
 // Kelas header sel tabel seragam.
 const TH_CLASS = "px-4 py-3 font-semibold";
@@ -105,7 +116,9 @@ export function AdminClient({
   initialMusics,
   initialFaqs,
   initialSettings,
-  packages
+  packages,
+  allPackages = [],
+  features = []
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -139,7 +152,7 @@ export function AdminClient({
   const [waNumberInput, setWaNumberInput] = useState(waSetting);
 
   // Form inputs untuk CRUD
-  const [themeInput, setThemeInput] = useState({ name: "", slug: "", description: "", thumbnailUrl: "", isPremium: false, isActive: true });
+  const [themeInput, setThemeInput] = useState({ name: "", slug: "", description: "", category: "", thumbnailUrl: "", previewImages: [], isPremium: false, isActive: true });
   const [quoteInput, setQuoteInput] = useState({ title: "", content: "", category: "Islami" });
   const [musicInput, setMusicInput] = useState({ title: "", url: "", isActive: true });
   const [faqInput, setFaqInput] = useState({ question: "", answer: "", sortOrder: "" });
@@ -156,7 +169,7 @@ export function AdminClient({
   const closeModal = () => {
     setModalOpen(false);
     setEditItem(null);
-    setThemeInput({ name: "", slug: "", description: "", thumbnailUrl: "", isPremium: false, isActive: true });
+    setThemeInput({ name: "", slug: "", description: "", category: "", thumbnailUrl: "", previewImages: [], isPremium: false, isActive: true });
     setQuoteInput({ title: "", content: "", category: "Islami" });
     setMusicInput({ title: "", url: "", isActive: true });
     setFaqInput({ question: "", answer: "", sortOrder: "" });
@@ -183,7 +196,9 @@ export function AdminClient({
         name: item.name,
         slug: item.slug,
         description: item.description || "",
+        category: item.category || "",
         thumbnailUrl: item.thumbnailUrl || "",
+        previewImages: Array.isArray(item.previewImages) ? item.previewImages : [],
         isPremium: item.isPremium,
         isActive: item.isActive
       });
@@ -532,7 +547,7 @@ export function AdminClient({
                             {activeSub ? (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gold-400">
                                 <Sparkles className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
-                                {activeSub.package.name} (s.d. {new Date(activeSub.validUntil).toLocaleDateString("id-ID")})
+                                {activeSub.package.name} (s.d. {formatShortDate(activeSub.validUntil)})
                               </span>
                             ) : (
                               <span className="font-light text-muted-foreground">Free Trial</span>
@@ -643,20 +658,10 @@ export function AdminClient({
                           <td className="px-4 py-3.5 font-semibold text-gold-400">{t.package?.name}</td>
                           <td className="px-4 py-3.5">{formatRupiah(t.amount)}</td>
                           <td className="px-4 py-3.5">
-                            <Badge
-                              variant={
-                                t.status === "SUCCESS"
-                                  ? "success"
-                                  : t.status === "FAILED"
-                                  ? "danger"
-                                  : "neutral"
-                              }
-                            >
-                              {t.status}
-                            </Badge>
+                            <StatusBadge status={t.status} />
                           </td>
                           <td className="px-4 py-3.5 text-right font-light text-muted-foreground">
-                            {new Date(t.createdAt).toLocaleDateString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                            {formatDateTime(t.createdAt)}
                           </td>
                         </tr>
                       ))}
@@ -1018,31 +1023,28 @@ export function AdminClient({
           </div>
         )}
 
+        {activeTab === "packages" && (
+          <PackageManager packages={allPackages} features={features} />
+        )}
+
       </Surface>
 
       {/* ==================================== GLOBAL CRUD MODALS ==================================== */}
-      {modalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="admin-modal-title"
-        >
-          <div className="relative w-full max-w-lg space-y-6 rounded-3xl border border-border/60 bg-card p-6 shadow-2xl sm:p-8">
-
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-border/40 pb-4">
-              <h3 id="admin-modal-title" className="font-heading text-lg font-bold text-foreground">
-                {modalType === "upgrade_user" && "Upgrade Paket Langganan Manual"}
-                {modalType === "theme" && (editItem ? "Edit Tema Undangan" : "Tambah Tema Baru")}
-                {modalType === "quote" && (editItem ? "Edit Templat Ayat/Kutipan" : "Tambah Templat Ayat/Kutipan")}
-                {modalType === "music" && (editItem ? "Edit Lagu Latar" : "Tambah Lagu Latar")}
-                {modalType === "faq" && (editItem ? "Edit FAQ" : "Tambah FAQ Baru")}
-              </h3>
-              <Button variant="ghost" size="icon-sm" onClick={closeModal} aria-label="Tutup dialog">
-                <X aria-hidden="true" />
-              </Button>
-            </div>
+      <Modal
+        open={modalOpen}
+        onClose={closeModal}
+        labelledBy="admin-modal-title"
+        panelClassName="max-w-lg"
+        title={
+          <>
+            {modalType === "upgrade_user" && "Upgrade Paket Langganan Manual"}
+            {modalType === "theme" && (editItem ? "Edit Tema Undangan" : "Tambah Tema Baru")}
+            {modalType === "quote" && (editItem ? "Edit Templat Ayat/Kutipan" : "Tambah Templat Ayat/Kutipan")}
+            {modalType === "music" && (editItem ? "Edit Lagu Latar" : "Tambah Lagu Latar")}
+            {modalType === "faq" && (editItem ? "Edit FAQ" : "Tambah FAQ Baru")}
+          </>
+        }
+      >
 
             {/* Modal Form Body */}
 
@@ -1084,7 +1086,7 @@ export function AdminClient({
             {/* 2. Form Theme CRUD */}
             {modalType === "theme" && (
               <form onSubmit={handleThemeSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <label htmlFor="theme-name" className="text-xs font-semibold text-foreground">Nama Tema</label>
                     <input
@@ -1121,37 +1123,33 @@ export function AdminClient({
                     className={FIELD_CLASS}
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="theme-category" className="text-xs font-semibold text-foreground">Kategori</label>
+                  <select
+                    id="theme-category"
+                    value={themeInput.category}
+                    onChange={(e) => setThemeInput({ ...themeInput, category: e.target.value })}
+                    className={FIELD_CLASS}
+                  >
+                    <option value="">— Pilih kategori —</option>
+                    {THEME_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
                 {/* Tab Switcher for Thumbnail Source Mode */}
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-foreground">Sumber Gambar Thumbnail</span>
-                  <div role="tablist" aria-label="Sumber gambar thumbnail" className="flex gap-2 rounded-xl bg-muted/60 p-1">
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={themeThumbnailSourceTab === "upload"}
-                      onClick={() => setThemeThumbnailSourceTab("upload")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        themeThumbnailSourceTab === "upload"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Unggah Gambar (R2/S3)
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={themeThumbnailSourceTab === "url"}
-                      onClick={() => setThemeThumbnailSourceTab("url")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        themeThumbnailSourceTab === "url"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Tautan URL Gambar
-                    </button>
-                  </div>
+                  <SegmentedControl
+                    fullWidth
+                    ariaLabel="Sumber gambar thumbnail"
+                    value={themeThumbnailSourceTab}
+                    onChange={setThemeThumbnailSourceTab}
+                    options={[
+                      { value: "upload", label: "Unggah Gambar (R2/S3)" },
+                      { value: "url", label: "Tautan URL Gambar" },
+                    ]}
+                  />
                 </div>
 
                 {/* Tab 1: Upload Image */}
@@ -1161,10 +1159,11 @@ export function AdminClient({
                     <FileUploader
                       value={themeInput.thumbnailUrl}
                       onChange={(url) => setThemeInput({ ...themeInput, thumbnailUrl: url })}
-                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      accept="image/*"
                       maxSize={5 * 1024 * 1024} // 5MB
+                      scope="theme"
                       label="Seret & lepas gambar di sini"
-                      helperText="Format berkas JPG, PNG, WEBP, atau GIF (Maksimal 5MB)"
+                      helperText="Gambar format apa pun — otomatis dikonversi ke WebP (Maksimal 5MB)"
                     />
                     {themeInput.thumbnailUrl && (
                       <div className="flex flex-col gap-1.5 rounded-xl border border-border/60 bg-muted/40 p-2.5 text-xs">
@@ -1199,6 +1198,45 @@ export function AdminClient({
                     )}
                   </div>
                 )}
+                {/* Galeri Preview (multi-gambar screenshot tema) */}
+                <div className="space-y-1.5">
+                  <span className="text-xs font-semibold text-foreground">
+                    Galeri Preview <span className="font-normal text-muted-foreground">(opsional — screenshot tema, bisa beberapa)</span>
+                  </span>
+                  {themeInput.previewImages.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {themeInput.previewImages.map((url, i) => (
+                        <div key={i} className="relative overflow-hidden rounded-lg border border-border">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt={`Preview ${i + 1}`} className="h-20 w-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setThemeInput((prev) => ({
+                                ...prev,
+                                previewImages: prev.previewImages.filter((_, idx) => idx !== i),
+                              }))
+                            }
+                            aria-label={`Hapus preview ${i + 1}`}
+                            className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white shadow"
+                          >
+                            <X className="h-3 w-3" aria-hidden="true" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <FileUploader
+                    value=""
+                    onChange={(url) =>
+                      setThemeInput((prev) => ({ ...prev, previewImages: [...prev.previewImages, url] }))
+                    }
+                    accept="image/*"
+                    maxSize={5 * 1024 * 1024}
+                    scope="theme"
+                    helperText="Unggah screenshot tema (format apa pun → WebP, maks 5MB). Ulangi untuk menambah beberapa."
+                  />
+                </div>
                 <div className="flex items-center gap-6 pt-2">
                   <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-foreground">
                     <input
@@ -1229,7 +1267,7 @@ export function AdminClient({
             {/* 3. Form Quote Template CRUD */}
             {modalType === "quote" && (
               <form onSubmit={handleQuoteSubmit} className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div className="col-span-2 space-y-1.5">
                     <label htmlFor="quote-title" className="text-xs font-semibold text-foreground">Judul / Sumber Ayat</label>
                     <input
@@ -1295,34 +1333,16 @@ export function AdminClient({
                 {/* Tab Switcher for Source Mode */}
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-foreground">Sumber Berkas Musik</span>
-                  <div role="tablist" aria-label="Sumber berkas musik" className="flex gap-2 rounded-xl bg-muted/60 p-1">
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={musicSourceTab === "upload"}
-                      onClick={() => setMusicSourceTab("upload")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        musicSourceTab === "upload"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Unggah MP3 (R2/S3 Storage)
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={musicSourceTab === "url"}
-                      onClick={() => setMusicSourceTab("url")}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
-                        musicSourceTab === "url"
-                          ? "bg-card text-gold-400 shadow-(--shadow-gold-sm)"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Tautan URL Eksternal
-                    </button>
-                  </div>
+                  <SegmentedControl
+                    fullWidth
+                    ariaLabel="Sumber berkas musik"
+                    value={musicSourceTab}
+                    onChange={setMusicSourceTab}
+                    options={[
+                      { value: "upload", label: "Unggah MP3 (R2/S3 Storage)" },
+                      { value: "url", label: "Tautan URL Eksternal" },
+                    ]}
+                  />
                 </div>
 
                 {/* Tab 1: Upload File MP3 */}
@@ -1435,9 +1455,7 @@ export function AdminClient({
               </form>
             )}
 
-          </div>
-        </div>
-      )}
+      </Modal>
 
     </div>
   );

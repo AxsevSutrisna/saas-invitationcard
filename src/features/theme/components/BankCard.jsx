@@ -31,7 +31,7 @@ function CardOverlay({ overlay }) {
     case "glass":
       return (
         <>
-          <div className="absolute inset-0 opacity-10 bg-gradient-to-tr from-white/30 via-transparent to-white/10" />
+          <div className="absolute inset-0 opacity-10 bg-linear-to-tr from-white/30 via-transparent to-white/10" />
           <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full border border-white/10" />
           <div className="absolute -top-5 -right-5 w-32 h-32 rounded-full border border-white/10" />
           <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full border border-white/10" />
@@ -42,7 +42,7 @@ function CardOverlay({ overlay }) {
       return (
         <>
           <div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,white,white_1px,transparent_0,transparent_12px)]" />
-          <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-white/30 to-transparent" />
+          <div className="absolute inset-0 opacity-10 bg-linear-to-br from-white/30 to-transparent" />
           <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full border border-white/15" />
           <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full border border-white/10" />
           <div className="absolute -bottom-12 -left-12 w-44 h-44 rounded-full border border-white/10" />
@@ -59,15 +59,17 @@ function CardOverlay({ overlay }) {
  * - overlay: "stripes-circles" | "glass" | "wave" | "grid-glow"
  * - chipClass: { base, inner, cell } class Tailwind untuk chip
  * - providerFont: "cormorant" | null (font nama provider)
- * - resolveGradient?: (providerName) => gradientString (mis. cabang isRose floral-blossom)
  */
-export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-circles", chipClass = {}, providerFont, resolveGradient }) {
-  const background = resolveGradient ? resolveGradient(gift.providerName) : gradient;
+export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-circles", chipClass = {}, providerFont }) {
+  const background = gradient;
   const providerFontClass = providerFont === "cormorant" ? "font-cormorant" : "";
 
+  const isEwallet = gift.type === "EWALLET";
+
   return (
+    <div className="w-full max-w-sm mx-auto space-y-3">
     <div
-      className="relative w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl"
+      className="relative rounded-3xl overflow-hidden shadow-2xl"
       style={{ background, minHeight: 180 }}
     >
       <CardOverlay overlay={overlay} />
@@ -76,7 +78,7 @@ export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-
         {/* Top: bank name + chip */}
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[9px] text-white/60 tracking-[0.25em] uppercase">Bank Transfer</p>
+            <p className="text-[9px] text-white/60 tracking-[0.25em] uppercase">{isEwallet ? "E-Wallet" : "Bank Transfer"}</p>
             <p className={`text-white font-bold text-lg tracking-wide ${providerFontClass}`}>{gift.providerName}</p>
           </div>
           {/* Chip */}
@@ -112,6 +114,23 @@ export function BankCard({ gift, copiedId, onCopy, gradient, overlay = "stripes-
           </button>
         </div>
       </div>
+    </div>
+
+    {/* Panel QR / QRIS — hanya tampil bila undangan menyertakan gambar QR */}
+    {gift.qrCodeUrl && (
+      <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-4 shadow-lg">
+        <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-400">
+          Scan QRIS untuk Kirim Hadiah
+        </p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={gift.qrCodeUrl}
+          alt={`Kode QRIS ${gift.providerName}`}
+          className="h-44 w-44 rounded-lg object-contain"
+          loading="lazy"
+        />
+      </div>
+    )}
     </div>
   );
 }

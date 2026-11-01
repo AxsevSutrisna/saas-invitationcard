@@ -14,6 +14,33 @@ export async function findAllActivePackages() {
   });
 }
 
+/**
+ * Paket ECERAN (dibeli per undangan): PLAN/BUNDLE/ADDON berbayar sekali-bayar
+ * yang aktif. Dipakai pemilih "Upgrade undangan ini" di dashboard — add-on
+ * bersifat menumpuk pada entitlement yang ada.
+ */
+export async function findEceranPackages() {
+  return db.package.findMany({
+    where: {
+      isActive: true,
+      kind: { in: ["PLAN", "BUNDLE", "ADDON"] },
+      saleType: "ONE_TIME",
+      price: { gt: 0 },
+    },
+    orderBy: { sortOrder: "asc" },
+  });
+}
+
+/**
+ * Paket RESELLER aktif (dijual dengan harga grosir, dibeli sebagai kredit/batch).
+ */
+export async function findResellerPackages() {
+  return db.package.findMany({
+    where: { isActive: true, saleType: "RESELLER" },
+    orderBy: { sortOrder: "asc" },
+  });
+}
+
 export async function findActiveSubscriptionByUserId(userId) {
   return db.subscription.findFirst({
     where: {
@@ -69,6 +96,18 @@ export async function upsertActiveSubscription({ userId, packageId, durationDays
       status: "ACTIVE",
       quotaUsed: 0,
     },
+  });
+}
+
+/**
+ * Menaikkan penghitung kuota terpakai (quotaUsed) sebuah langganan sebanyak 1.
+ * Dipanggil saat sebuah undangan dibuat di bawah langganan tersebut.
+ * @param {string} subscriptionId
+ */
+export async function incrementSubscriptionQuota(subscriptionId) {
+  return db.subscription.update({
+    where: { id: subscriptionId },
+    data: { quotaUsed: { increment: 1 } },
   });
 }
 

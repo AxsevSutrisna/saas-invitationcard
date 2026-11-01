@@ -3,6 +3,10 @@
 import { motion } from "framer-motion";
 import { Mail, Leaf } from "lucide-react";
 import { getThemeConfig } from "@/features/theme/theme-config";
+import { HangingLeavesTop, GardenScene, CoverGardenBorder } from "@/features/theme/components/FloralOrnaments";
+import { CoverLayers } from "@/features/theme/components/CoverLayers";
+import { getCoverAssets } from "@/features/theme/cover-assets";
+import { BlueGardenDecor, NatureDecor, ModernDecor } from "@/features/theme/components/CoverScenes";
 
 const ROSE_PETALS = [
   { left: "12%", xEnd: 30,  dur: 9,   del: 0   },
@@ -35,6 +39,34 @@ const GREEN_LEAVES = [
   { left: "74%", xEnd: -26, dur: 16, del: 1,   fontSize: "18px" },
   { left: "90%", xEnd: 20,  dur: 11, del: 5.5, fontSize: "15px" },
 ];
+
+/**
+ * Transisi "buka undangan" — FADE + ZOOM-THROUGH: cover memudar (opacity 1→0)
+ * sambil sedikit membesar (scale 1→1.08), seolah resesi/larut ke arah penonton.
+ * Saat cover larut, isi undangan di belakangnya tersingkap halus (cross-dissolve).
+ * Dipakai BERSAMA oleh kedua varian cover (fullbleed & framed) agar tak duplikat.
+ *
+ * PENTING — cover dirender `fixed inset-0`, BUKAN `absolute`. Begitu undangan
+ * dibuka, isi undangan (tinggi) ikut ter-render sebagai sibling dan membuat
+ * parent membengkak setinggi seluruh halaman. Kalau cover `absolute`, tingginya
+ * ikut membengkak → titik pusat skala jatuh di tengah HALAMAN (jauh di bawah
+ * viewport) dan konten cover meloncat. Dengan `fixed`, cover selalu seukuran
+ * viewport (di preview: terkurung ke layar HP via transform parent) → pusat
+ * skala di tengah layar, zoom terasa benar.
+ *
+ * Isi undangan TIDAK diberi transform zoom sendiri (hanya tersingkap oleh cover
+ * yang larut): transform yang menetap akan membuat elemen `fixed` (partikel &
+ * tombol musik) terkurung + ikut ter-scroll, dan merusak rantai tinggi
+ * `min-h-screen` di preview. Hero isi sengaja statis (lihat Reveal.jsx).
+ *
+ * Blur lembut (0→8px) saat memudar → kesan "larut"/dreamy. Blur hanya pada cover
+ * (unmount setelah transisi) & tak memengaruhi isi undangan (cover = sibling).
+ */
+const COVER_TRANSITION = {
+  initial: { opacity: 1, scale: 1, filter: "blur(0px)" },
+  exit: { opacity: 0, scale: 1.08, filter: "blur(8px)" },
+  transition: { duration: 1, ease: [0.4, 0, 0.2, 1] },
+};
 
 function PhotoFrame({ frameKind, coverUrl, title }) {
   const defaultPlaceholder = "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600";
@@ -122,9 +154,141 @@ function PhotoFrame({ frameKind, coverUrl, title }) {
   }
 }
 
+// ── Cover "SCENIC" — sampul bertema untuk floral-blue / nature / modern:
+//    latar bertema + dekor SVG beranimasi + konten. Satu komponen, beda scene. ──
+const SCENES = {
+  "blue-garden": {
+    Decor: BlueGardenDecor,
+    sky: "linear-gradient(175deg, #EAF4FB 0%, #DBEAF6 32%, #E4E1F2 70%, #D9D7EC 100%)",
+    particle: "bubbles",
+    nameKind: "script",
+    nameFont: "font-greatvibes",
+    name: "text-[#1A365D]",
+    nameShadow: "drop-shadow-[0_2px_8px_rgba(255,255,255,0.6)]",
+    pretitle: "text-[#1A365D]/70",
+    divider: "bg-[#1A365D]/40",
+    btn: "border-[#1A365D]/40 bg-[#1A365D]/12 text-[#1A365D]",
+  },
+  "nature-garden": {
+    Decor: NatureDecor,
+    sky: "linear-gradient(175deg, #F5F4E9 0%, #ECEDD9 40%, #E3E8D2 74%, #D9E3C9 100%)",
+    particle: "leaves",
+    nameKind: "script",
+    nameFont: "font-greatvibes",
+    name: "text-[#2F4A28]",
+    nameShadow: "drop-shadow-[0_2px_8px_rgba(255,255,255,0.6)]",
+    pretitle: "text-[#2F4A28]/70",
+    divider: "bg-[#2F4A28]/40",
+    btn: "border-[#2F4A28]/40 bg-[#2F4A28]/12 text-[#2F4A28]",
+  },
+  "modern-scene": {
+    Decor: ModernDecor,
+    sky: "linear-gradient(180deg, #FAFAF8 0%, #F0F0ED 100%)",
+    particle: null,
+    nameKind: "modern",
+    nameFont: "font-sans font-black text-2xl sm:text-3xl uppercase",
+    name: "text-[#1E293B]",
+    nameShadow: "",
+    pretitle: "text-[#64748B]",
+    divider: "bg-[#1E293B]/30",
+    btn: "border-[#1E293B]/30 bg-[#1E293B]/5 text-[#1E293B]",
+  },
+};
+
+function ScenicCover({ config, scene, invitation, title, groom, bride, guestName, onOpen, coverAssets }) {
+  const Decor = scene.Decor;
+  return (
+    <motion.div
+      {...COVER_TRANSITION}
+      className="fixed inset-0 z-60 flex flex-col items-center justify-center overflow-hidden select-none px-6 pt-24 pb-28 gap-4"
+    >
+      <div className="absolute inset-0 z-0" style={{ background: scene.sky }} />
+      {/* Dekor: layer PNG bila aset tema aktif, selain itu scene SVG beranimasi */}
+      {coverAssets?.enabled ? <CoverLayers assets={coverAssets} /> : <Decor />}
+
+      {scene.particle === "bubbles" && (
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" aria-hidden="true">
+          {BLUE_BUBBLES.map((bubble, i) => (
+            <motion.div
+              key={`b-${i}`}
+              className="absolute pointer-events-none rounded-full border border-[#1A365D]/20"
+              style={{ top: "105%", left: bubble.left, width: bubble.w, height: bubble.h }}
+              animate={{ y: ["0vh", "-110vh"], opacity: [0, 0.4, 0], scale: [0.8, 1.2] }}
+              transition={{ duration: bubble.dur, repeat: Infinity, delay: bubble.del, ease: "linear" }}
+            />
+          ))}
+        </div>
+      )}
+      {scene.particle === "leaves" && (
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" aria-hidden="true">
+          {GREEN_LEAVES.map((leaf, i) => (
+            <motion.div
+              key={`l-${i}`}
+              className="absolute pointer-events-none select-none"
+              style={{ top: "-5%", left: leaf.left, fontSize: leaf.fontSize }}
+              animate={{ y: ["0vh", "110vh"], x: [0, leaf.xEnd], rotate: [0, 300], opacity: [0, 0.5, 0] }}
+              transition={{ duration: leaf.dur, repeat: Infinity, delay: leaf.del, ease: "linear" }}
+            >
+              🍃
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Nama mempelai */}
+      <div className="relative z-20 flex w-full max-w-xs flex-col items-center text-center">
+        <span className={`text-[8px] tracking-[0.35em] uppercase font-semibold ${scene.pretitle}`}>
+          The Wedding Of
+        </span>
+        {scene.nameKind === "modern" ? (
+          <h1 className={`mt-2 ${scene.nameFont} ${scene.name} tracking-[0.15em] leading-tight`}>
+            <span className="block">{groom}</span>
+            <span className="block text-[9px] my-2 font-light tracking-[0.35em] opacity-50 font-sans">— AND —</span>
+            <span className="block">{bride}</span>
+          </h1>
+        ) : (
+          <h1 className={`mt-1 ${scene.nameFont} leading-[1.05] ${scene.name} ${scene.nameShadow}`}>
+            <span className="block text-4xl sm:text-5xl">{groom}</span>
+            <span className="block text-xl my-0.5 opacity-80">&amp;</span>
+            <span className="block text-4xl sm:text-5xl">{bride}</span>
+          </h1>
+        )}
+      </div>
+
+      {/* Foto */}
+      <div className="relative z-20 flex items-center justify-center">
+        <PhotoFrame frameKind={config.frameKind} coverUrl={invitation?.coverUrl} title={title} />
+      </div>
+
+      {/* Tamu + tombol */}
+      <div className="relative z-20 flex flex-col items-center text-center">
+        <p className={`text-[8px] tracking-[0.3em] uppercase font-bold ${scene.pretitle}`}>Kepada Yth.</p>
+        <p className={`mt-1 text-base font-bold ${scene.name}`}>{guestName || "Tamu Undangan"}</p>
+        <div className={`my-2 h-px w-10 ${scene.divider}`} />
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label="Buka undangan"
+          className="group flex flex-col items-center gap-1 cursor-pointer focus:outline-none"
+        >
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border shadow-lg backdrop-blur-md transition-all ${scene.btn}`}
+          >
+            <Mail className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
+          </motion.div>
+          <span className={`text-[8px] tracking-[0.35em] font-bold uppercase ${scene.pretitle}`}>Buka</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 export function EnvelopeCover({ invitation, guestName, onOpen }) {
   const theme = invitation?.theme?.slug || "classic-elegance";
   const config = getThemeConfig(theme).cover;
+  const coverAssets = getCoverAssets(theme); // layer PNG per-tema (opsional)
 
   const groom = invitation?.groomNickname || "Pria";
   const bride = invitation?.brideNickname || "Wanita";
@@ -135,10 +299,8 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
   if (config.layout === "fullbleed") {
     return (
       <motion.div
-        initial={{ y: 0 }}
-        exit={{ y: "-100%" }}
-        transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-        className="absolute inset-0 z-50 flex flex-col items-center justify-between py-12 px-6 select-none overflow-hidden bg-[#F8F6F2]"
+        {...COVER_TRANSITION}
+        className="fixed inset-0 z-60 flex flex-col items-center justify-between py-12 px-6 select-none overflow-hidden bg-[#F8F6F2]"
       >
         {/* Background Photo (Full Screen) */}
         {invitation?.coverUrl && (
@@ -151,7 +313,7 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
 
         {/* Dark Gradient Overlays for Readability */}
         <div className="absolute inset-0 bg-black/20 z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/40 z-0" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-black/40 z-0" />
 
         {/* Ambient Gold Particles (Optional subtle effect) */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
@@ -165,6 +327,9 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
             />
           ))}
         </div>
+
+        {/* Layer PNG dekoratif (opsional, bila aset tema aktif) */}
+        {coverAssets?.enabled && <CoverLayers assets={coverAssets} />}
 
         {/* Foreground Content */}
         <div className="relative z-20 flex flex-col h-full w-full items-center justify-between">
@@ -202,13 +367,132 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
     );
   }
 
+  // ── Cover "GARDEN" (floral-blossom): taman pastel dreamy, dedaunan menjuntai,
+  //    nama putih, foto perangko, karangan bunga lebat di dasar. ──
+  if (config.layout === "garden") {
+    return (
+      <motion.div
+        {...COVER_TRANSITION}
+        className="fixed inset-0 z-60 flex flex-col items-center justify-center overflow-hidden select-none px-6 pt-24 pb-28 gap-4"
+      >
+        {/* Langit pastel (pink → lavender) */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{ background: "linear-gradient(175deg, #F9E4D3 0%, #F6D7D9 22%, #F0D1DF 46%, #E1CCE8 74%, #D4C6EA 100%)" }}
+        />
+        {/* Dekor: layer PNG fotorealistis bila aset tema aktif, selain itu
+            ornamen SVG bawaan (fallback aman). */}
+        {coverAssets?.enabled ? (
+          <CoverLayers assets={coverAssets} />
+        ) : (
+          <>
+            {/* Taman pastel lembut */}
+            <GardenScene className="absolute inset-0 z-0 h-full w-full" />
+            {/* Dedaunan menjuntai dari atas */}
+            <HangingLeavesTop className="absolute inset-x-0 top-0 z-10 h-44" />
+          </>
+        )}
+
+        {/* Hujan kelopak */}
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" aria-hidden="true">
+          {ROSE_PETALS.map((petal, i) => (
+            <motion.div
+              key={`petal-${i}`}
+              className="absolute pointer-events-none select-none"
+              style={{
+                top: "-5%",
+                left: petal.left,
+                width: 10,
+                height: 7,
+                borderRadius: "50% 0 50% 50%",
+                background: "linear-gradient(135deg, #ffccd5 0%, #B76E79 100%)",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              }}
+              animate={{ y: ["0vh", "110vh"], x: [0, petal.xEnd], rotate: [0, 360], opacity: [0, 0.7, 0] }}
+              transition={{ duration: petal.dur, repeat: Infinity, delay: petal.del, ease: "linear" }}
+            />
+          ))}
+        </div>
+
+        {/* Karangan bunga SVG di dasar — hanya bila TIDAK memakai layer PNG
+            (saat PNG aktif, bunga dasar sudah dari CoverLayers). */}
+        {!coverAssets?.enabled && (
+          <CoverGardenBorder className="absolute inset-x-0 bottom-0 z-10 h-52" />
+        )}
+
+        {/* Konten */}
+        <div className="relative z-20 flex w-full max-w-xs flex-col items-center text-center">
+          <span className="text-[8px] tracking-[0.35em] uppercase font-semibold text-white/85 drop-shadow-sm">
+            The Wedding Of
+          </span>
+          <h1 className="mt-1 font-greatvibes leading-[1.05] text-white drop-shadow-[0_2px_10px_rgba(130,90,120,0.45)]">
+            <span className="block text-4xl sm:text-5xl">{groom}</span>
+            <span className="block text-xl my-0.5 opacity-90">&amp;</span>
+            <span className="block text-4xl sm:text-5xl">{bride}</span>
+          </h1>
+        </div>
+
+        <div className="relative z-20 flex items-center justify-center">
+          <PhotoFrame frameKind={config.frameKind} coverUrl={invitation?.coverUrl} title={title} />
+        </div>
+
+        <div className="relative z-20 flex flex-col items-center text-center">
+          <p className="text-[8px] tracking-[0.3em] uppercase font-bold text-white/85 drop-shadow-sm">
+            Kepada Yth.
+          </p>
+          <p className="mt-1 text-base font-bold text-white drop-shadow-[0_1px_6px_rgba(130,90,120,0.4)]">
+            {guestName || "Tamu Undangan"}
+          </p>
+          <div className="my-2 h-px w-10 bg-white/55" />
+
+          <button
+            type="button"
+            onClick={onOpen}
+            aria-label="Buka undangan"
+            className="group flex flex-col items-center gap-1 cursor-pointer focus:outline-none"
+          >
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-white/20 text-white shadow-lg backdrop-blur-md transition-all"
+            >
+              <Mail className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
+            </motion.div>
+            <span className="text-[8px] tracking-[0.35em] font-bold uppercase text-white/90">Buka</span>
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Cover scenic bertema (floral-blue / nature / modern)
+  const scene = SCENES[config.layout];
+  if (scene) {
+    return (
+      <ScenicCover
+        config={config}
+        scene={scene}
+        invitation={invitation}
+        title={title}
+        groom={groom}
+        bride={bride}
+        guestName={guestName}
+        onOpen={onOpen}
+        coverAssets={coverAssets}
+      />
+    );
+  }
+
   return (
     <motion.div
-      initial={{ y: 0 }}
-      exit={{ y: "-100%" }}
-      transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-      className="absolute inset-0 z-50 flex flex-col items-center justify-between py-4 sm:py-8 px-4 sm:px-6 select-none overflow-hidden"
+      {...COVER_TRANSITION}
+      className="fixed inset-0 z-60 flex flex-col items-center justify-center gap-8 sm:gap-12 py-10 px-4 sm:px-6 select-none overflow-hidden"
     >
+      {/* 0. Base solid (OPAQUE) — tirai wajib menutup penuh konten di belakangnya
+          selama transisi luncur-naik, agar isi undangan tak "menembus" (mencegah
+          efek transisi ganda). Layer paling bawah, di bawah foto blur & overlay. */}
+      <div className={`absolute inset-0 z-0 ${config.solid || "bg-[#F8F6F2] dark:bg-zinc-950"}`} />
+
       {/* 1. Blurred Background Image of Couple */}
       {invitation?.coverUrl && (
         <div
@@ -343,9 +627,12 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
         </svg>
       </div>
 
+      {/* Layer PNG dekoratif (opsional, bila aset tema aktif) */}
+      {coverAssets?.enabled && <CoverLayers assets={coverAssets} />}
+
       {/* 4. Couple Names (Top Section) */}
       <div className="text-center z-20 space-y-0.5 mt-2">
-        <span className="text-[8px] tracking-[0.35em] uppercase font-bold text-muted-foreground opacity-70">
+        <span className={`text-[8px] tracking-[0.35em] uppercase font-bold ${config.textSecondary}`}>
           THE WEDDING OF
         </span>
 
@@ -373,16 +660,16 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
       <div className="w-full max-w-xs mx-auto z-20 space-y-3 flex flex-col items-center">
         {/* Guest Name Card */}
         <div className={`py-2 px-3 ${guestCardClass} ${config.cardBg} backdrop-blur-md w-[220px] text-center space-y-1`}>
-          <p className="text-[8px] tracking-[0.25em] uppercase font-bold text-muted-foreground opacity-75">
+          <p className={`text-[8px] tracking-[0.25em] uppercase font-bold ${config.cardMuted || "text-zinc-500"}`}>
             Kepada Yth.
           </p>
           <div className="space-y-0.5">
-            <h2 className="text-base font-bold tracking-normal text-foreground">
+            <h2 className={`text-base font-bold tracking-normal ${config.cardName || "text-zinc-800"}`}>
               {guestName || "Tamu Undangan"}
             </h2>
-            <div className="h-[1px] w-8 bg-gradient-to-r from-transparent via-[#C8A96A] to-transparent mx-auto opacity-40" />
+            <div className="h-[1px] w-8 bg-linear-to-r from-transparent via-current to-transparent mx-auto opacity-30" style={{ color: config.ornamentsColor }} />
           </div>
-          <p className="text-[8px] text-muted-foreground leading-relaxed font-light px-1">
+          <p className={`text-[8px] leading-relaxed font-light px-1 ${config.cardMuted || "text-zinc-500"}`}>
             Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami.
           </p>
         </div>

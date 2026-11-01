@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { dashboardNav } from "@/config/navigation.config";
+import { ROUTES } from "@/constants/routes";
 import { useUIStore } from "@/stores/uiStore";
 import { can } from "@/lib/ability";
 import {
@@ -21,6 +22,8 @@ import {
   Music,
   HelpCircle,
   Settings,
+  Package,
+  Store,
 } from "lucide-react";
 
 /** Map Icon string ke komponen Lucide */
@@ -37,6 +40,7 @@ const ICON_MAP = {
 const ADMIN_SUBNAV = [
   { id: "users", label: "Pengguna", icon: Users },
   { id: "transactions", label: "Transaksi", icon: CreditCard },
+  { id: "packages", label: "Paket & Fitur", icon: Package },
   { id: "themes", label: "Tema Desain", icon: Palette },
   { id: "quotes", label: "Templat Ayat", icon: Quote },
   { id: "musics", label: "Lagu Latar", icon: Music },
@@ -131,6 +135,29 @@ export function Sidebar({ user }) {
                 </Link>
               );
             })}
+
+            {can(user, "reseller:access") && (
+              <Link
+                href={ROUTES.RESELLER}
+                onClick={closeSidebar}
+                aria-current={pathname.startsWith("/dashboard/reseller") ? "page" : undefined}
+                className={`group relative flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ease-out hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 ${
+                  pathname.startsWith("/dashboard/reseller")
+                    ? "border-l-4 border-gold-400 bg-linear-to-r from-gold-400/20 to-gold-400/5 font-semibold text-gold-600 shadow-sm dark:text-gold-300"
+                    : "border-l-4 border-transparent text-muted-foreground hover:border-gold-400/50 hover:bg-gold-400/10 hover:text-gold-600 dark:hover:text-gold-300"
+                }`}
+              >
+                <Store
+                  className={`h-5 w-5 transition-transform duration-200 group-hover:scale-110 ${
+                    pathname.startsWith("/dashboard/reseller")
+                      ? "text-gold-500 dark:text-gold-300"
+                      : "text-zinc-400 group-hover:text-gold-500"
+                  }`}
+                  aria-hidden="true"
+                />
+                <span>Reseller</span>
+              </Link>
+            )}
 
             {can(user, "admin:access") && (
               <div className="space-y-1 pt-1">

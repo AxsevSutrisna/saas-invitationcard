@@ -7,23 +7,51 @@ import { db } from "@/lib/db";
 export async function createTransaction({
   userId,
   packageId,
+  invitationId = null,
   amount,
+  quantity = 1,
   midtransOrderId,
-  midtransToken,
-  paymentUrl,
+  midtransToken = null,
+  paymentType = null,
+  paymentUrl = null,
+  paymentMeta = null,
   status = "PENDING",
 }) {
   return db.transaction.create({
     data: {
       userId,
       packageId,
+      invitationId,
       amount,
+      quantity,
       midtransOrderId,
       midtransToken,
       paymentUrl,
       status,
+      ...(paymentType ? { paymentType } : {}),
+      ...(paymentMeta ? { paymentMeta } : {}),
     },
   });
+}
+
+/**
+ * Klaim transisi status transaksi secara atomik (idempotensi "exactly-once").
+ * Hanya berhasil bila status saat ini masih `fromStatus` — mencegah pemenuhan
+ * ganda saat webhook & polling status berjalan bersamaan.
+ * @returns {Promise<number>} 1 bila berhasil mengklaim, 0 bila sudah diproses pihak lain
+ */
+export async function claimTransactionTransition(orderId, fromStatus, toStatus, meta = {}) {
+  const { paidAt = null, midtransTransactionId, paymentType } = meta;
+  const result = await db.transaction.updateMany({
+    where: { midtransOrderId: orderId, status: fromStatus },
+    data: {
+      status: toStatus,
+      paidAt,
+      ...(midtransTransactionId ? { midtransTransactionId } : {}),
+      ...(paymentType ? { paymentType } : {}),
+    },
+  });
+  return result.count;
 }
 
 /**
@@ -32,30 +60,9 @@ export async function createTransaction({
 export async function findTransactionByOrderId(midtransOrderId) {
   return db.transaction.findUnique({
     where: { midtransOrderId },
-    include: {
-      package: true,
-      user: true,
-    },
-  });
-}
-
-/**
- * Memperbarui status transaksi beserta metadata pembayaran opsional.
- * @param {string} midtransOrderId
- * @param {string} status - PENDING | SUCCESS | FAILED | REFUNDED
- * @param {{ paidAt?: Date|null, midtransTransactionId?: string, paymentType?: string }} [meta]
- */
-export async function updateTransactionStatus(midtransOrderId, status, meta = {}) {
-  const { paidAt = null, midtransTransactionId, paymentType } = meta;
-  return db.transaction.update({
-    where: { midtransOrderId },
-    data: {
-      status,
-      paidAt,
-      // Hanya set bila tersedia (hindari menimpa nilai lama dengan undefined/null)
-      ...(midtransTransactionId ? { midtransTransactionId } : {}),
-      ...(paymentType ? { paymentType } : {}),
-    },
+    // `user` tak dipakai handler webhook (hanya userId/packageId/amount/status +
+    // package.durationDays) → jangan ikut tarik baris user penuh.
+    include: { package: true },
   });
 }
 

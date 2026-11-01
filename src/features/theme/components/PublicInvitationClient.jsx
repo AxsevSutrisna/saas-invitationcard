@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Volume2, VolumeX } from "lucide-react";
 import { EnvelopeCover } from "./EnvelopeCover";
 import { ThemeRegistry } from "./ThemeRegistry";
 import { trackGuestOpenAction, getGuestByCodeAction } from "@/features/guest/actions";
@@ -45,6 +44,23 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
     }
   }, [isOpen, isMuted, isMusicEnabled]);
 
+  // Preload gambar kritikal isi undangan SELAGI cover masih tampil, agar begitu
+  // tirai terbuka gambar sudah ter-cache (tidak "pop-in" di koneksi lambat).
+  // coverUrl umumnya sudah dimuat cover; foto mempelai & galeri pertama belum.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const urls = [
+      invitation?.coverUrl,
+      invitation?.groomPhotoUrl,
+      invitation?.bridePhotoUrl,
+      invitation?.galleries?.[0]?.mediaUrl,
+    ].filter(Boolean);
+    urls.forEach((url) => {
+      const img = new window.Image();
+      img.src = url;
+    });
+  }, [invitation]);
+
   // Lock body scroll when envelope cover is closed
   useEffect(() => {
     if (!isOpen) {
@@ -80,11 +96,15 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
   };
 
   return (
-    <div className="relative min-h-screen">
+    // `light`: undangan publik selalu tampil terang (art-direction tetap),
+    // tidak mengikuti dark mode aplikasi — menyelaraskan warna sampul & isi
+    // untuk SEMUA tema sekaligus (lihat @custom-variant dark di globals.css).
+    <div className="light relative min-h-screen">
       {/* 1. LAYAR SAMPUL PEMBUKA (Envelope Cover) */}
       <AnimatePresence>
         {!isOpen && (
           <EnvelopeCover
+            key="envelope-cover"
             invitation={invitation}
             guestName={guestName}
             onOpen={handleOpenInvitation}
@@ -119,7 +139,7 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
       {isOpen && !isPremium && (
         <div className="w-full py-6 text-center bg-zinc-50 dark:bg-zinc-900 border-t border-border/40 text-[10px] tracking-wider text-muted-foreground font-semibold uppercase flex items-center justify-center gap-1.5 z-40 relative">
           <span>Powered by</span>
-          <span className="text-[#C8A96A] font-heading font-bold text-xs tracking-widest">IKARA</span>
+          <span className="text-gold-400 font-heading font-bold text-xs tracking-widest">IKARA</span>
           <span className="text-[8px] font-normal lowercase opacity-60">— Every Promise Has a Story</span>
         </div>
       )}

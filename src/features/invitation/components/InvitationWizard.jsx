@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invitationFormSchema } from "@/features/invitation/schema";
-import { createInvitationAction } from "@/features/invitation/actions";
+import { createInvitationAction, updateInvitationAction } from "@/features/invitation/actions";
 import { OnboardingGuideModal } from "./OnboardingGuideModal";
 import { LivePhonePreview } from "./LivePhonePreview";
 import { Step1InfoTheme } from "./Step1InfoTheme";
@@ -15,6 +15,7 @@ import { Step4GiftsStories } from "./Step4GiftsStories";
 import { Step5ReviewPublish } from "./Step5ReviewPublish";
 import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/ui/Surface";
+import { Alert } from "@/components/ui/Alert";
 import { BookOpen, ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 const STEPS = [
@@ -25,7 +26,16 @@ const STEPS = [
   { id: 5, title: "Finalisasi" },
 ];
 
-export function InvitationWizard({ themes = [], activeSubscription = null, quoteTemplates = [], musicTemplates = [] }) {
+export function InvitationWizard({
+  themes = [],
+  activeSubscription = null,
+  quoteTemplates = [],
+  musicTemplates = [],
+  mode = "create",
+  invitationId = null,
+  initialData = null,
+}) {
+  const isEdit = mode === "edit";
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryThemeId = searchParams.get("themeId");
@@ -45,91 +55,60 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(invitationFormSchema),
-    defaultValues: {
-      title: "Pernikahan William & Eleanor",
-      slug: "william-eleanor",
+    // Mode CREATE memakai nilai KOSONG (bukan data contoh) agar user tidak
+    // sengaja mempublikasikan undangan berisi data dummy. Mode EDIT memakai
+    // initialData dari DB. Placeholder di tiap input memandu pengisian.
+    defaultValues: initialData || {
+      title: "",
+      slug: "",
       themeId: defaultThemeId,
 
       // Mempelai Pria
-      groomNickname: "William",
-      groomFullName: "William Jonathan Tanuwijaya",
-      groomFather: "Bapak William Jonathan",
-      groomMother: "Ibu William Jonathan",
+      groomNickname: "",
+      groomFullName: "",
+      groomFather: "",
+      groomMother: "",
       groomPhotoUrl: "",
 
       // Mempelai Wanita
-      brideNickname: "Eleanor",
-      brideFullName: "Eleanor Grace Tanuwidjaja",
-      brideFather: "Bapak Eleanor Grace",
-      brideMother: "Ibu Eleanor Grace",
+      brideNickname: "",
+      brideFullName: "",
+      brideFather: "",
+      brideMother: "",
       bridePhotoUrl: "",
 
       // Foto Sampul & Konten
-      coverUrl: "https://images.unsplash.com/photo-1519741497674-611481863552",
-      quotes:
-        "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang. (QS. Ar-Rum: 21)",
-      openingText: "Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami.",
-      musicUrl: "https://pub-c48bd7eade8944c1bbc28a03f43c23f7.r2.dev/Beautiful_In_White.mp3",
-      musicTitle: "Beautiful In White",
-      isMusicEnabled: true,
+      coverUrl: "",
+      quotes: "",
+      openingText: "",
 
-      // Acara
+      // Acara (minimal 1 baris kosong — wajib diisi user)
       events: [
         {
-          name: "Akad Nikah",
-          date: "2026-08-08",
-          startTime: "09:00",
-          endTime: "10:30",
-          locationName: "Masjid Raya Al-A'zham",
-          address: "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
-          mapUrl: "https://maps.app.goo.gl/kX31s3V4F6T7U8W9",
-        },
-        {
-          name: "Resepsi Pernikahan",
-          date: "2026-08-08",
-          startTime: "11:00",
-          endTime: "14:00",
-          locationName: "Grand Ballroom Al-A'zham",
-          address: "Jl. Jenderal Sudirman, Sukaasih, Kec. Tangerang, Kota Tangerang, Banten 15111",
-          mapUrl: "https://maps.app.goo.gl/kX31s3V4F6T7U8W9",
+          name: "",
+          date: "",
+          startTime: "",
+          endTime: "",
+          locationName: "",
+          address: "",
+          mapUrl: "",
         },
       ],
-      loveStories: [
-        {
-          title: "Pertama Bertemu",
-          date: "2020",
-          description: "Awal mula takdir mempertemukan kami di sebuah acara kampus.",
-        },
-        {
-          title: "Menuju Pelaminan",
-          date: "2025",
-          description: "Setelah melewati banyak cerita bersama, kami memantapkan hati untuk melangkah ke jenjang pernikahan.",
-        },
-      ],
+      loveStories: [],
 
       // Galeri
       galleryLayout: "CAROUSEL",
-      galleries: [
-        { mediaUrl: "https://images.unsplash.com/photo-1519741497674-611481863552", type: "PHOTO" },
-        { mediaUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc", type: "PHOTO" },
-      ],
+      galleries: [],
 
       // Gifts & Finalisasi
-      gifts: [
-        {
-          type: "BANK",
-          providerName: "BCA",
-          accountName: "William Jonathan Tanuwijaya",
-          accountNumber: "1234567890",
-        },
-      ],
-      physicalGiftAddress: "Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)",
-      physicalGiftReceiver: "William & Eleanor",
-      physicalGiftPhone: "081234567890",
+      gifts: [],
+      physicalGiftAddress: "",
+      physicalGiftReceiver: "",
+      physicalGiftPhone: "",
 
       // Musik
-      musicTitle: "Nadhif Basalamah - Bergema Sampai Selamanya",
-      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      musicTitle: "",
+      musicUrl: "",
       isMusicEnabled: true,
       isPublished: true,
     },
@@ -170,9 +149,13 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
       return;
     }
 
-    const res = await createInvitationAction(data);
+    const res = isEdit
+      ? await updateInvitationAction(invitationId, data)
+      : await createInvitationAction(data);
+
     if (res.success) {
       router.push("/dashboard");
+      router.refresh();
     } else {
       setServerError(res.error || "Terjadi kesalahan saat memproses data.");
     }
@@ -190,10 +173,12 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
       <div className="flex flex-col gap-4 border-b border-border/40 pb-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-            Buat Undangan Baru
+            {isEdit ? "Edit Undangan" : "Buat Undangan Baru"}
           </h1>
           <p className="text-xs font-light text-muted-foreground">
-            Isi informasi di bawah untuk membuat undangan pernikahan digital Anda
+            {isEdit
+              ? "Perbarui informasi undangan Anda. Perubahan langsung tersimpan setelah difinalisasi."
+              : "Isi informasi di bawah untuk membuat undangan pernikahan digital Anda"}
           </p>
         </div>
 
@@ -250,14 +235,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
       </nav>
 
       {/* Server Error Alert */}
-      {serverError && (
-        <div
-          role="alert"
-          className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-xs font-medium text-destructive"
-        >
-          {serverError}
-        </div>
-      )}
+      {serverError && <Alert variant="error">{serverError}</Alert>}
 
       {/* Split-Screen Container: Left Form (60%) + Right Live Preview (40%) */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -274,7 +252,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
               />
             )}
             {currentStep === 2 && (
-              <Step2Couple register={register} errors={errors} watch={watch} setValue={setValue} />
+              <Step2Couple register={register} errors={errors} watch={watch} setValue={setValue} invitationId={invitationId} />
             )}
             {currentStep === 3 && (
               <Step3Events
@@ -290,6 +268,7 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
                 watch={watch}
                 setValue={setValue}
                 quoteTemplates={quoteTemplates}
+                invitationId={invitationId}
               />
             )}
             {currentStep === 5 && (
@@ -300,6 +279,8 @@ export function InvitationWizard({ themes = [], activeSubscription = null, quote
                 setValue={setValue}
                 isSubmitting={isSubmitting}
                 musicTemplates={musicTemplates}
+                isEdit={isEdit}
+                invitationId={invitationId}
               />
             )}
 

@@ -5,6 +5,8 @@ import { useFieldArray } from "react-hook-form";
 import { Heart, Plus, Trash2, LayoutGrid, Quote, Image as ImageIcon, Sparkles, BookOpen, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FileUploader } from "@/components/shared/FileUploader";
+import { Modal } from "@/components/ui/Modal";
+import { TextField, TextAreaField } from "@/components/ui/Field";
 
 const QUOTES_PRESETS = [
   {
@@ -31,7 +33,7 @@ const STORY_PRESETS = [
   { title: "Menuju Pelaminan", date: "2026", description: "Setelah melewati banyak cerita bersama, kami memantapkan hati untuk melangkah ke pernikahan." },
 ];
 
-export function Step4GiftsStories({ register, control, watch, setValue, quoteTemplates = [] }) {
+export function Step4GiftsStories({ register, control, watch, setValue, quoteTemplates = [], invitationId }) {
   const displayQuotes = quoteTemplates.length > 0
     ? quoteTemplates.map((q) => ({ title: q.title, text: q.content }))
     : QUOTES_PRESETS;
@@ -121,39 +123,33 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="space-y-1">
-                  <label htmlFor={`loveStories-${index}-date`} className="text-[11px] font-semibold text-muted-foreground">Tahun / Tanggal</label>
-                  <input
-                    id={`loveStories-${index}-date`}
-                    type="text"
-                    placeholder="Contoh: 2025"
-                    {...register(`loveStories.${index}.date`)}
-                    className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
-                  />
-                </div>
-
-                <div className="space-y-1 sm:col-span-2">
-                  <label htmlFor={`loveStories-${index}-title`} className="text-[11px] font-semibold text-muted-foreground">Judul Momen</label>
-                  <input
-                    id={`loveStories-${index}-title`}
-                    type="text"
-                    placeholder="Contoh: Menuju Pelaminan"
-                    {...register(`loveStories.${index}.title`)}
-                    className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label htmlFor={`loveStories-${index}-description`} className="text-[11px] font-semibold text-muted-foreground">Deskripsi Cerita</label>
-                <textarea
-                  id={`loveStories-${index}-description`}
-                  rows={2}
-                  placeholder="Setelah melewati banyak cerita bersama, kami memantapkan hati..."
-                  {...register(`loveStories.${index}.description`)}
-                  className="w-full rounded-xl border border-border bg-zinc-50 px-3 py-2 text-xs leading-relaxed focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
+                <TextField
+                  label="Tahun / Tanggal"
+                  htmlFor={`loveStories-${index}-date`}
+                  className="space-y-1"
+                  type="text"
+                  placeholder="Contoh: 2025"
+                  {...register(`loveStories.${index}.date`)}
+                />
+                <TextField
+                  label="Judul Momen"
+                  htmlFor={`loveStories-${index}-title`}
+                  className="space-y-1 sm:col-span-2"
+                  type="text"
+                  placeholder="Contoh: Menuju Pelaminan"
+                  {...register(`loveStories.${index}.title`)}
                 />
               </div>
+
+              <TextAreaField
+                label="Deskripsi Cerita"
+                htmlFor={`loveStories-${index}-description`}
+                className="space-y-1"
+                rows={2}
+                inputClassName="leading-relaxed"
+                placeholder="Setelah melewati banyak cerita bersama, kami memantapkan hati..."
+                {...register(`loveStories.${index}.description`)}
+              />
             </div>
           ))}
         </div>
@@ -284,6 +280,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                   onChange={(url) => setValue(`galleries.${index}.mediaUrl`, url)}
                   accept="image/*"
                   maxSize={5 * 1024 * 1024}
+                  invitationId={invitationId}
                   helperText="Format JPG, PNG, atau WEBP (Maks 5MB)"
                 />
               </div>
@@ -335,15 +332,37 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
         </div>
       </div>
 
+      {/* Modul D: Teks Pembuka Undangan */}
+      <div className="space-y-3 rounded-3xl border border-border/60 bg-zinc-50 p-5 dark:bg-zinc-900/60">
+        <div className="space-y-0.5">
+          <h4 className="flex items-center gap-2 font-heading text-base font-bold text-foreground">
+            <Quote className="h-4 w-4 text-gold-500" aria-hidden="true" />
+            <span>Teks Pembuka</span>
+          </h4>
+          <p className="text-xs font-light text-muted-foreground">
+            Kalimat sambutan/pembuka undangan (mis. ajakan untuk hadir). Kosongkan jika tidak diperlukan.
+          </p>
+        </div>
+        <label htmlFor="openingText" className="sr-only">
+          Teks pembuka undangan
+        </label>
+        <textarea
+          id="openingText"
+          rows={3}
+          placeholder="Contoh: Dengan memohon rahmat dan ridho Tuhan Yang Maha Esa, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami."
+          {...register("openingText")}
+          className="w-full rounded-xl border border-border bg-white px-4 py-3 text-xs leading-relaxed transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
+        />
+      </div>
+
       {/* Modal Popup Preset Kutipan / Ayat */}
-      {showQuotesModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="quotes-modal-title"
-          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200"
-        >
-          <div className="max-h-[85vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl">
+      <Modal
+        open={showQuotesModal}
+        onClose={() => setShowQuotesModal(false)}
+        labelledBy="quotes-modal-title"
+        overlayClassName="animate-in fade-in bg-black/60 backdrop-blur-sm duration-200"
+        panelClassName="max-h-[85vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl"
+      >
             <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <h3 id="quotes-modal-title" className="font-heading text-base font-bold text-foreground">
                 Pilihan Template Ayat &amp; Kutipan
@@ -376,9 +395,7 @@ export function Step4GiftsStories({ register, control, watch, setValue, quoteTem
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

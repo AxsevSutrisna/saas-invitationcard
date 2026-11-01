@@ -5,6 +5,8 @@ import { useFieldArray } from "react-hook-form";
 import { CreditCard, Plus, Trash2, Gift, Music, Sparkles, Volume2, VolumeX, Disc, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FileUploader } from "@/components/shared/FileUploader";
+import { Modal } from "@/components/ui/Modal";
+import { Field, TextField, TextAreaField } from "@/components/ui/Field";
 
 const MUSIC_PRESETS = [
   { title: "Nadhif Basalamah - Bergema Sampai Selamanya", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
@@ -13,7 +15,7 @@ const MUSIC_PRESETS = [
   { title: "Shane Filan - Beautiful in White", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
 ];
 
-export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting, musicTemplates = [] }) {
+export function Step5ReviewPublish({ register, control, watch, setValue, isSubmitting, musicTemplates = [], isEdit = false, invitationId }) {
   const displayMusics = musicTemplates.length > 0
     ? musicTemplates.map((m) => ({ title: m.title, url: m.url }))
     : MUSIC_PRESETS;
@@ -83,8 +85,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="space-y-1">
-                  <label htmlFor={`gifts-${index}-type`} className="text-[11px] font-semibold text-muted-foreground">Jenis</label>
+                <Field label="Jenis" htmlFor={`gifts-${index}-type`} className="space-y-1">
                   <select
                     id={`gifts-${index}-type`}
                     {...register(`gifts.${index}.type`)}
@@ -93,10 +94,9 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                     <option value="BANK">Bank Transfer</option>
                     <option value="EWALLET">E-Wallet (GoPay/OVO/ShopeePay)</option>
                   </select>
-                </div>
+                </Field>
 
-                <div className="space-y-1">
-                  <label htmlFor={`gifts-${index}-providerName`} className="text-[11px] font-semibold text-muted-foreground">Nama Bank / E-Wallet</label>
+                <Field label="Nama Bank / E-Wallet" htmlFor={`gifts-${index}-providerName`} className="space-y-1">
                   <input
                     id={`gifts-${index}-providerName`}
                     type="text"
@@ -104,10 +104,9 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                     {...register(`gifts.${index}.providerName`)}
                     className="w-full rounded-xl border border-border bg-zinc-50 px-3.5 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
-                </div>
+                </Field>
 
-                <div className="space-y-1">
-                  <label htmlFor={`gifts-${index}-accountNumber`} className="text-[11px] font-semibold text-muted-foreground">Nomor Rekening / HP</label>
+                <Field label="Nomor Rekening / HP" htmlFor={`gifts-${index}-accountNumber`} className="space-y-1">
                   <input
                     id={`gifts-${index}-accountNumber`}
                     type="text"
@@ -115,11 +114,10 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                     {...register(`gifts.${index}.accountNumber`)}
                     className="w-full rounded-xl border border-border bg-zinc-50 px-3.5 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                   />
-                </div>
+                </Field>
               </div>
 
-              <div className="space-y-1">
-                <label htmlFor={`gifts-${index}-accountName`} className="text-[11px] font-semibold text-muted-foreground">Atas Nama Pemilik</label>
+              <Field label="Atas Nama Pemilik" htmlFor={`gifts-${index}-accountName`} className="space-y-1">
                 <input
                   id={`gifts-${index}-accountName`}
                   type="text"
@@ -127,7 +125,25 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                   {...register(`gifts.${index}.accountName`)}
                   className="w-full rounded-xl border border-border bg-zinc-50 px-3.5 py-2 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-900"
                 />
-              </div>
+              </Field>
+
+              {/* Upload QR muncul khusus untuk E-Wallet (QRIS/GoPay/OVO/dsb) */}
+              {watch(`gifts.${index}.type`) === "EWALLET" && (
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-semibold text-muted-foreground">
+                    Kode QR / QRIS <span className="font-normal">(opsional)</span>
+                  </label>
+                  <FileUploader
+                    value={watch(`gifts.${index}.qrCodeUrl`)}
+                    onChange={(url) =>
+                      setValue(`gifts.${index}.qrCodeUrl`, url, { shouldDirty: true })
+                    }
+                    accept="image/*"
+                    invitationId={invitationId}
+                    helperText="Unggah gambar QRIS agar tamu bisa langsung scan untuk mengirim hadiah."
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -138,9 +154,9 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
             onClick={() =>
               appendGift({
                 type: "BANK",
-                providerName: "BCA",
-                accountName: "William Jonathan Tanuwidjaja",
-                accountNumber: "1234567890",
+                providerName: "",
+                accountName: "",
+                accountNumber: "",
               })
             }
             variant="outline"
@@ -164,41 +180,34 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           </p>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="physicalGiftAddress" className="text-[11px] font-semibold text-muted-foreground">
-            Alamat Lengkap Penerima
-          </label>
-          <textarea
-            id="physicalGiftAddress"
-            rows={3}
-            placeholder="Contoh: Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)"
-            {...register("physicalGiftAddress")}
-            className="w-full rounded-xl border border-border bg-white px-4 py-3 text-xs leading-relaxed transition-all focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-          />
-        </div>
+        <TextAreaField
+          label="Alamat Lengkap Penerima"
+          htmlFor="physicalGiftAddress"
+          className="space-y-2"
+          rows={3}
+          placeholder="Contoh: Jl. Mawar No. 12, RT 01/RW 02, Kec. Coblong, Kota Bandung, Jawa Barat (40135)"
+          inputClassName="px-4 py-3 leading-relaxed"
+          {...register("physicalGiftAddress")}
+        />
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="space-y-1">
-            <label htmlFor="physicalGiftReceiver" className="text-[11px] font-semibold text-muted-foreground">Nama Penerima</label>
-            <input
-              id="physicalGiftReceiver"
-              type="text"
-              placeholder="Contoh: William & Elleanor"
-              {...register("physicalGiftReceiver")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </div>
+          <TextField
+            label="Nama Penerima"
+            htmlFor="physicalGiftReceiver"
+            className="space-y-1"
+            type="text"
+            placeholder="Contoh: William & Elleanor"
+            {...register("physicalGiftReceiver")}
+          />
 
-          <div className="space-y-1">
-            <label htmlFor="physicalGiftPhone" className="text-[11px] font-semibold text-muted-foreground">No. Telepon Penerima</label>
-            <input
-              id="physicalGiftPhone"
-              type="text"
-              placeholder="Contoh: 081234567890"
-              {...register("physicalGiftPhone")}
-              className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:bg-zinc-800"
-            />
-          </div>
+          <TextField
+            label="No. Telepon Penerima"
+            htmlFor="physicalGiftPhone"
+            className="space-y-1"
+            type="text"
+            placeholder="Contoh: 081234567890"
+            {...register("physicalGiftPhone")}
+          />
         </div>
       </div>
 
@@ -237,6 +246,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
             }}
             accept="audio/*"
             maxSize={10 * 1024 * 1024} // 10MB
+            invitationId={invitationId}
             label="Unggah File Musik Latar (.mp3)"
             helperText="Mendukung format MP3 atau WAV, Maksimal 10MB."
           />
@@ -284,14 +294,13 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
       </div>
 
       {/* Modal Popup Pustaka Lagu */}
-      {showMusicModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="music-modal-title"
-          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200"
-        >
-          <div className="max-h-[85vh] w-full max-w-md space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl">
+      <Modal
+        open={showMusicModal}
+        onClose={() => setShowMusicModal(false)}
+        labelledBy="music-modal-title"
+        overlayClassName="animate-in fade-in bg-black/60 backdrop-blur-sm duration-200"
+        panelClassName="max-h-[85vh] w-full max-w-md space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card p-6 shadow-2xl"
+      >
             <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <h3 id="music-modal-title" className="font-heading text-base font-bold text-foreground">
                 Pustaka Lagu Pernikahan
@@ -326,9 +335,7 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+      </Modal>
 
       {/* Modul D: Tombol Final Publikasi Undangan */}
       <div className="flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-4 sm:flex-row">
@@ -343,7 +350,11 @@ export function Step5ReviewPublish({ register, control, watch, setValue, isSubmi
           className="w-full sm:w-auto"
         >
           <Sparkles className="fill-current" aria-hidden="true" />
-          {isSubmitting ? "Memproses..." : "Publikasikan Undangan"}
+          {isSubmitting
+            ? "Memproses..."
+            : isEdit
+            ? "Simpan Perubahan"
+            : "Publikasikan Undangan"}
         </Button>
       </div>
     </div>

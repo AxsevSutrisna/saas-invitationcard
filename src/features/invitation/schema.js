@@ -92,6 +92,7 @@ export const giftItemSchema = z.object({
   providerName: z.string().min(2, "Nama bank / e-wallet wajib diisi (misal: BCA)"),
   accountName: z.string().min(2, "Nama pemilik rekening wajib diisi"),
   accountNumber: z.string().optional(),
+  qrCodeUrl: z.string().optional(), // Gambar QRIS/QR e-wallet (opsional)
   note: z.string().optional(),
 });
 

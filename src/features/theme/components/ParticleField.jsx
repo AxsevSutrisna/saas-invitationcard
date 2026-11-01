@@ -71,25 +71,79 @@ const PETAL_POSITIONS = [
   { left: "95%", top: "-9px",  fontSize: "16px" },
 ];
 
-function FallingPetal({ style, color, xEnd = 40, dur = 10, del = 0 }) {
+// Variasi bunga agar hujan kelopak terasa lebih kaya.
+const PETAL_GLYPHS = ["🌸", "🌷", "🌼", "🌸", "🏵️", "🌸", "🌷", "🌺", "🌸", "🌼", "🌷", "🌸"];
+
+function FallingPetal({ style, color, glyph = "🌸", xEnd = 40, dur = 10, del = 0 }) {
   return (
     <motion.div
       className="absolute pointer-events-none select-none"
       style={{ ...style, color }}
       animate={{
         y: ["0vh", "110vh"],
-        x: [0, xEnd],
-        rotate: [0, 360],
-        opacity: [0, 0.35, 0],
+        x: [0, xEnd * 0.5, xEnd],
+        rotate: [0, 180, 360],
+        opacity: [0, 0.45, 0.45, 0],
       }}
       transition={{
         duration: dur,
         repeat: Infinity,
         delay: del,
-        ease: "linear",
+        ease: "easeInOut",
       }}
     >
-      🌸
+      {glyph}
+    </motion.div>
+  );
+}
+
+// ─────────── DANDELION SEEDS (menyertai petals) ───────────
+const SEED_CONFIGS = [
+  { xEnd: 34, dur: 17, del: 0 },
+  { xEnd: -26, dur: 21, del: 3.5 },
+  { xEnd: 20, dur: 19, del: 7 },
+  { xEnd: -32, dur: 23, del: 1.5 },
+  { xEnd: 28, dur: 18, del: 9 },
+  { xEnd: -20, dur: 22, del: 5 },
+  { xEnd: 36, dur: 20, del: 11 },
+  { xEnd: -28, dur: 24, del: 2.5 },
+];
+const SEED_POSITIONS = [
+  { left: "8%" }, { left: "20%" }, { left: "33%" }, { left: "45%" },
+  { left: "58%" }, { left: "70%" }, { left: "82%" }, { left: "93%" },
+];
+
+function DandelionSeed({ style, xEnd = 30, dur = 18, del = 0 }) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none select-none"
+      style={{ ...style, top: "-12px" }}
+      animate={{
+        y: ["0vh", "112vh"],
+        x: [0, xEnd, -xEnd * 0.4, xEnd * 0.8],
+        rotate: [0, 60, -40, 90],
+        opacity: [0, 0.65, 0.65, 0],
+      }}
+      transition={{ duration: dur, repeat: Infinity, delay: del, ease: "easeInOut" }}
+    >
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+        {Array.from({ length: 9 }).map((_, i) => {
+          const a = ((i * 40) * Math.PI) / 180;
+          return (
+            <line
+              key={i}
+              x1="6.5"
+              y1="6.5"
+              x2={6.5 + 5.2 * Math.cos(a)}
+              y2={6.5 + 5.2 * Math.sin(a)}
+              stroke="#CBBFA6"
+              strokeWidth="0.6"
+              opacity="0.75"
+            />
+          );
+        })}
+        <circle cx="6.5" cy="6.5" r="1.1" fill="#9E8E6E" opacity="0.85" />
+      </svg>
     </motion.div>
   );
 }
@@ -203,7 +257,24 @@ export function ParticleField({ type, accent }) {
     return (
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
         {PETAL_POSITIONS.map((p, i) => (
-          <FallingPetal key={i} style={{ left: p.left, top: p.top, fontSize: p.fontSize }} color={color} xEnd={PETAL_CONFIGS[i].xEnd} dur={PETAL_CONFIGS[i].dur} del={PETAL_CONFIGS[i].del} />
+          <FallingPetal
+            key={`p-${i}`}
+            style={{ left: p.left, top: p.top, fontSize: p.fontSize }}
+            color={color}
+            glyph={PETAL_GLYPHS[i % PETAL_GLYPHS.length]}
+            xEnd={PETAL_CONFIGS[i].xEnd}
+            dur={PETAL_CONFIGS[i].dur}
+            del={PETAL_CONFIGS[i].del}
+          />
+        ))}
+        {SEED_POSITIONS.map((s, i) => (
+          <DandelionSeed
+            key={`s-${i}`}
+            style={{ left: s.left }}
+            xEnd={SEED_CONFIGS[i].xEnd}
+            dur={SEED_CONFIGS[i].dur}
+            del={SEED_CONFIGS[i].del}
+          />
         ))}
       </div>
     );

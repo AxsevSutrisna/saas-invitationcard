@@ -113,23 +113,12 @@ export async function getGuestWithOwner(guestId) {
  * Track when a guest opens the invitation
  */
 export async function trackGuestOpen(uniqueCode) {
-  // Find first to avoid crashing if uniqueCode is invalid
-  const guest = await db.guest.findUnique({
-    where: { uniqueCode },
+  // Satu tulisan (tanpa baca dulu): tandai "dibuka" HANYA bila belum, sehingga
+  // timestamp buka pertama tetap terjaga & operasi idempotent. Baris tak
+  // ditemukan atau sudah dibuka → count 0 (tracking bersifat best-effort).
+  const result = await db.guest.updateMany({
+    where: { uniqueCode, isOpened: false },
+    data: { isOpened: true, openedAt: new Date() },
   });
-
-  if (!guest) return null;
-
-  // Only update if not already opened to preserve the first open timestamp
-  if (!guest.isOpened) {
-    return db.guest.update({
-      where: { uniqueCode },
-      data: {
-        isOpened: true,
-        openedAt: new Date(),
-      },
-    });
-  }
-
-  return guest;
+  return result.count; // 1 = baru ditandai; 0 = sudah dibuka / tidak ditemukan
 }
