@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { FLORAL_ASSETS } from "@/features/theme/floral-assets";
 
 // Sembunyikan <img> yang gagal dimuat (file belum disediakan) → fallback aman.
 const hideOnError = (e) => {
@@ -10,17 +9,16 @@ const hideOnError = (e) => {
 };
 
 /**
- * FloralCoverLayers — lapisan PNG floral untuk sampul (teknik mengundanganda):
- * latar taman + dedaunan menjuntai + karangan bunga sudut kiri/kanan, masing-
- * masing <img> absolut dengan transform sendiri, dianimasikan GSAP (muncul
- * bertahap dari bawah + float lembut). Menghormati prefers-reduced-motion.
+ * CoverLayers — lapisan PNG dekoratif untuk SAMPUL (teknik mengundanganda),
+ * generik untuk SEMUA tema. Membaca config aset per-tema (lihat cover-assets.js):
+ * latar opsional + ornamen/daun menjuntai di atas + elemen sudut bawah kiri/kanan.
  *
- * Dipakai hanya bila FLORAL_USE_PNG = true. Jika file aset belum ada, tiap <img>
- * menyembunyikan diri (onError) sehingga tak ada layar kosong/rusak.
+ * Tiap <img> absolut dengan transform sendiri; dianimasikan GSAP (muncul bertahap
+ * dari bawah + float lembut). Menghormati prefers-reduced-motion. Jika file aset
+ * belum ada, tiap <img> menyembunyikan diri (onError) → tak ada layar kosong.
  */
-export function FloralCoverLayers() {
+export function CoverLayers({ assets }) {
   const ref = useRef(null);
-  const A = FLORAL_ASSETS;
 
   useEffect(() => {
     const root = ref.current;
@@ -44,7 +42,6 @@ export function FloralCoverLayers() {
         ease: "power2.out",
         stagger: 0.1,
       });
-      // Float ambient lembut (terus-menerus) setelah muncul.
       gsap.to("[data-cover-flower]", {
         yPercent: "-=4",
         duration: 4,
@@ -59,9 +56,12 @@ export function FloralCoverLayers() {
     return () => ctx.revert();
   }, []);
 
+  if (!assets) return null;
+  const A = assets;
+
   return (
     <div ref={ref} className="pointer-events-none absolute inset-0 z-10 overflow-hidden" aria-hidden="true">
-      {/* Latar taman (opsional; jika tak ada → gradient sampul yang tampil) */}
+      {/* Latar (opsional; jika tak ada → latar bawaan tema yang tampil) */}
       {A.coverBg && (
         <img
           src={A.coverBg}
@@ -71,8 +71,8 @@ export function FloralCoverLayers() {
         />
       )}
 
-      {/* Dedaunan menjuntai dari atas */}
-      {A.coverLeaves.map((l, i) => (
+      {/* Ornamen/daun menjuntai dari atas */}
+      {(A.coverLeaves || []).map((l, i) => (
         <img
           key={`leaf-${i}`}
           data-cover-leaf
@@ -91,8 +91,8 @@ export function FloralCoverLayers() {
         />
       ))}
 
-      {/* Karangan bunga sudut KIRI */}
-      {A.coverFlowers.map((f, i) => (
+      {/* Elemen sudut bawah KIRI */}
+      {(A.coverFlowers || []).map((f, i) => (
         <img
           key={`fl-${i}`}
           data-cover-flower
@@ -111,8 +111,8 @@ export function FloralCoverLayers() {
         />
       ))}
 
-      {/* Karangan bunga sudut KANAN (cermin) */}
-      {A.coverFlowers.map((f, i) => (
+      {/* Elemen sudut bawah KANAN (cermin) */}
+      {(A.coverFlowers || []).map((f, i) => (
         <img
           key={`fr-${i}`}
           data-cover-flower

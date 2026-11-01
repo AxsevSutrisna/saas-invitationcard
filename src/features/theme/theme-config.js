@@ -240,7 +240,7 @@ export const THEME_CONFIG = {
       cardName: "text-zinc-800",
       cardMuted: "text-zinc-500",
       particleType: "bubbles",
-      layout: "framed",
+      layout: "blue-garden",
       guestCardShape: "rounded-2xl",
     },
     preview: {
@@ -298,7 +298,7 @@ export const THEME_CONFIG = {
       cardName: "text-zinc-100",
       cardMuted: "text-zinc-400",
       particleType: "grid",
-      layout: "framed",
+      layout: "modern-scene",
       guestCardShape: "rounded-none",
     },
     preview: {
@@ -356,7 +356,7 @@ export const THEME_CONFIG = {
       cardName: "text-zinc-800",
       cardMuted: "text-zinc-500",
       particleType: "leaves",
-      layout: "framed",
+      layout: "nature-garden",
       guestCardShape: "rounded-2xl",
     },
     preview: {

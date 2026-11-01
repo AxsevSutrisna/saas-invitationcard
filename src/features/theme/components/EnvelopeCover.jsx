@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { Mail, Leaf } from "lucide-react";
 import { getThemeConfig } from "@/features/theme/theme-config";
 import { HangingLeavesTop, GardenScene, CoverGardenBorder } from "@/features/theme/components/FloralOrnaments";
-import { FloralCoverLayers } from "@/features/theme/components/FloralCoverLayers";
-import { FLORAL_USE_PNG } from "@/features/theme/floral-assets";
+import { CoverLayers } from "@/features/theme/components/CoverLayers";
+import { getCoverAssets } from "@/features/theme/cover-assets";
+import { BlueGardenDecor, NatureDecor, ModernDecor } from "@/features/theme/components/CoverScenes";
 
 const ROSE_PETALS = [
   { left: "12%", xEnd: 30,  dur: 9,   del: 0   },
@@ -153,9 +154,141 @@ function PhotoFrame({ frameKind, coverUrl, title }) {
   }
 }
 
+// ── Cover "SCENIC" — sampul bertema untuk floral-blue / nature / modern:
+//    latar bertema + dekor SVG beranimasi + konten. Satu komponen, beda scene. ──
+const SCENES = {
+  "blue-garden": {
+    Decor: BlueGardenDecor,
+    sky: "linear-gradient(175deg, #EAF4FB 0%, #DBEAF6 32%, #E4E1F2 70%, #D9D7EC 100%)",
+    particle: "bubbles",
+    nameKind: "script",
+    nameFont: "font-greatvibes",
+    name: "text-[#1A365D]",
+    nameShadow: "drop-shadow-[0_2px_8px_rgba(255,255,255,0.6)]",
+    pretitle: "text-[#1A365D]/70",
+    divider: "bg-[#1A365D]/40",
+    btn: "border-[#1A365D]/40 bg-[#1A365D]/12 text-[#1A365D]",
+  },
+  "nature-garden": {
+    Decor: NatureDecor,
+    sky: "linear-gradient(175deg, #F5F4E9 0%, #ECEDD9 40%, #E3E8D2 74%, #D9E3C9 100%)",
+    particle: "leaves",
+    nameKind: "script",
+    nameFont: "font-greatvibes",
+    name: "text-[#2F4A28]",
+    nameShadow: "drop-shadow-[0_2px_8px_rgba(255,255,255,0.6)]",
+    pretitle: "text-[#2F4A28]/70",
+    divider: "bg-[#2F4A28]/40",
+    btn: "border-[#2F4A28]/40 bg-[#2F4A28]/12 text-[#2F4A28]",
+  },
+  "modern-scene": {
+    Decor: ModernDecor,
+    sky: "linear-gradient(180deg, #FAFAF8 0%, #F0F0ED 100%)",
+    particle: null,
+    nameKind: "modern",
+    nameFont: "font-sans font-black text-2xl sm:text-3xl uppercase",
+    name: "text-[#1E293B]",
+    nameShadow: "",
+    pretitle: "text-[#64748B]",
+    divider: "bg-[#1E293B]/30",
+    btn: "border-[#1E293B]/30 bg-[#1E293B]/5 text-[#1E293B]",
+  },
+};
+
+function ScenicCover({ config, scene, invitation, title, groom, bride, guestName, onOpen, coverAssets }) {
+  const Decor = scene.Decor;
+  return (
+    <motion.div
+      {...COVER_TRANSITION}
+      className="fixed inset-0 z-60 flex flex-col items-center justify-center overflow-hidden select-none px-6 pt-24 pb-28 gap-4"
+    >
+      <div className="absolute inset-0 z-0" style={{ background: scene.sky }} />
+      {/* Dekor: layer PNG bila aset tema aktif, selain itu scene SVG beranimasi */}
+      {coverAssets?.enabled ? <CoverLayers assets={coverAssets} /> : <Decor />}
+
+      {scene.particle === "bubbles" && (
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" aria-hidden="true">
+          {BLUE_BUBBLES.map((bubble, i) => (
+            <motion.div
+              key={`b-${i}`}
+              className="absolute pointer-events-none rounded-full border border-[#1A365D]/20"
+              style={{ top: "105%", left: bubble.left, width: bubble.w, height: bubble.h }}
+              animate={{ y: ["0vh", "-110vh"], opacity: [0, 0.4, 0], scale: [0.8, 1.2] }}
+              transition={{ duration: bubble.dur, repeat: Infinity, delay: bubble.del, ease: "linear" }}
+            />
+          ))}
+        </div>
+      )}
+      {scene.particle === "leaves" && (
+        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" aria-hidden="true">
+          {GREEN_LEAVES.map((leaf, i) => (
+            <motion.div
+              key={`l-${i}`}
+              className="absolute pointer-events-none select-none"
+              style={{ top: "-5%", left: leaf.left, fontSize: leaf.fontSize }}
+              animate={{ y: ["0vh", "110vh"], x: [0, leaf.xEnd], rotate: [0, 300], opacity: [0, 0.5, 0] }}
+              transition={{ duration: leaf.dur, repeat: Infinity, delay: leaf.del, ease: "linear" }}
+            >
+              🍃
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Nama mempelai */}
+      <div className="relative z-20 flex w-full max-w-xs flex-col items-center text-center">
+        <span className={`text-[8px] tracking-[0.35em] uppercase font-semibold ${scene.pretitle}`}>
+          The Wedding Of
+        </span>
+        {scene.nameKind === "modern" ? (
+          <h1 className={`mt-2 ${scene.nameFont} ${scene.name} tracking-[0.15em] leading-tight`}>
+            <span className="block">{groom}</span>
+            <span className="block text-[9px] my-2 font-light tracking-[0.35em] opacity-50 font-sans">— AND —</span>
+            <span className="block">{bride}</span>
+          </h1>
+        ) : (
+          <h1 className={`mt-1 ${scene.nameFont} leading-[1.05] ${scene.name} ${scene.nameShadow}`}>
+            <span className="block text-4xl sm:text-5xl">{groom}</span>
+            <span className="block text-xl my-0.5 opacity-80">&amp;</span>
+            <span className="block text-4xl sm:text-5xl">{bride}</span>
+          </h1>
+        )}
+      </div>
+
+      {/* Foto */}
+      <div className="relative z-20 flex items-center justify-center">
+        <PhotoFrame frameKind={config.frameKind} coverUrl={invitation?.coverUrl} title={title} />
+      </div>
+
+      {/* Tamu + tombol */}
+      <div className="relative z-20 flex flex-col items-center text-center">
+        <p className={`text-[8px] tracking-[0.3em] uppercase font-bold ${scene.pretitle}`}>Kepada Yth.</p>
+        <p className={`mt-1 text-base font-bold ${scene.name}`}>{guestName || "Tamu Undangan"}</p>
+        <div className={`my-2 h-px w-10 ${scene.divider}`} />
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label="Buka undangan"
+          className="group flex flex-col items-center gap-1 cursor-pointer focus:outline-none"
+        >
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border shadow-lg backdrop-blur-md transition-all ${scene.btn}`}
+          >
+            <Mail className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
+          </motion.div>
+          <span className={`text-[8px] tracking-[0.35em] font-bold uppercase ${scene.pretitle}`}>Buka</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 export function EnvelopeCover({ invitation, guestName, onOpen }) {
   const theme = invitation?.theme?.slug || "classic-elegance";
   const config = getThemeConfig(theme).cover;
+  const coverAssets = getCoverAssets(theme); // layer PNG per-tema (opsional)
 
   const groom = invitation?.groomNickname || "Pria";
   const bride = invitation?.brideNickname || "Wanita";
@@ -194,6 +327,9 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
             />
           ))}
         </div>
+
+        {/* Layer PNG dekoratif (opsional, bila aset tema aktif) */}
+        {coverAssets?.enabled && <CoverLayers assets={coverAssets} />}
 
         {/* Foreground Content */}
         <div className="relative z-20 flex flex-col h-full w-full items-center justify-between">
@@ -244,10 +380,10 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
           className="absolute inset-0 z-0"
           style={{ background: "linear-gradient(175deg, #F9E4D3 0%, #F6D7D9 22%, #F0D1DF 46%, #E1CCE8 74%, #D4C6EA 100%)" }}
         />
-        {/* Dekor floral: layer PNG fotorealistis bila FLORAL_USE_PNG aktif,
-            selain itu ornamen SVG bawaan (fallback aman). */}
-        {FLORAL_USE_PNG ? (
-          <FloralCoverLayers />
+        {/* Dekor: layer PNG fotorealistis bila aset tema aktif, selain itu
+            ornamen SVG bawaan (fallback aman). */}
+        {coverAssets?.enabled ? (
+          <CoverLayers assets={coverAssets} />
         ) : (
           <>
             {/* Taman pastel lembut */}
@@ -279,8 +415,8 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
         </div>
 
         {/* Karangan bunga SVG di dasar — hanya bila TIDAK memakai layer PNG
-            (saat PNG aktif, bunga dasar sudah dari FloralCoverLayers). */}
-        {!FLORAL_USE_PNG && (
+            (saat PNG aktif, bunga dasar sudah dari CoverLayers). */}
+        {!coverAssets?.enabled && (
           <CoverGardenBorder className="absolute inset-x-0 bottom-0 z-10 h-52" />
         )}
 
@@ -326,6 +462,24 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
           </button>
         </div>
       </motion.div>
+    );
+  }
+
+  // Cover scenic bertema (floral-blue / nature / modern)
+  const scene = SCENES[config.layout];
+  if (scene) {
+    return (
+      <ScenicCover
+        config={config}
+        scene={scene}
+        invitation={invitation}
+        title={title}
+        groom={groom}
+        bride={bride}
+        guestName={guestName}
+        onOpen={onOpen}
+        coverAssets={coverAssets}
+      />
     );
   }
 
@@ -472,6 +626,9 @@ export function EnvelopeCover({ invitation, guestName, onOpen }) {
           <circle cx="50" cy="50" r="45" stroke={config.ornamentsColor} strokeWidth="1" strokeDasharray="3 3" />
         </svg>
       </div>
+
+      {/* Layer PNG dekoratif (opsional, bila aset tema aktif) */}
+      {coverAssets?.enabled && <CoverLayers assets={coverAssets} />}
 
       {/* 4. Couple Names (Top Section) */}
       <div className="text-center z-20 space-y-0.5 mt-2">
