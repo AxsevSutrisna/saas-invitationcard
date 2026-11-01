@@ -45,6 +45,13 @@ export async function createGuestsBulk(invitationId, guestsList) {
 }
 
 /**
+ * Hitung jumlah tamu sebuah undangan (untuk penegakan kuota MAX_GUESTS).
+ */
+export async function countGuestsByInvitationId(invitationId) {
+  return db.guest.count({ where: { invitationId } });
+}
+
+/**
  * Get all guests for an invitation, including their RSVP status
  */
 export async function getGuestsByInvitationId(invitationId) {

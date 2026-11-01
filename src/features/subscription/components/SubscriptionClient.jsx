@@ -13,6 +13,7 @@ import {
   Gift,
   Store,
   Crown,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -414,26 +415,53 @@ export function SubscriptionClient({ activeSubscription, packages, transactions 
                   <th scope="col" className="px-4 py-3 font-semibold">Nominal</th>
                   <th scope="col" className="px-4 py-3 font-semibold">Tanggal Transaksi</th>
                   <th scope="col" className="px-4 py-3 font-semibold">Status</th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    <span className="sr-only">Aksi</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((trx) => (
-                  <tr key={trx.id} className="border-b border-border/40 hover:bg-gold-400/5">
-                    <td className="px-4 py-3.5 font-mono font-medium text-foreground">
-                      {trx.midtransOrderId}
-                    </td>
-                    <td className="px-4 py-3.5 text-foreground">{trx.package.name}</td>
-                    <td className="px-4 py-3.5 font-medium text-foreground">
-                      {formatRupiah(trx.amount)}
-                    </td>
-                    <td className="px-4 py-3.5 text-muted-foreground">
-                      {formatDateTime(trx.createdAt)}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <StatusBadge status={trx.status} />
-                    </td>
-                  </tr>
-                ))}
+                {transactions.map((trx) => {
+                  const openDetail = () =>
+                    router.push(ROUTES.PAYMENT_ORDER(trx.midtransOrderId));
+                  const actionLabel = trx.status === "PENDING" ? "Lanjutkan" : "Lihat";
+                  return (
+                    <tr
+                      key={trx.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${actionLabel} detail pembayaran ${trx.midtransOrderId}`}
+                      onClick={openDetail}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          openDetail();
+                        }
+                      }}
+                      className="group cursor-pointer border-b border-border/40 transition-colors hover:bg-gold-400/5 focus:bg-gold-400/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold-400/40"
+                    >
+                      <td className="px-4 py-3.5 font-mono font-medium text-foreground">
+                        {trx.midtransOrderId}
+                      </td>
+                      <td className="px-4 py-3.5 text-foreground">{trx.package.name}</td>
+                      <td className="px-4 py-3.5 font-medium text-foreground">
+                        {formatRupiah(trx.amount)}
+                      </td>
+                      <td className="px-4 py-3.5 text-muted-foreground">
+                        {formatDateTime(trx.createdAt)}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <StatusBadge status={trx.status} />
+                      </td>
+                      <td className="px-4 py-3.5 text-right whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors group-hover:text-gold-600 dark:group-hover:text-gold-300">
+                          {actionLabel}
+                          <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

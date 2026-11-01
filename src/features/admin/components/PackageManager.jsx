@@ -23,6 +23,7 @@ import {
   grantEntitlementAction,
 } from "@/features/admin/actions";
 import { formatRupiah } from "@/lib/format";
+import { isComingSoonFeature } from "@/features/entitlement/constants";
 import { Alert } from "@/components/ui/Alert";
 import { RowActions } from "@/components/ui/RowActions";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -427,7 +428,14 @@ export function PackageManager({ packages = [], features = [] }) {
         >
           {features.map((feat) => (
                   <tr key={feat.id} className="hover:bg-muted/30">
-                    <td className="px-4 py-3 font-medium text-foreground">{feat.name}</td>
+                    <td className="px-4 py-3 font-medium text-foreground">
+                      <span className="inline-flex items-center gap-1.5">
+                        {feat.name}
+                        {isComingSoonFeature(feat.key) && (
+                          <Badge variant="neutral">Segera Hadir</Badge>
+                        )}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <code className="rounded bg-muted px-1.5 py-0.5 text-[11px]">{feat.key}</code>
                     </td>
@@ -679,7 +687,14 @@ export function PackageManager({ packages = [], features = [] }) {
                           onChange={() => toggleAssign(feat.id)}
                           className="accent-gold-400"
                         />
-                        <span className="truncate text-foreground">{feat.name}</span>
+                        <span className="truncate text-foreground">
+                          {feat.name}
+                          {isComingSoonFeature(feat.key) && (
+                            <span className="ml-1 rounded bg-muted px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              Segera
+                            </span>
+                          )}
+                        </span>
                       </label>
                       {assigned && feat.type === "QUOTA" && (
                         <input

@@ -1,40 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { useUIStore } from "@/stores/uiStore";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { ROUTES } from "@/constants/routes";
 import { signOut } from "next-auth/react";
-import { Menu, Plus, User, LogOut, Settings } from "lucide-react";
+import { Plus, User, LogOut, Settings } from "lucide-react";
 import { useState } from "react";
 
 export function Header({ user }) {
-  const { toggleSidebar } = useUIStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-card/80 px-4 backdrop-blur-md sm:px-8">
-      {/* Left: Mobile Menu Toggle */}
+      {/* Left: Logo IKARA (hanya mobile; di desktop logo ada di Sidebar) */}
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          aria-label="Buka menu navigasi"
-          className="rounded-xl border border-border/60 p-2 text-foreground transition-colors hover:bg-gold-400/10 hover:text-gold-600 lg:hidden"
-        >
-          <Menu className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <Link href="/" className="lg:hidden" aria-label="IKARA">
+          <Image
+            src="/IKARA_Logo_V3.png"
+            alt="IKARA"
+            width={120}
+            height={32}
+            style={{ width: "auto", height: "28px" }}
+            className="object-contain"
+            priority
+          />
+        </Link>
       </div>
 
       {/* Right: CTA & User Dropdown */}
       <div className="ml-auto flex items-center gap-3 sm:gap-4">
-        {/* Primary CTA */}
-        <Link href={ROUTES.INVITATION_NEW}>
+        {/* Primary CTA — hanya desktop (di mobile sudah ada tombol tengah bottom nav) */}
+        <Link href={ROUTES.INVITATION_NEW} className="hidden lg:block">
           <Button size="sm">
             <Plus className="h-4 w-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Buat Undangan Baru</span>
-            <span className="sm:hidden">Buat</span>
+            <span>Buat Undangan Baru</span>
           </Button>
         </Link>
 

@@ -7,7 +7,7 @@ import { ThemeRegistry } from "@/features/theme/components/ThemeRegistry";
 import { EnvelopeCover } from "@/features/theme/components/EnvelopeCover";
 import { getThemeConfig } from "@/features/theme/theme-config";
 
-export function LivePhonePreview({ formData, themes = [] }) {
+export function LivePhonePreview({ formData, themes = [], featureMap = null }) {
   const selectedTheme =
     themes.find((t) => t.id === formData?.themeId) || themes[0] || {
       name: "Classic Elegance",
@@ -212,7 +212,8 @@ export function LivePhonePreview({ formData, themes = [] }) {
                     rsvps={[]}
                     guestName="Tamu Undangan"
                     onRsvpSuccess={() => {}}
-                    isPreview={true}
+                    featureMap={featureMap}
+                    preview={true}
                     isMuted={isMuted}
                     setIsMuted={setIsMuted}
                   />

@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { serialize } from "@/lib/utils";
 import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
+import { getPackageFeatureMap } from "@/features/entitlement/service";
+import { freeFeatureMap } from "@/features/entitlement/featureMap";
 import { InvitationWizard } from "@/features/invitation";
 import { ROUTES } from "@/constants/routes";
 
@@ -32,6 +34,12 @@ export default async function NewInvitationPage() {
   const serializedQuotes = serialize(quoteTemplates);
   const serializedMusics = serialize(musicTemplates);
 
+  // Peta fitur yang bisa diberikan user (dari langganan aktif / FREE) — dipakai
+  // pratinjau editor untuk menandai section yang belum termasuk paket.
+  const featureMap = activeSubscription?.packageId
+    ? await getPackageFeatureMap(activeSubscription.packageId)
+    : freeFeatureMap();
+
   return (
     <div className="max-w-6xl mx-auto">
       <Suspense fallback={<div className="text-xs text-muted-foreground p-6">Loading form editor...</div>}>
@@ -40,6 +48,7 @@ export default async function NewInvitationPage() {
           activeSubscription={serializedSubscription}
           quoteTemplates={serializedQuotes}
           musicTemplates={serializedMusics}
+          featureMap={featureMap}
         />
       </Suspense>
     </div>

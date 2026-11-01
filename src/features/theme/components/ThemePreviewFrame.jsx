@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 /**
@@ -26,19 +26,32 @@ const PHONE_SCOPE_CSS = `
 `;
 
 export function ThemePreviewFrame({ children, themeName, backHref = "/#tema" }) {
+  const router = useRouter();
+
+  // Kembali ke HALAMAN ASAL (dashboard atau landing) via riwayat browser.
+  // Fallback ke backHref bila dibuka langsung tanpa riwayat (mis. tab baru).
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(backHref);
+    }
+  };
+
   return (
     <div className="relative flex min-h-dvh w-full flex-col items-center justify-center gap-4 overflow-hidden px-4 py-16 bg-[radial-gradient(120%_120%_at_50%_0%,#f4f2ed_0%,#e7e4de_55%,#dbd7cf_100%)] dark:bg-[radial-gradient(120%_120%_at_50%_0%,#16171b_0%,#0e0f12_60%,#0a0b0d_100%)]">
       <style dangerouslySetInnerHTML={{ __html: PHONE_SCOPE_CSS }} />
 
       {/* Top bar */}
       <div className="absolute left-0 top-0 z-20 flex w-full items-center justify-between px-5 py-4">
-        <Link
-          href={backHref}
-          className="inline-flex items-center gap-1.5 rounded-full bg-black/5 px-3 py-1.5 text-xs font-medium text-zinc-700 backdrop-blur transition-colors hover:bg-black/10 dark:bg-white/10 dark:text-zinc-200 dark:hover:bg-white/15"
+        <button
+          type="button"
+          onClick={handleBack}
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-black/5 px-3 py-1.5 text-xs font-medium text-zinc-700 backdrop-blur transition-colors hover:bg-black/10 dark:bg-white/10 dark:text-zinc-200 dark:hover:bg-white/15"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Kembali
-        </Link>
+        </button>
         <span className="font-heading text-sm font-bold tracking-wide text-zinc-500 dark:text-zinc-300">
           IKARA
         </span>

@@ -31,6 +31,7 @@ export function InvitationWizard({
   activeSubscription = null,
   quoteTemplates = [],
   musicTemplates = [],
+  featureMap = null,
   mode = "create",
   invitationId = null,
   initialData = null,
@@ -313,7 +314,7 @@ export function InvitationWizard({
 
         {/* Right Column: Sticky Live Phone Preview (5 Cols) */}
         <div className="hidden lg:col-span-5 lg:block">
-          <LivePhonePreview formData={formData} themes={themes} />
+          <LivePhonePreview formData={formData} themes={themes} featureMap={featureMap} />
         </div>
       </div>
     </div>

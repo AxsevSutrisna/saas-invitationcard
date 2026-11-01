@@ -11,6 +11,7 @@ import { Divider } from "@/features/theme/components/Divider";
 import { GeometricFrame } from "@/features/theme/components/frames";
 import { BankCard } from "@/features/theme/components/BankCard";
 import { MusicToggle } from "@/features/theme/components/MusicToggle";
+import { FeatureGate } from "@/features/theme/components/FeatureGate";
 import { useInvitationView } from "@/features/theme/hooks/useInvitationView";
 import { formatEventDate } from "@/lib/format";
 import { getThemeConfig } from "@/features/theme/theme-config";
@@ -52,7 +53,9 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
     >
       {/* ── MUSIC TOGGLE ── */}
       {invitation?.isMusicEnabled && (
-        <MusicToggle isMuted={isMuted} setIsMuted={setIsMuted} accent={DARK} bg="#FFFFFF" />
+        <FeatureGate feature="BACKGROUND_MUSIC" soft>
+          <MusicToggle isMuted={isMuted} setIsMuted={setIsMuted} accent={DARK} bg="#FFFFFF" />
+        </FeatureGate>
       )}
 
       {/* ════════ 1. HERO ════════ */}
@@ -265,6 +268,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
       </section>
 
       {/* ════════ 5. LOVE STORY ════════ */}
+      <FeatureGate feature="LOVE_STORY" label="Cerita Cinta">
       {invitation?.loveStories?.length > 0 && (
         <section aria-label="Cerita Cinta" className="py-24 px-6" style={{ background: "#F4F4F2" }}>
           <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
@@ -286,6 +290,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
           </div>
         </section>
       )}
+      </FeatureGate>
 
       {/* ════════ 6. GALLERY ════════ */}
       {galleries.length > 0 && (
@@ -342,6 +347,7 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
       )}
 
       {/* ════════ 7. GIFTS ════════ */}
+      <FeatureGate feature="DIGITAL_ENVELOPE" label="Amplop Digital">
       {invitation?.gifts?.length > 0 && (
         <section aria-label="Kado" className="py-24 px-6" style={{ background: "#F4F4F2" }}>
           <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
@@ -376,11 +382,13 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
           </div>
         </section>
       )}
+      </FeatureGate>
 
       {/* ════════ 8. RSVP ════════ */}
       <section aria-label="RSVP" className="py-24 px-6">
         <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
           <SectionHeading title="RSVP & Ucapan" color={DARK} />
+          <FeatureGate feature="RSVP" label="Konfirmasi Kehadiran (RSVP)">
           <Reveal direction="up">
             <div className="p-6 bg-white border border-[#1E293B]/10" style={{ boxShadow: cardShadow }}>
               <RsvpForm
@@ -394,12 +402,15 @@ export function ModernMinimalistTheme({ invitation, rsvps, guestName, onRsvpSucc
               />
             </div>
           </Reveal>
+          </FeatureGate>
+          <FeatureGate feature="GUEST_BOOK" label="Buku Tamu & Ucapan">
           <Reveal direction="up" delay={0.1}>
             <div className="space-y-3">
               <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">Ucapan Tamu ({rsvps?.length || 0})</p>
               <GuestWishes rsvps={rsvps} accent={DARK} />
             </div>
           </Reveal>
+          </FeatureGate>
         </div>
       </section>
 

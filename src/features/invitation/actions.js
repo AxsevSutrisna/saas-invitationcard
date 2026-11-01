@@ -14,12 +14,27 @@ import { deleteObjectsByUrls } from "@/lib/r2";
 import { incrementSubscriptionQuota } from "@/features/subscription/repository";
 import {
   getGrantableFeaturesForUser,
+  getFeaturesForInvitation,
   checkInvitationQuota,
   mintEntitlementFromSubscription,
 } from "@/features/entitlement/service";
-import { hasFeature } from "@/features/entitlement/featureMap";
+import { hasFeature, getQuota } from "@/features/entitlement/featureMap";
 import { FEATURE_KEYS } from "@/features/entitlement/constants";
 import { authorize } from "@/features/auth/guard";
+
+/**
+ * Validasi kuota foto galeri (MAX_PHOTOS) terhadap peta fitur yang berlaku.
+ * @returns {string|null} pesan error bila melebihi, null bila lolos.
+ */
+function checkPhotoQuota(galleries, featureMap) {
+  const limit = getQuota(featureMap, FEATURE_KEYS.MAX_PHOTOS);
+  const count = galleries?.length || 0;
+  if (count > limit) {
+    const limitLabel = limit === Infinity ? "∞" : limit;
+    return `Jumlah foto galeri (${count}) melebihi batas paket undangan ini (${limitLabel}). Kurangi foto atau upgrade paket.`;
+  }
+  return null;
+}
 
 /**
  * Ratakan seluruh URL media dari objek undangan (baik hasil query DB maupun
@@ -93,6 +108,12 @@ export async function createInvitationAction(payload) {
       };
     }
 
+    // Penegakan kuota foto galeri (MAX_PHOTOS).
+    const photoError = checkPhotoQuota(validatedData.galleries, grantableFeatures);
+    if (photoError) {
+      return { success: false, error: photoError };
+    }
+
     // Eksekusi Simpan di PostgreSQL
     const newInvitation = await createInvitation(user.id, validatedData);
 
@@ -156,11 +177,21 @@ export async function updateInvitationAction(invitationId, payload) {
       };
     }
 
-    // Cek Akses Tema Premium (Security Check) — berbasis feature flag.
-    const { map: grantableFeatures } = await getGrantableFeaturesForUser(user.id);
-    const premiumError = await checkPremiumThemeAccess(validatedData.themeId, grantableFeatures);
+    // Peta fitur EFEKTIF undangan ini (entitlement per-undangan → fallback
+    // langganan pemilik → FREE). SATU resolusi dipakai untuk cek tema premium
+    // & kuota foto: hindari dua kali resolusi, sekaligus benar untuk undangan
+    // yang di-unlock lewat eceran/reseller (user tak punya langganan aktif tapi
+    // undangannya tetap boleh diedit).
+    const invFeatures = await getFeaturesForInvitation({ id: invitationId, userId: user.id });
+
+    const premiumError = await checkPremiumThemeAccess(validatedData.themeId, invFeatures);
     if (premiumError) {
       return { success: false, error: premiumError };
+    }
+
+    const photoError = checkPhotoQuota(validatedData.galleries, invFeatures);
+    if (photoError) {
+      return { success: false, error: photoError };
     }
 
     const updated = await updateInvitation(invitationId, user.id, validatedData);

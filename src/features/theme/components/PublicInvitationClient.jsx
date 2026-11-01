@@ -1,20 +1,53 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
 import { EnvelopeCover } from "./EnvelopeCover";
 import { ThemeRegistry } from "./ThemeRegistry";
+import { hasFeature, getQuota } from "@/features/entitlement/featureMap";
+import { FEATURE_KEYS } from "@/features/entitlement/constants";
 import { trackGuestOpenAction, getGuestByCodeAction } from "@/features/guest/actions";
 import { logVisitAction } from "@/features/analytics/actions";
 
-export function PublicInvitationClient({ invitation, initialRsvps, guestName, guestCode, isPremium = false }) {
+export function PublicInvitationClient({
+  invitation,
+  initialRsvps,
+  guestName,
+  guestCode,
+  featureMap = null,
+  preview = false,
+  // Override watermark opsional (dipakai halaman pratinjau tema agar selalu
+  // tampil premium). Bila tak diberi, status premium diturunkan dari featureMap.
+  isPremium: isPremiumOverride,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [rsvps, setRsvps] = useState(initialRsvps || []);
   const [guest, setGuest] = useState(null);
   const audioRef = useRef(null);
 
-  const isMusicEnabled = invitation?.isMusicEnabled && invitation?.musicUrl;
+  // Hak akses berbasis peta fitur efektif undangan (per-undangan).
+  const isPremium =
+    typeof isPremiumOverride === "boolean"
+      ? isPremiumOverride
+      : featureMap
+      ? hasFeature(featureMap, FEATURE_KEYS.NO_WATERMARK)
+      : false;
+  const musicEntitled = featureMap == null ? true : hasFeature(featureMap, FEATURE_KEYS.BACKGROUND_MUSIC);
+  const photoQuota = featureMap == null ? Infinity : getQuota(featureMap, FEATURE_KEYS.MAX_PHOTOS);
+
+  // Batasi galeri ke kuota MAX_PHOTOS untuk tamu (defensif thd data lama yang
+  // melebihi batas). Di pratinjau pemilik, tampilkan semua.
+  const displayInvitation = useMemo(() => {
+    if (preview || !invitation?.galleries || photoQuota === Infinity) return invitation;
+    if (invitation.galleries.length <= photoQuota) return invitation;
+    return { ...invitation, galleries: invitation.galleries.slice(0, photoQuota) };
+  }, [invitation, photoQuota, preview]);
+
+  // Musik latar hanya diputar bila undangan berhak (BACKGROUND_MUSIC) — kecuali
+  // pratinjau pemilik. Tombol musik di tema turut digating via <FeatureGate>.
+  const isMusicEnabled =
+    invitation?.isMusicEnabled && invitation?.musicUrl && (preview || musicEntitled);
 
   useEffect(() => {
     if (guestCode) {
@@ -115,13 +148,15 @@ export function PublicInvitationClient({ invitation, initialRsvps, guestName, gu
       {/* 2. THEME COMPONENT RENDERER */}
       {isOpen && (
         <ThemeRegistry
-          invitation={invitation}
+          invitation={displayInvitation}
           rsvps={rsvps}
           guestName={guestName}
           onRsvpSuccess={handleRsvpSuccess}
           guest={guest}
           isMuted={isMuted}
           setIsMuted={setIsMuted}
+          featureMap={featureMap}
+          preview={preview}
         />
       )}
 

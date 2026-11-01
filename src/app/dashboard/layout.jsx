@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 export default async function DashboardLayout({ children }) {
   const session = await auth();
@@ -27,10 +28,13 @@ export default async function DashboardLayout({ children }) {
       {/* Main Content Area */}
       <div className="flex min-w-0 flex-1 flex-col transition-all duration-300 lg:pl-64">
         <Header user={user} />
-        <main className="mx-auto w-full max-w-6xl flex-1 p-6 sm:p-10">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-6 pt-6 pb-24 sm:px-10 sm:pt-10 lg:pb-10">
           {children}
         </main>
       </div>
+
+      {/* Navigasi bawah ala aplikasi (mobile/tablet; desktop pakai Sidebar) */}
+      <MobileBottomNav />
     </div>
   );
 }

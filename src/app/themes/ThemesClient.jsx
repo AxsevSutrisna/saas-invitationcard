@@ -149,7 +149,7 @@ function ThemeCard({ theme }) {
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-2">
-          <Link href={`/theme/preview/${theme.slug}`} target="_blank">
+          <Link href={`/theme/preview/${theme.slug}`}>
             <Button
               variant="outline"
               className="w-full h-10 rounded-xl bg-transparent border border-border/60 text-muted-foreground hover:text-gold-400 hover:border-gold-400 hover:bg-gold-400/5 font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-300 active:scale-95"

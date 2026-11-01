@@ -11,6 +11,7 @@ import { Divider } from "@/features/theme/components/Divider";
 import { BlobFrame } from "@/features/theme/components/frames";
 import { BankCard } from "@/features/theme/components/BankCard";
 import { MusicToggle } from "@/features/theme/components/MusicToggle";
+import { FeatureGate } from "@/features/theme/components/FeatureGate";
 import { ParticleField } from "@/features/theme/components/ParticleField";
 import { useInvitationView } from "@/features/theme/hooks/useInvitationView";
 import { formatEventDate } from "@/lib/format";
@@ -66,13 +67,15 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
 
       {/* ── MUSIC TOGGLE BUTTON ── */}
       {invitation?.isMusicEnabled && (
-        <MusicToggle
-          isMuted={isMuted}
-          setIsMuted={setIsMuted}
-          accent={FOREST}
-          bg="#FFFFFF"
-          title={isMuted ? "Mainkan Musik" : "Senyap"}
-        />
+        <FeatureGate feature="BACKGROUND_MUSIC" soft>
+          <MusicToggle
+            isMuted={isMuted}
+            setIsMuted={setIsMuted}
+            accent={FOREST}
+            bg="#FFFFFF"
+            title={isMuted ? "Mainkan Musik" : "Senyap"}
+          />
+        </FeatureGate>
       )}
 
       {/* ════════ 1. HERO SECTION — asymmetric split (stacked on mobile, side-by-side on desktop) ════════ */}
@@ -291,6 +294,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       </section>
 
       {/* ════════ 5. LOVE STORY ════════ */}
+      <FeatureGate feature="LOVE_STORY" label="Cerita Cinta">
       {invitation?.loveStories?.length > 0 && (
         <section aria-label="Cerita Cinta" className="py-24 @[768px]:py-28 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
           <div className="max-w-xl @[1024px]:max-w-2xl mx-auto space-y-10">
@@ -313,6 +317,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
           </div>
         </section>
       )}
+      </FeatureGate>
 
       {/* ════════ 6. PHOTO GALLERY — masonry 3-kolom di desktop, carousel tetap fokus di HP ════════ */}
       {galleries.length > 0 && (
@@ -383,6 +388,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
       )}
 
       {/* ════════ 7. DIGITAL GIFTS — grid 2 kolom di desktop ════════ */}
+      <FeatureGate feature="DIGITAL_ENVELOPE" label="Amplop Digital">
       {invitation?.gifts?.length > 0 && (
         <section aria-label="Kado" className="py-24 @[768px]:py-28 px-6 @[768px]:px-10 @[1024px]:px-16" style={{ background: "linear-gradient(180deg, #FBFAF6 0%, #F7F5EE 100%)" }}>
           <div className="max-w-xl @[1024px]:max-w-4xl mx-auto space-y-10">
@@ -421,6 +427,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
           </div>
         </section>
       )}
+      </FeatureGate>
 
       {/* ════════ 8. RSVP & UCAPAN — 2 kolom di desktop (form kiri, ucapan kanan) ════════ */}
       <section aria-label="RSVP" className="py-24 @[768px]:py-28 px-6 @[768px]:px-10 @[1024px]:px-16">
@@ -428,6 +435,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
           <SectionHeading title="RSVP & Buku Ucapan" subtitle="Berikan konfirmasi kehadiran Anda beserta doa terbaik:" color={FOREST} />
 
           <div className="grid grid-cols-1 @[1024px]:grid-cols-2 gap-8 @[1024px]:gap-10 @[1024px]:items-start">
+            <FeatureGate feature="RSVP" label="Konfirmasi Kehadiran (RSVP)">
             <Reveal direction="up">
               <div className="p-6 rounded-3xl bg-white border" style={{ borderColor: `${FOREST}25`, boxShadow: cardShadow }}>
                 <RsvpForm
@@ -441,7 +449,9 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                 />
               </div>
             </Reveal>
+            </FeatureGate>
 
+            <FeatureGate feature="GUEST_BOOK" label="Buku Tamu & Ucapan">
             <Reveal direction="up" delay={0.1}>
               <div className="space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">
@@ -450,6 +460,7 @@ export function NatureHarmonyTheme({ invitation, rsvps, guestName, onRsvpSuccess
                 <GuestWishes rsvps={rsvps} accent={FOREST} />
               </div>
             </Reveal>
+            </FeatureGate>
           </div>
         </div>
       </section>

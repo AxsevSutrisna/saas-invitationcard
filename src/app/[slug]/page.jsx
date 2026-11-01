@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { getInvitationBySlug } from "@/features/invitation/repository";
 import { getRsvpsByInvitationId } from "@/features/rsvp/repository";
 import { getFeaturesForInvitation } from "@/features/entitlement/service";
-import { hasFeature } from "@/features/entitlement/featureMap";
-import { FEATURE_KEYS } from "@/features/entitlement/constants";
 import { PublicInvitationClient } from "@/features/theme/components/PublicInvitationClient";
 import { siteConfig } from "@/config/site.config";
 
@@ -84,7 +82,6 @@ export default async function PublicInvitationPage({ params, searchParams }) {
     getFeaturesForInvitation(invitation),
     getRsvpsByInvitationId(invitation.id),
   ]);
-  const isPremium = hasFeature(featureMap, FEATURE_KEYS.NO_WATERMARK);
 
   const guestName = resolvedSearchParams.to || "";
   const guestCode = resolvedSearchParams.code || "";
@@ -125,7 +122,7 @@ export default async function PublicInvitationPage({ params, searchParams }) {
        initialRsvps={rsvps}
        guestName={guestName}
        guestCode={guestCode}
-       isPremium={isPremium}
+       featureMap={featureMap}
      />
     </>
   );

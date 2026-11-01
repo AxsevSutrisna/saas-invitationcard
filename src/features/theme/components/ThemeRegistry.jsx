@@ -3,6 +3,7 @@
 import { TraditionalLayout } from "@/features/theme/layouts/TraditionalLayout";
 import { ModernMinimalistTheme } from "@/features/theme/designs/modern-minimalist";
 import { NatureHarmonyTheme } from "@/features/theme/designs/nature-harmony";
+import { FeatureProvider } from "@/features/theme/components/FeatureGate";
 import { getThemeConfig } from "@/features/theme/theme-config";
 
 /**
@@ -26,21 +27,28 @@ export function ThemeRegistry({
   guest,
   isMuted,
   setIsMuted,
+  featureMap = null,
+  preview = false,
 }) {
   const themeSlug = invitation?.theme?.slug || "classic-elegance";
   const config = getThemeConfig(themeSlug); // fallback ke classic-elegance
   const Renderer = RENDERERS[config.renderer] || TraditionalLayout;
 
+  // Gating hak akses per-section disediakan lewat konteks (FeatureProvider),
+  // supaya tiap tema cukup membungkus section dengan <FeatureGate> tanpa
+  // prop-drilling. `featureMap` null = tak digating (mis. pratinjau tema).
   return (
-    <Renderer
-      config={config}
-      invitation={invitation}
-      rsvps={rsvps}
-      guestName={guestName}
-      onRsvpSuccess={onRsvpSuccess}
-      guest={guest}
-      isMuted={isMuted}
-      setIsMuted={setIsMuted}
-    />
+    <FeatureProvider featureMap={featureMap} preview={preview}>
+      <Renderer
+        config={config}
+        invitation={invitation}
+        rsvps={rsvps}
+        guestName={guestName}
+        onRsvpSuccess={onRsvpSuccess}
+        guest={guest}
+        isMuted={isMuted}
+        setIsMuted={setIsMuted}
+      />
+    </FeatureProvider>
   );
 }

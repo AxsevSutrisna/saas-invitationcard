@@ -1,7 +1,10 @@
 "use client";
 
 import { Reveal } from "@/components/ui/Reveal";
-import { Check, Sparkles, Plus, Gift } from "lucide-react";
+import { Check, Sparkles, Plus, Gift, Clock } from "lucide-react";
+
+// Bullet ber-label "(Segera Hadir)" dirender berbeda (ikon jam + redup).
+const COMING_SOON_RE = /\(segera hadir\)/i;
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
@@ -43,24 +46,27 @@ function ctaOf(pkg) {
 
 const KIND_TAG = { ADDON: "Add-on", BUNDLE: "Paket Hemat" };
 
-// Paket contoh bila DB kosong (mis. saat testing).
+// Paket contoh bila DB kosong (mis. saat testing). WAJIB cermin bullet `features`
+// paket free/basic/pro di `prisma/seed.js` agar tampilan fallback == produksi.
+// Jangan mengiklankan fitur yang tidak diberikan paketnya (mis. Custom Domain
+// bukan bagian PRO — itu add-on terpisah).
 const FALLBACK_PLANS = [
   {
     name: "FREE", price: 0, period: "selamanya",
     desc: "Cocok untuk mencoba fitur dasar platform.",
-    features: ["1 Undangan Aktif", "Pilihan Tema Terbatas", "Masa Aktif 30 Hari"],
+    features: ["1 Undangan Aktif", "Watermark Platform Aktif", "Pilihan Tema Terbatas", "Masa Aktif 30 Hari"],
     popular: false, ctaText: "Mulai Gratis",
   },
   {
     name: "BASIC", price: 99000, period: "sekali bayar",
     desc: "Pilihan favorit untuk sepasang calon pengantin.",
-    features: ["1 Undangan Premium", "Tanpa Watermark", "Semua Pilihan Tema", "Fitur Amplop Digital & QRIS", "Masa Aktif 180 Hari"],
+    features: ["1 Undangan Premium", "Tanpa Watermark", "Semua Pilihan Tema", "Fitur Amplop Digital", "Masa Aktif 180 Hari"],
     popular: true, ctaText: "Pilih Paket Basic",
   },
   {
     name: "PRO", price: 199000, period: "/ bulan",
     desc: "Solusi profesional untuk Wedding Organizer & Studio Foto.",
-    features: ["Hingga 10 Undangan/Bulan", "Tanpa Watermark", "Semua Tema Premium", "RSVP & QR Check-in", "Dukungan Custom Domain"],
+    features: ["Hingga 10 Undangan Aktif/Bulan", "Tanpa Watermark", "Semua Pilihan Tema", "Fitur Amplop Digital", "Fitur RSVP Kehadiran", "Buku Tamu & Ucapan", "Check-in QR Tamu (Segera Hadir)", "Masa Aktif 30 Hari (Berlangganan)"],
     popular: false, ctaText: "Berlangganan Pro",
   },
 ];
@@ -195,12 +201,22 @@ export function PricingSection({ packages = [] }) {
                         Yang Didapat
                       </p>
                       <ul className="space-y-2.5">
-                        {plan.features.map((feat, i) => (
-                          <li key={i} className="flex items-start gap-2.5 text-[13px] text-zinc-200">
-                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
+                        {plan.features.map((feat, i) => {
+                          const soon = COMING_SOON_RE.test(feat);
+                          return (
+                            <li
+                              key={i}
+                              className={`flex items-start gap-2.5 text-[13px] ${soon ? "text-zinc-400" : "text-zinc-200"}`}
+                            >
+                              {soon ? (
+                                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" aria-hidden="true" />
+                              ) : (
+                                <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
+                              )}
+                              <span>{feat}</span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
 

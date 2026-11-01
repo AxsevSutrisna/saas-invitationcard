@@ -114,6 +114,10 @@ class RollbackSignal extends Error {}
         const freeMap = buildFeatureMap(free.packageFeatures);
         check("FREE → tanpa NO_WATERMARK", freeMap.NO_WATERMARK !== true);
         check("FREE → MAX_INVITATIONS = 1", getQuota(freeMap, "MAX_INVITATIONS") === 1);
+        // Parity: paket FREE di DB harus selaras dgn FREE_FEATURE_MAP (constants.js)
+        // yang jadi fallback saat user tanpa langganan — keduanya memberi musik+RSVP.
+        check("FREE → BACKGROUND_MUSIC & RSVP aktif (selaras FREE_FEATURE_MAP)", freeMap.BACKGROUND_MUSIC === true && freeMap.RSVP === true);
+        check("FREE → tanpa PREMIUM_THEME / DIGITAL_ENVELOPE / GUEST_BOOK", freeMap.PREMIUM_THEME !== true && freeMap.DIGITAL_ENVELOPE !== true && freeMap.GUEST_BOOK !== true);
 
         // ---- 2. Merge BUNDLE ----------------------------------------------
         console.log("\n[Bundle merge]");

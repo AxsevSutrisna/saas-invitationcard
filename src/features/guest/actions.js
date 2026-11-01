@@ -10,13 +10,33 @@ import {
   trackGuestOpen,
   getGuestByCode,
   getGuestWithOwner,
+  countGuestsByInvitationId,
 } from "@/features/guest/repository";
 import { getInvitationOwner } from "@/features/invitation/repository";
+import { getFeaturesForInvitation } from "@/features/entitlement/service";
+import { getQuota } from "@/features/entitlement/featureMap";
+import { FEATURE_KEYS } from "@/features/entitlement/constants";
 import {
   guestSchema,
   updateGuestSchema,
   bulkGuestSchema,
 } from "@/features/guest/schema";
+
+/**
+ * Cek sisa kuota tamu sebuah undangan (MAX_GUESTS pada peta fitur efektifnya).
+ * @returns {Promise<{ allowed: boolean, used: number, limit: number }>}
+ */
+async function checkGuestQuota(invitation, adding = 1) {
+  const map = await getFeaturesForInvitation(invitation);
+  const limit = getQuota(map, FEATURE_KEYS.MAX_GUESTS);
+  const used = await countGuestsByInvitationId(invitation.id);
+  return { allowed: used + adding <= limit, used, limit };
+}
+
+/** Label kuota tamu untuk pesan error (∞ bila tak terbatas). */
+function guestLimitLabel(limit) {
+  return limit === Infinity ? "∞" : limit;
+}
 
 /**
  * Action: Create a single guest
@@ -28,6 +48,18 @@ export async function createGuestAction(payload) {
     // Otorisasi: hanya pemilik undangan induk yang boleh menambah tamu.
     const invitation = await getInvitationOwner(validatedData.invitationId);
     await authorize("guest:create", invitation);
+
+    // Penegakan kuota tamu (MAX_GUESTS) sesuai hak akses undangan.
+    const quota = await checkGuestQuota(
+      { id: validatedData.invitationId, userId: invitation.userId },
+      1
+    );
+    if (!quota.allowed) {
+      return {
+        success: false,
+        error: `Kuota tamu undangan ini sudah penuh (${quota.used}/${guestLimitLabel(quota.limit)}). Upgrade paket untuk menambah tamu.`,
+      };
+    }
 
     const newGuest = await createGuest(validatedData);
 
@@ -61,6 +93,19 @@ export async function createGuestsBulkAction(payload) {
 
     if (lines.length === 0) {
       return { success: false, error: "Tidak ada Tamu Undangan yang valid." };
+    }
+
+    // Penegakan kuota tamu (MAX_GUESTS) untuk seluruh batch sekaligus.
+    const quota = await checkGuestQuota(
+      { id: invitationId, userId: invitation.userId },
+      lines.length
+    );
+    if (!quota.allowed) {
+      const sisa = quota.limit === Infinity ? "∞" : Math.max(0, quota.limit - quota.used);
+      return {
+        success: false,
+        error: `Melebihi kuota tamu undangan ini (${quota.used}/${guestLimitLabel(quota.limit)}). Sisa slot: ${sisa}, sedang menambah ${lines.length}. Upgrade paket untuk menambah lebih banyak.`,
+      };
     }
 
     const guestsList = lines.map((line) => {

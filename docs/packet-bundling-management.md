@@ -89,11 +89,20 @@ Fungsi inti di [`src/features/entitlement/`](../src/features/entitlement/):
 **`getPackageFeatureMap(packageId)`**: untuk BUNDLE, gabung fitur paket + seluruh
 item bundle.
 
-Pemakaian gating:
-- Halaman publik [`src/app/[slug]/page.jsx`](../src/app/%5Bslug%5D/page.jsx):
-  watermark off bila `NO_WATERMARK`.
+Pemakaian gating (ringkas — tabel lengkap di
+[`entitlement-module.md`](./entitlement-module.md#penegakan-enforcement--di-mana-tiap-flag-bekerja)):
+- Halaman publik [`src/app/[slug]/page.jsx`](../src/app/%5Bslug%5D/page.jsx) →
+  `PublicInvitationClient`: watermark off bila `NO_WATERMARK`; musik hanya bila
+  `BACKGROUND_MUSIC`; galeri dipotong ke `MAX_PHOTOS`.
+- Section per-tema digating via Context `FeatureProvider` +
+  [`<FeatureGate>`](../src/features/theme/components/FeatureGate.jsx): `LOVE_STORY`,
+  `DIGITAL_ENVELOPE`, `RSVP`, `GUEST_BOOK`, `BACKGROUND_MUSIC` — disembunyikan dari
+  tamu, terkunci+CTA upgrade di pratinjau pemilik.
 - Buat/edit undangan [`src/features/invitation/actions.js`](../src/features/invitation/actions.js):
-  tema premium butuh `PREMIUM_THEME`; kuota pakai `MAX_INVITATIONS`.
+  tema premium butuh `PREMIUM_THEME`; kuota `MAX_INVITATIONS` & `MAX_PHOTOS`.
+- Tambah tamu [`src/features/guest/actions.js`](../src/features/guest/actions.js):
+  kuota `MAX_GUESTS`.
+- **Placeholder (belum ditegakkan):** `LIVE_STREAM`, `QR_CHECKIN`, `CUSTOM_DOMAIN`.
 
 ---
 

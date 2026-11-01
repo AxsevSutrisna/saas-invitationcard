@@ -30,9 +30,35 @@ export const FEATURE_KEYS = {
 /**
  * Peta fitur dasar untuk undangan TANPA entitlement/langganan aktif
  * (paket "FREE" implisit). Fitur BOOLEAN yang tidak disebut dianggap nonaktif.
+ *
+ * WAJIB cermin penugasan fitur paket "free" di `prisma/seed.js` (sumber katalog
+ * yang dikelola admin): FREE memberi Musik Latar + RSVP, selain kuota dasar —
+ * TANPA tanpa-watermark, tema premium, amplop digital, love story, buku tamu.
  */
 export const FREE_FEATURE_MAP = {
   [FEATURE_KEYS.MAX_INVITATIONS]: 1,
   [FEATURE_KEYS.MAX_GUESTS]: 100,
   [FEATURE_KEYS.MAX_PHOTOS]: 8,
+  [FEATURE_KEYS.BACKGROUND_MUSIC]: true,
+  [FEATURE_KEYS.RSVP]: true,
 };
+
+/**
+ * Fitur yang flag-nya sudah ada di katalog tetapi KAPABILITASNYA belum dibangun
+ * (roadmap). Ditandai "Segera Hadir" di katalog admin & bullet marketing, dan
+ * TIDAK menggerakkan apa pun di runtime (tak ada field/UI untuk dikunci).
+ *
+ * Saat sebuah fitur selesai dibangun: hapus key-nya dari sini LALU pasang
+ * gating-nya (mis. `<FeatureGate>` / cek server) + hapus label "(Segera Hadir)"
+ * dari bullet paket terkait.
+ */
+export const COMING_SOON_FEATURES = new Set([
+  FEATURE_KEYS.LIVE_STREAM,
+  FEATURE_KEYS.QR_CHECKIN,
+  FEATURE_KEYS.CUSTOM_DOMAIN,
+]);
+
+/** Apakah sebuah feature key masih "segera hadir" (belum berfungsi). */
+export function isComingSoonFeature(key) {
+  return COMING_SOON_FEATURES.has(key);
+}

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { serialize } from "@/lib/utils";
 import { findActiveSubscriptionByUserId } from "@/features/subscription/repository";
 import { getInvitationForEdit } from "@/features/invitation/repository";
+import { getFeaturesForInvitation } from "@/features/entitlement/service";
 import { InvitationWizard } from "@/features/invitation";
 import { ROUTES } from "@/constants/routes";
 
@@ -35,12 +36,15 @@ export default async function EditInvitationPage({ params }) {
     notFound();
   }
 
-  const [activeSubscription, themes, quoteTemplates, musicTemplates] =
+  const [activeSubscription, themes, quoteTemplates, musicTemplates, featureMap] =
     await Promise.all([
       findActiveSubscriptionByUserId(session.user.id),
       db.theme.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" } }),
       db.quoteTemplate.findMany(),
       db.musicTemplate.findMany({ where: { isActive: true } }),
+      // Peta fitur efektif undangan ini (entitlement per-undangan → fallback
+      // langganan pemilik → FREE) untuk menandai section terkunci di pratinjau.
+      getFeaturesForInvitation({ id: invitation.id, userId: session.user.id }),
     ]);
 
   // Map data DB → bentuk yang dipakai form wizard (semua serializable).
@@ -120,6 +124,7 @@ export default async function EditInvitationPage({ params }) {
           activeSubscription={activeSubscription ? serialize(activeSubscription) : null}
           quoteTemplates={serialize(quoteTemplates)}
           musicTemplates={serialize(musicTemplates)}
+          featureMap={featureMap}
         />
       </Suspense>
     </div>

@@ -82,7 +82,7 @@ export function HeroSection() {
               </Button>
             </Link>
 
-            <Link href="/theme/preview/classic-elegance" target="_blank" className="w-full sm:w-auto">
+            <Link href="/theme/preview/classic-elegance" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"

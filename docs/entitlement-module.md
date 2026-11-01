@@ -36,6 +36,43 @@ Feature ──< PackageFeature >── Package ──< Entitlement >── Invit
 Saat undangan dibuat di bawah langganan aktif, entitlement SUBSCRIPTION
 di-_mint_ otomatis (lihat `createInvitationAction`) + `quotaUsed` naik.
 
+## Penegakan (enforcement) — di mana tiap flag bekerja
+
+Resolusi peta fitur saja tidak cukup; tiap flag harus benar-benar mengunci
+sesuatu. Titik penegakan saat ini:
+
+| Flag | Ditegakkan di | Perilaku |
+| --- | --- | --- |
+| `NO_WATERMARK` | `app/[slug]/page.jsx` → `PublicInvitationClient` | Watermark "Powered by IKARA" tampil bila tak berhak. |
+| `PREMIUM_THEME` | `invitation/actions.js` (`checkPremiumThemeAccess`) | Blokir pilih tema `isPremium` saat create/update. |
+| `MAX_INVITATIONS` | `entitlement/service.js` (`checkInvitationQuota`) | Blokir buat undangan melebihi kuota. |
+| `MAX_PHOTOS` | `invitation/actions.js` (`checkPhotoQuota`) + render | Tolak simpan galeri > batas; tamu dipotong ke batas. |
+| `MAX_GUESTS` | `guest/actions.js` (`checkGuestQuota`) | Tolak tambah tamu (satuan & massal) > batas. |
+| `BACKGROUND_MUSIC` | `PublicInvitationClient` (audio) + `<FeatureGate soft>` (tombol) | Audio & tombol musik hanya bila berhak. |
+| `LOVE_STORY`, `DIGITAL_ENVELOPE`, `RSVP`, `GUEST_BOOK` | `<FeatureGate>` di 3 tema | Section disembunyikan dari tamu / terkunci di pratinjau. |
+
+**Gating per-section** memakai Context: [`ThemeRegistry`](../src/features/theme/components/ThemeRegistry.jsx)
+membungkus renderer dengan `FeatureProvider` (`featureMap` + `preview`), lalu tiap
+tema membungkus section dengan [`<FeatureGate feature label soft>`](../src/features/theme/components/FeatureGate.jsx):
+
+- berhak → tampil; tak berhak & **tamu** → disembunyikan; tak berhak &
+  **pratinjau pemilik** (`preview=true` dari `LivePhonePreview`) → tampil blur +
+  gembok + ajakan upgrade (`soft` → tombol kecil tetap polos).
+- `featureMap = null` (tanpa provider, mis. pratinjau tema data contoh) =
+  _fail-open_ (semua tampil).
+
+**Parity FREE**: `FREE_FEATURE_MAP` (constants.js) WAJIB cermin penugasan paket
+`free` di seed (keduanya: musik + RSVP + kuota dasar, tanpa fitur premium).
+Dijaga oleh assertion di `scripts/e2e-packet-bundling.cjs`.
+
+**Flag placeholder (belum ditegakkan — belum ada fitur):** `LIVE_STREAM`,
+`QR_CHECKIN`, `CUSTOM_DOMAIN`. Terdaftar di `COMING_SOON_FEATURES`
+([`constants.js`](../src/features/entitlement/constants.js)) → ditandai badge
+**"Segera Hadir"** di admin PackageManager, dan bullet marketing yang
+mengandung "(Segera Hadir)" dirender redup + ikon jam (`FeatureList`,
+`PricingSection`) alih-alih centang. Saat fiturnya dibangun: hapus key dari set,
+pasang gating-nya, dan buang label "(Segera Hadir)" dari bullet paket.
+
 ## Dikelola dari admin (tanpa deploy)
 
 Dashboard → Admin → **Paket & Fitur** ([`PackageManager`](../src/features/admin/components/PackageManager.jsx)):

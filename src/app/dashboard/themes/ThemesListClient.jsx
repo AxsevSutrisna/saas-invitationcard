@@ -142,7 +142,7 @@ function ThemeCard({ theme }) {
         </div>
 
         <div className="grid grid-cols-2 gap-2 pt-1">
-          <Link href={`/theme/preview/${theme.slug}`} target="_blank">
+          <Link href={`/theme/preview/${theme.slug}`}>
             <Button variant="outline" size="sm" className="w-full">
               <Eye aria-hidden="true" />
               Lihat

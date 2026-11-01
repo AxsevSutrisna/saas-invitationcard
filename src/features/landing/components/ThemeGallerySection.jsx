@@ -138,7 +138,7 @@ export function ThemeGallerySection({ initialThemes = [] }) {
 
                 {/* CTA Button */}
                 <div className="mt-4">
-                  <Link href={`/theme/preview/${theme.slug}`} target="_blank" className="w-full block">
+                  <Link href={`/theme/preview/${theme.slug}`} className="w-full block">
                     <Button
                       variant="outline"
                       className="w-full h-10 rounded-xl border border-gold-400/50 bg-black/40 backdrop-blur-md hover:bg-gold-400/20 hover:border-gold-400 text-white hover:text-[#F6E5B3] font-medium text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer transition-all active:scale-95"
